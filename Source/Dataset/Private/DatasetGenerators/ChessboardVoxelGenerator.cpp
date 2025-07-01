@@ -1,4 +1,3 @@
-
 #include "DatasetGenerators/ChessboardVoxelGenerator.h"
 
 #include "DatasetGenerators/SphereVoxelGenerator.h"

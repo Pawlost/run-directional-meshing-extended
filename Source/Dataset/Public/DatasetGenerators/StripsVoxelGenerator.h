@@ -5,6 +5,8 @@
 #include "Voxel/Generator/Single/SingleVoxelGeneratorBase.h"
 #include "StripsVoxelGenerator.generated.h"
 
+struct FChunk;
+
 UCLASS()
 class DATASET_API UStripsVoxelGenerator : public USingleVoxelGeneratorBase
 {

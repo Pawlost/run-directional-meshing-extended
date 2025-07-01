@@ -9,7 +9,7 @@ public class Dataset : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core", "RunDirectionalMeshingDemo",
+                "Core", "RunDirectionalMeshingExtended", "ProceduralMeshComponent"
             }
         );
 

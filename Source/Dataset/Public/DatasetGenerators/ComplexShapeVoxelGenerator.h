@@ -17,4 +17,5 @@ public:
 	float Omega = 0.5f;
 private:
 	float ShapeSinus(int Coordinate) const;
+
 };
