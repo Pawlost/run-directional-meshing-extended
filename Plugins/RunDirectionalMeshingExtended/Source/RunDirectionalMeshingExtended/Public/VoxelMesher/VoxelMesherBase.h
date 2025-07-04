@@ -57,8 +57,7 @@ protected:
 	
 	void InitFaceContainers(FMesherVariables& MeshVars) const;
 	
-	void GenerateActorMesh(const TMap<uint32, uint16>& LocalVoxelTable,
-					   const TSharedPtr<FChunkParams>& ChunkParams) const;
+	void GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const;
 	
 	void GenerateMeshFromFaces(const FMesherVariables& MeshVars) const;
 	

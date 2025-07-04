@@ -162,9 +162,27 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 
 	auto VoxelSize = VoxelGenerator->GetVoxelSize();
 
+	auto Spawner = MakeShared<FChunkParams>(MeshVars.ChunkParams);
+
+	if (!MeshVars.ChunkParams.ExecutedOnMainThread)
+	{
+		// Synchronize Mesh generation with game thread.
+		AsyncTask(ENamedThreads::GameThread, [this, Spawner]()
+		{
+			GenerateActorMesh(Spawner);
+		});
+	}
+	else
+	{
+		//Creating AsyncTask from main thread will cause deadlock
+		GenerateActorMesh(Spawner);
+	}
+	
 	// Local voxel table 
 	TMap<uint32, uint16> LocalVoxelTable;
 	SIZE_T VertexCount = 0;
+
+	auto MeshActor = MeshVars.ChunkParams.OriginalChunk->ChunkMeshActor;
 	
 	// Iterate through merged faces
 	for (auto VoxelId : MeshVars.VoxelIdToLocalVoxelMap)
@@ -218,12 +236,16 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 				{
 					// Keep track of how many voxel quads are actually displayed
 					LocalVoxelTable.Add(VoxelId.Key, LocalVoxelTable.Num());
-				}
+					// Add voxel materials to mesh
+					const auto MaterialId = VoxelId.Value;
+					const auto VoxelType = VoxelGenerator->GetVoxelTypeById(VoxelId.Key);
 
+					MeshActor->ProceduralMeshComponent->SetMaterial(MaterialId, VoxelType.Value.Material);
+				}
 			}
 		}
 		
-		MeshVars.ChunkParams.OriginalChunk.Get()->ChunkMeshActor.Get()->ProceduralMeshComponent.Get()->CreateMeshSection(LocalVoxelTable[VoxelId.Key], Vertices, Triangles, Normals, TArray<FVector2D>(), TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+		MeshActor->ProceduralMeshComponent->CreateMeshSection(LocalVoxelTable[VoxelId.Key], Vertices, Triangles, Normals, TArray<FVector2D>(), TArray<FColor>(), TArray<FProcMeshTangent>(), true);
 		VertexCount += Vertices.Num();
 	}
 
@@ -236,28 +258,11 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 	const FString MapName = GetWorld()->GetMapName();
 	FVoxelMeshingProfilingLogger::LogGeneratedVertices(MapName, VertexCount);
 #endif
-	
-	auto Spawner = MakeShared<FChunkParams>(MeshVars.ChunkParams);
-
-	if (!MeshVars.ChunkParams.ExecutedOnMainThread)
-	{
-		// Synchronize Mesh generation with game thread.
-		AsyncTask(ENamedThreads::GameThread, [this, LocalVoxelTable,  Spawner]()
-		{
-			GenerateActorMesh(LocalVoxelTable, Spawner);
-		});
-	}
-	else
-	{
-		//Creating AsyncTask from main thread will cause deadlock
-		GenerateActorMesh(LocalVoxelTable, Spawner);
-	}
 
 	MeshVars.ChunkParams.OriginalChunk->bHasMesh = true;
 }
 
-void UVoxelMesherBase::GenerateActorMesh(const TMap<uint32, uint16>& LocalVoxelTable,
-                                    const TSharedPtr<FChunkParams>& ChunkParams) const
+void UVoxelMesherBase::GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const
 {
 	const auto World = GetWorld();
 	if (!IsValid(World))
@@ -311,14 +316,4 @@ void UVoxelMesherBase::GenerateActorMesh(const TMap<uint32, uint16>& LocalVoxelT
 
 
 	ActorPtr->PrepareMesh();
-	
-
-	for (const auto VoxelId : LocalVoxelTable)
-	{
-		// Add voxel materials to mesh
-		const auto MaterialId = VoxelId.Value;
-		const auto VoxelType = VoxelGenerator->GetVoxelTypeById(VoxelId.Key);
-
-		Chunk->ChunkMeshActor->ProceduralMeshComponent->SetMaterial(MaterialId, VoxelType.Value.Material);
-	}
 }
