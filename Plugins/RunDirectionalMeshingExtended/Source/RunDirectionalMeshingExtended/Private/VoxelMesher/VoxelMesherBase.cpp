@@ -166,11 +166,12 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 
 	if (!MeshVars.ChunkParams.ExecutedOnMainThread)
 	{
+
 		// Synchronize Mesh generation with game thread.
-		AsyncTask(ENamedThreads::GameThread, [this, Spawner]()
+		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
 		{
 			GenerateActorMesh(Spawner);
-		});
+		}).Wait();
 	}
 	else
 	{
@@ -180,22 +181,21 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 	
 	// Local voxel table 
 	TMap<uint32, uint16> LocalVoxelTable;
-	SIZE_T VertexCount = 0;
+	SIZE_T GlobalVertexCount = 0;
 
 	auto MeshActor = MeshVars.ChunkParams.OriginalChunk->ChunkMeshActor;
 	
 	// Iterate through merged faces
 	for (auto VoxelId : MeshVars.VoxelIdToLocalVoxelMap)
 	{
-
-		TArray<FVector> Vertices;
-		TArray<int32> Triangles;
-		TArray<FVector> Normals;
+		TSharedPtr<TArray<FVector>> Vertices = MakeShared<TArray<FVector>>();
+		TSharedPtr<TArray<int32>> Triangles = MakeShared<TArray<int32>>();;
+		TSharedPtr<TArray<FVector>> Normals = MakeShared<TArray<FVector>>();;
 
 		constexpr int VERTICES_PER_VOXEL = 24;
 		const int VERTICES_PER_CHUNK = VoxelGenerator->GetVoxelCountPerChunk()*VERTICES_PER_VOXEL; 
-		Vertices.Reserve(VERTICES_PER_CHUNK);
-		Triangles.Reserve(VERTICES_PER_CHUNK);
+		Vertices->Reserve(VERTICES_PER_CHUNK);
+		Triangles->Reserve(VERTICES_PER_CHUNK);
 
 		
 		int64 TriangleIndex = 0;
@@ -213,22 +213,22 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 			{
 				// Create quad from 2 triangles
 				
-				Vertices.Add(Face.GetFinalStartVertexDown(VoxelSize));
-				Vertices.Add(Face.GetFinalEndVertexDown(VoxelSize));
-				Vertices.Add(Face.GetFinalEndVertexUp(VoxelSize));
-				Vertices.Add(Face.GetFinalStartVertexUp(VoxelSize));
+				Vertices->Add(Face.GetFinalStartVertexDown(VoxelSize));
+				Vertices->Add(Face.GetFinalEndVertexDown(VoxelSize));
+				Vertices->Add(Face.GetFinalEndVertexUp(VoxelSize));
+				Vertices->Add(Face.GetFinalStartVertexUp(VoxelSize));
 
-				Triangles.Add(TriangleIndex);
-				Triangles.Add(TriangleIndex + 1);
-				Triangles.Add(TriangleIndex + 2);
-				Triangles.Add(TriangleIndex + 2);
-				Triangles.Add(TriangleIndex + 3);
-				Triangles.Add(TriangleIndex);
+				Triangles->Add(TriangleIndex);
+				Triangles->Add(TriangleIndex + 1);
+				Triangles->Add(TriangleIndex + 2);
+				Triangles->Add(TriangleIndex + 2);
+				Triangles->Add(TriangleIndex + 3);
+				Triangles->Add(TriangleIndex);
 
-				Normals.Add(Normal);
-				Normals.Add(Normal);
-				Normals.Add(Normal);
-				Normals.Add(Normal);
+				Normals->Add(Normal);
+				Normals->Add(Normal);
+				Normals->Add(Normal);
+				Normals->Add(Normal);
 				
 				TriangleIndex+=4;
 				
@@ -244,9 +244,17 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 				}
 			}
 		}
+
+		int32  SectionIndex = LocalVoxelTable[VoxelId.Key];
+
+		AsyncTask(ENamedThreads::GameThread, [MeshActor, Vertices, Triangles, Normals, SectionIndex]()
+		{
+			if(MeshActor.IsValid() &&  Vertices.IsValid() && Triangles.IsValid()){
+				   MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(SectionIndex, *Vertices.Get(), *Triangles.Get(), *Normals.Get(), TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
+			   }
+		});
 		
-		MeshActor->ProceduralMeshComponent->CreateMeshSection(LocalVoxelTable[VoxelId.Key], Vertices, Triangles, Normals, TArray<FVector2D>(), TArray<FColor>(), TArray<FProcMeshTangent>(), true);
-		VertexCount += Vertices.Num();
+		GlobalVertexCount += Vertices->Num();
 	}
 
 	if (!MeshVars.ChunkParams.OriginalChunk.IsValid() || LocalVoxelTable.IsEmpty())
@@ -256,7 +264,7 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 
 #if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT)
 	const FString MapName = GetWorld()->GetMapName();
-	FVoxelMeshingProfilingLogger::LogGeneratedVertices(MapName, VertexCount);
+	FVoxelMeshingProfilingLogger::LogGeneratedVertices(MapName, GlobalVertexCount);
 #endif
 
 	MeshVars.ChunkParams.OriginalChunk->bHasMesh = true;

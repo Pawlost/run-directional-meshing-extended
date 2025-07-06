@@ -32,6 +32,7 @@ void AAreaChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPositi
 		auto Chunk = *FoundChunk;
 		
 		FMesherVariables MesherVars;
+		MesherVars.ChunkParams.ExecutedOnMainThread = true;
 		Chunk->bIsActive = false;
 		FVoxelChange Modification(VoxelName, VoxelPosition.VoxelPosition);
 		GenerateChunkMesh(MesherVars, Chunk->GridPosition, &Modification);
