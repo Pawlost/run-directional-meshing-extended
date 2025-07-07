@@ -34,10 +34,10 @@ private:
 	                  const FMeshingDirections& FaceTemplate, const FMeshingDirections& ReversedFaceTemplate,
 	                  FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const;
 
-	static void AddFace(const UVoxelGrid& VoxelGridObject,const FMeshingDirections& FaceTemplate, bool bIsBorder,
+	void AddFace(const UVoxelGrid& VoxelGridObject,const FMeshingDirections& FaceTemplate, bool bIsBorder,
 	                    const int32& Index, const FIntVector& Position, const FVoxel& Voxel,
 	                    const int32& AxisVoxelIndex,
-	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces, const FChunkParams& ChunkParams);
+	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces, const FChunkParams& ChunkParams, const FMesherVariables& MeshVars) const;
 
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, FMesherVariables& MeshVars) const;
 

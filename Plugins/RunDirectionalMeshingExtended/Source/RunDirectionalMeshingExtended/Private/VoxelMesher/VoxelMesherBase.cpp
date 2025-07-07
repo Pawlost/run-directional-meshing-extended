@@ -260,12 +260,12 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 
 		int32  SectionIndex = LocalVoxelTable[VoxelId.Key];
 
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, Vertices, Triangles, Normals, SectionIndex, UV0, Tangents]()
+		Async(EAsyncExecution::TaskGraphMainThread, [MeshActor, Vertices, Triangles, Normals, SectionIndex, UV0, Tangents]()
 		{
 			if(MeshActor.IsValid() &&  Vertices.IsValid() && Triangles.IsValid()){
 				   MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(SectionIndex, *Vertices.Get(), *Triangles.Get(), *Normals.Get(), *UV0.Get(), TArray<FLinearColor>(), *Tangents.Get(), true);
 			   }
-		});
+		}).Wait();
 		
 		GlobalVertexCount += Vertices->Num();
 	}

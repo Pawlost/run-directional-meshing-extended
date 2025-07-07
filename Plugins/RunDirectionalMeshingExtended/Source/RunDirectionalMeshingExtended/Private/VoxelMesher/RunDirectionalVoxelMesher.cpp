@@ -79,7 +79,8 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 			}
 
 			// Directional Greedy Meshing
-			if (z > 0){			
+			if (z > 0){
+				FPlatformProcess::Sleep(0.5f);
 				// Merge faces in sorted arrays
 				for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
 				{
@@ -114,9 +115,12 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 								{
 									// Break the iteration if merge was found
 									FaceContainer->RemoveAt(i + 1, EAllowShrinking::No);
+
+									FPlatformProcess::Sleep(0.5f);
+									GenerateMeshFromFaces(FaceParams);
 									break;
 								}
-
+								
 								BackTrackIndex--;
 							}
 						}
@@ -154,16 +158,16 @@ void URunDirectionalVoxelMesher::IncrementRun(const int X, const int Y, const in
 	
 		// Generate face for each direction
 		AddFace(VoxelGridObject, FaceTemplate, bIsMinBorder, Index, Position, Voxel, AxisVoxelIndex,
-		        MeshVars.Faces[FaceContainerIndex][LocalVoxelId], MeshVars.ChunkParams);
+		        MeshVars.Faces[FaceContainerIndex][LocalVoxelId], MeshVars.ChunkParams, MeshVars);
 		AddFace(VoxelGridObject, ReversedFaceTemplate, bIsMaxBorder, Index, Position, Voxel, AxisVoxelIndex,
-		        MeshVars.Faces[ReversedFaceContainerIndex][LocalVoxelId], MeshVars.ChunkParams);
+		        MeshVars.Faces[ReversedFaceContainerIndex][LocalVoxelId], MeshVars.ChunkParams, MeshVars);
 	}
 }
 
 void URunDirectionalVoxelMesher::AddFace(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate, const bool bIsBorder,
                                const int32& Index, const FIntVector& Position, const FVoxel& Voxel,
                                const int32& AxisVoxelIndex,
-                               const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces, const FChunkParams& ChunkParams)
+                               const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces, const FChunkParams& ChunkParams, const FMesherVariables& MeshVars) const
 {
 	// Calculate indices need to check if face should be generated
 	const FVoxelIndexParams VoxelIndexParams =
@@ -189,11 +193,13 @@ void URunDirectionalVoxelMesher::AddFace(const UVoxelGrid& VoxelGridObject, cons
 			
 			if (FaceTemplate.StaticMeshingData.RunDirectionFaceMerge(PrevFace, NewFace))
 			{
+				FPlatformProcess::Sleep(0.2f);
+				GenerateMeshFromFaces(MeshVars);
 				// Return when new face was merged
 				return;
 			}
 		}
-
+		
 		ChunkFaces->Push(NewFace);
 	}
 }
