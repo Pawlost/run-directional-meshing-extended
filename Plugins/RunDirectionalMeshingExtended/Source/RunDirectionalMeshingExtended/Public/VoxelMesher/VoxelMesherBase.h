@@ -34,7 +34,7 @@ protected:
 	struct FNormalsAndTangents
 	{
 		FVector Normal;
-		FVector3f Tangent;
+		FProcMeshTangent Tangent;
 	};
      
 	FORCEINLINE static bool IsMinBorder(const int X)

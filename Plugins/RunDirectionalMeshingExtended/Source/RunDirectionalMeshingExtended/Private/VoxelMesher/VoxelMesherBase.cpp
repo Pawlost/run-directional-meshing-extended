@@ -41,12 +41,12 @@ void UVoxelMesherBase::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGri
 }
 
 const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTangents[] = {
-	{FVector(1.0f, 0.0f, 0.0f), FVector3f(0.0, 1.0, 0.0)}, //Front
-	{FVector(-1.0f, 0.0f, 0.0f), FVector3f(0.0, 1.0, 0.0)}, //Back
-	{FVector(0.0f, 1.0f, 0.0f), FVector3f(1.0f, 0.0f, 0.0f)}, // Right 
-	{FVector(0.0f, -1.0f, 0.0f), FVector3f(1.0, 0.0, 0.0)}, // Left
-	{FVector(0.0f, 0.0f, -1.0f), FVector3f(1.0f, 0.0f, 0.0f)}, //Bottom
-	{FVector(0.0f, 0.0f, 1.0f), FVector3f(1.0f, 0.0f, 0.0f)} //Top
+	{FVector(1.0f, 0.0f, 0.0f), FProcMeshTangent(0.0, 1.0, 0.0)}, //Front
+	{FVector(-1.0f, 0.0f, 0.0f), FProcMeshTangent(0.0, 1.0, 0.0)}, //Back
+	{FVector(0.0f, 1.0f, 0.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)}, // Right 
+	{FVector(0.0f, -1.0f, 0.0f), FProcMeshTangent(1.0, 0.0, 0.0)}, // Left
+	{FVector(0.0f, 0.0f, -1.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)}, //Bottom
+	{FVector(0.0f, 0.0f, 1.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)} //Top
 };
 
 void UVoxelMesherBase::UpdateAllFacesParams()
@@ -189,14 +189,18 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 	for (auto VoxelId : MeshVars.VoxelIdToLocalVoxelMap)
 	{
 		TSharedPtr<TArray<FVector>> Vertices = MakeShared<TArray<FVector>>();
-		TSharedPtr<TArray<int32>> Triangles = MakeShared<TArray<int32>>();;
-		TSharedPtr<TArray<FVector>> Normals = MakeShared<TArray<FVector>>();;
+		TSharedPtr<TArray<int32>> Triangles = MakeShared<TArray<int32>>();
+		TSharedPtr<TArray<FVector2D>> UV0 = MakeShared<TArray<FVector2D>>();
+		TSharedPtr<TArray<FVector>> Normals = MakeShared<TArray<FVector>>();
+		TSharedPtr<TArray<FProcMeshTangent>> Tangents = MakeShared<TArray<FProcMeshTangent>>();
 
 		constexpr int VERTICES_PER_VOXEL = 24;
 		const int VERTICES_PER_CHUNK = VoxelGenerator->GetVoxelCountPerChunk()*VERTICES_PER_VOXEL; 
 		Vertices->Reserve(VERTICES_PER_CHUNK);
 		Triangles->Reserve(VERTICES_PER_CHUNK);
-
+		UV0->Reserve(VERTICES_PER_CHUNK);
+		Normals->Reserve(VERTICES_PER_CHUNK);
+		Tangents->Reserve(VERTICES_PER_CHUNK);
 		
 		int64 TriangleIndex = 0;
 		
@@ -229,6 +233,16 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 				Normals->Add(Normal);
 				Normals->Add(Normal);
 				Normals->Add(Normal);
+
+				Tangents->Add(Tangent);
+				Tangents->Add(Tangent);
+				Tangents->Add(Tangent);
+				Tangents->Add(Tangent);
+				
+				UV0->Add(FVector2D(0, 0));
+				UV0->Add(FVector2D(1, 0));
+				UV0->Add(FVector2D(1, 1));
+				UV0->Add(FVector2D(0, 1));
 				
 				TriangleIndex+=4;
 				
@@ -247,10 +261,10 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 
 		int32  SectionIndex = LocalVoxelTable[VoxelId.Key];
 
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, Vertices, Triangles, Normals, SectionIndex]()
+		AsyncTask(ENamedThreads::GameThread, [MeshActor, Vertices, Triangles, Normals, SectionIndex, UV0, Tangents]()
 		{
 			if(MeshActor.IsValid() &&  Vertices.IsValid() && Triangles.IsValid()){
-				   MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(SectionIndex, *Vertices.Get(), *Triangles.Get(), *Normals.Get(), TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
+				   MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(SectionIndex, *Vertices.Get(), *Triangles.Get(), *Normals.Get(), *UV0.Get(), TArray<FLinearColor>(), *Tangents.Get(), true);
 			   }
 		});
 		
