@@ -216,7 +216,6 @@ void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) c
 			for (auto Face : *SideFaces)
 			{
 				// Create quad from 2 triangles
-				
 				Vertices->Add(Face.GetFinalStartVertexDown(VoxelSize));
 				Vertices->Add(Face.GetFinalEndVertexDown(VoxelSize));
 				Vertices->Add(Face.GetFinalEndVertexUp(VoxelSize));

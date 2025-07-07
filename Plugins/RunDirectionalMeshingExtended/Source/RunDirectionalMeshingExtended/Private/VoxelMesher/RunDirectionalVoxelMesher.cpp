@@ -33,7 +33,6 @@ void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVoxel
 	
 	InitFaceContainers(MeshVars);
 	FaceGeneration(VoxelGrid, MeshVars);
-	DirectionalGreedyMeshing(MeshVars);
 	GenerateMeshFromFaces(MeshVars);
 }
 
@@ -72,11 +71,57 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 				* The run direction is from left to right, bottom to top and left to right.
 				*/
 				IncrementRun(x, y, z, XAxisIndex, bMinBorder, bMaxBorder, BackFaceTemplate, FrontFaceTemplate,
-				             FaceParams, VoxelGridObject);
+							 FaceParams, VoxelGridObject);
 				IncrementRun(y, x, z, YAxisIndex, bMinBorder, bMaxBorder, LeftFaceTemplate, RightFaceTemplate,
-				             FaceParams, VoxelGridObject);
+							 FaceParams, VoxelGridObject);
 				IncrementRun(z, y, x, ZAxisIndex, bMinBorder, bMaxBorder, BottomFaceTemplate, TopFaceTemplate,
-				             FaceParams, VoxelGridObject);
+							 FaceParams, VoxelGridObject);
+			}
+
+			// Directional Greedy Meshing
+			if (z > 0){			
+				// Merge faces in sorted arrays
+				for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
+				{
+					for (const auto VoxelId : FaceParams.VoxelIdToLocalVoxelMap)
+					{
+						auto FaceContainer = FaceParams.Faces[f][VoxelId.Value];
+						const int LastElementIndex = FaceContainer->Num() - 1;
+
+						// Iterate from last face
+						for (int32 i = LastElementIndex - 1; i >= 0; i--)
+						{
+							FVoxelFace& NextFace = (*FaceContainer)[i + 1];
+
+							int BackTrackIndex = i;
+
+							/*
+							 * Face may be last in the coordinate row.
+							 * It is necessary to iterate through the current coordinate row to reach previous coordinate row.
+							 * It is necessary to go only -1 coordinate because if there is a merge, it will accumulate.
+							 */
+							while (FaceContainer->IsValidIndex(BackTrackIndex))
+							{
+								FVoxelFace& Face = (*FaceContainer)[BackTrackIndex];
+
+								if (Face.StartVertexUp.Z < static_cast<int>(z))
+								{
+									// Break the iteration if coordinate row is too far.
+									break;
+								}
+
+								if (FVoxelFace::MergeFaceUp(Face, NextFace))
+								{
+									// Break the iteration if merge was found
+									FaceContainer->RemoveAt(i + 1, EAllowShrinking::No);
+									break;
+								}
+
+								BackTrackIndex--;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -180,56 +225,6 @@ bool URunDirectionalVoxelMesher::IsVoxelVisible(const UVoxelGrid& VoxelGridObjec
 		return NextVoxel.IsTransparent() && NextVoxel != FaceData.CurrentVoxel;
 	}
 	return false;
-}
-
-void URunDirectionalVoxelMesher::DirectionalGreedyMeshing(const FMesherVariables& MeshVars)
-{
-#if CPUPROFILERTRACE_ENABLED
-	TRACE_CPUPROFILER_EVENT_SCOPE("Other - RunDirectionalMeshing GreedyMesh generation")
-#endif
-
-	// Merge faces in sorted arrays
-	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
-	{
-		for (const auto VoxelId : MeshVars.VoxelIdToLocalVoxelMap)
-		{
-			auto FaceContainer = MeshVars.Faces[f][VoxelId.Value];
-			const int LastElementIndex = FaceContainer->Num() - 1;
-
-			// Iterate from last face
-			for (int32 i = LastElementIndex - 1; i >= 0; i--)
-			{
-				FVoxelFace& NextFace = (*FaceContainer)[i + 1];
-
-				int BackTrackIndex = i;
-
-				/*
-				 * Face may be last in the coordinate row.
-				 * It is necessary to iterate through the current coordinate row to reach previous coordinate row.
-				 * It is necessary to go only -1 coordinate because if there is a merge, it will accumulate.
-				 */
-				while (FaceContainer->IsValidIndex(BackTrackIndex))
-				{
-					FVoxelFace& Face = (*FaceContainer)[BackTrackIndex];
-
-					if (Face.StartVertexUp.Z < NextFace.StartVertexDown.Z)
-					{
-						// Break the iteration if coordinate row is too far.
-						break;
-					}
-
-					if (FVoxelFace::MergeFaceUp(Face, NextFace))
-					{
-						// Break the iteration if merge was found
-						FaceContainer->RemoveAt(i + 1, EAllowShrinking::No);
-						break;
-					}
-
-					BackTrackIndex--;
-				}
-			}
-		}
-	}
 }
 
 void URunDirectionalVoxelMesher::ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable, const FVoxelChange& VoxelChange) const
