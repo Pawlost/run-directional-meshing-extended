@@ -27,7 +27,7 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FMesherVariables
 {
 	GENERATED_BODY()
 
-	TArray<TSharedPtr<TArray<FVoxelFace>>> Faces[CHUNK_FACE_COUNT];
+	TSharedPtr<TArray<FVoxelFace>> Faces[CHUNK_FACE_COUNT];
 	FChunkParams ChunkParams;
 	TMap<uint16, uint16> VoxelIdToLocalVoxelMap; 
 };

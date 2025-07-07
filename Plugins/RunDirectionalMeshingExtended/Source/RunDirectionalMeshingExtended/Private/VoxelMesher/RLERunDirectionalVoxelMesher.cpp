@@ -8,7 +8,7 @@
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "Voxel/RLEVoxel.h"
 #include "Voxel/Grid/RLEVoxelGrid.h"
-
+/*
 void URLERunDirectionalVoxelMesher::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid)
 {
 
@@ -450,4 +450,4 @@ void URLERunDirectionalVoxelMesher::FirstRunEditIndex(FIndexParams& IndexParams)
 			}
 		}
 	}
-}
+}*/

@@ -59,8 +59,6 @@ protected:
 	
 	void GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const;
 	
-	void GenerateMeshFromFaces(const FMesherVariables& MeshVars) const;
-	
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 };

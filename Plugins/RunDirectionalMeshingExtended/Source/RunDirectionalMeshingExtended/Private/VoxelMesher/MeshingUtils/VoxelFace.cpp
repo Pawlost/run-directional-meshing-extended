@@ -61,7 +61,8 @@ FVoxelFace FVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& I
  */
 bool FVoxelFace::MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
 {
-	if (PrevFace.EndVertexDown == NewFace.StartVertexDown &&
+	if (PrevFace.Voxel == NewFace.Voxel &&
+		PrevFace.EndVertexDown == NewFace.StartVertexDown &&
 		PrevFace.EndVertexUp == NewFace.StartVertexUp)
 	{
 		PrevFace.EndVertexDown = NewFace.EndVertexDown;
@@ -77,7 +78,8 @@ bool FVoxelFace::MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
  */
 bool FVoxelFace::MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
 {
-	if (PrevFace.StartVertexUp == NewFace.EndVertexUp &&
+	if (PrevFace.Voxel == NewFace.Voxel &&
+		PrevFace.StartVertexUp == NewFace.EndVertexUp &&
 		PrevFace.StartVertexDown == NewFace.EndVertexDown)
 	{
 		PrevFace.StartVertexDown = NewFace.StartVertexDown;
@@ -93,7 +95,8 @@ bool FVoxelFace::MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
  */
 bool FVoxelFace::MergeFaceUp(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
 {
-	if (PrevFace.StartVertexUp == NewFace.StartVertexDown &&
+	if (PrevFace.Voxel == NewFace.Voxel &&
+		PrevFace.StartVertexUp == NewFace.StartVertexDown &&
 		PrevFace.EndVertexUp == NewFace.EndVertexDown)
 	{
 		PrevFace.StartVertexUp = NewFace.StartVertexUp;

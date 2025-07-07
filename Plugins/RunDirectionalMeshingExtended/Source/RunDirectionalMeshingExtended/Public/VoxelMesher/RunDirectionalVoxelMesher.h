@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
+#include "MeshingUtils/ProcMeshSectionVars.h"
 #include "MeshingUtils/MeshingDirections.h"
 #include "RunDirectionalVoxelMesher.generated.h"
 
@@ -40,6 +41,8 @@ private:
 	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces, const FChunkParams& ChunkParams);
 
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, FMesherVariables& MeshVars) const;
+
+	static void ConvertFaceToProcMesh(const FProcMeshSectionVars* QuadMeshSectionArray, const FVoxelFace& Face, TMap<uint32, uint32> LocalVoxelTable, int FaceIndex, double VoxelSize);
 
 	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable, const FVoxelChange& VoxelChange) const;
 };

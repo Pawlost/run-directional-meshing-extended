@@ -123,164 +123,25 @@ void UVoxelMesherBase::InitFaceContainers(FMesherVariables& MeshVars) const
 
 	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
-		// Voxel faces need to be sorted to different arrays by Id because Realtime Mesh Component requires it
-		for (const auto Voxel : MeshVars.VoxelIdToLocalVoxelMap)
+		TMap<int32, uint32>& VoxelTable = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable;
+
+		auto FaceArray = MeshVars.Faces[f];
+		if (FaceArray == nullptr || !FaceArray.IsValid())
 		{
-			TMap<int32, uint32>& VoxelTable = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable;
-			MeshVars.Faces[f].SetNum(VoxelTable.Num());
-
-			auto FaceArray = MeshVars.Faces[f][Voxel.Value];
-			if (FaceArray == nullptr || !FaceArray.IsValid())
-			{
-				// In case voxel table is not available this code needs to be rewritten to add local voxels id dynamically during voxel grid traversal
-				FaceArray = MakeShared<TArray<FVoxelFace>>();
-				MeshVars.Faces[f][Voxel.Value] = FaceArray;
-			}
-			else
-			{
-				// If array was pulled from a pool, just empty it 
-				FaceArray->Empty();
-			}
-
-			// Preallocate memory needed for meshing
-			const uint32 Count = VoxelGenerator->GetVoxelCountPerChunk();
-			FaceArray->Reserve(Count);
+			// In case voxel table is not available this code needs to be rewritten to add local voxels id dynamically during voxel grid traversal
+			FaceArray = MakeShared<TArray<FVoxelFace>>();
+			MeshVars.Faces[f] = FaceArray;
 		}
-	}
-}
-
-void UVoxelMesherBase::GenerateMeshFromFaces(const FMesherVariables& MeshVars) const
-{
-#if CPUPROFILERTRACE_ENABLED
-	TRACE_CPUPROFILER_EVENT_SCOPE("Buffer - UE RunDirectionalMeshing generation")
-#endif
-	
-	if (!IsValid(VoxelGenerator))
-	{
-		return;
-	}
-
-	auto VoxelSize = VoxelGenerator->GetVoxelSize();
-
-	auto Spawner = MakeShared<FChunkParams>(MeshVars.ChunkParams);
-
-	if (!MeshVars.ChunkParams.ExecutedOnMainThread)
-	{
-
-		// Synchronize Mesh generation with game thread.
-		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
+		else
 		{
-			GenerateActorMesh(Spawner);
-		}).Wait();
-	}
-	else
-	{
-		//Creating AsyncTask from main thread will cause deadlock
-		GenerateActorMesh(Spawner);
-	}
-	
-	// Local voxel table 
-	TMap<uint32, uint16> LocalVoxelTable;
-	SIZE_T GlobalVertexCount = 0;
-
-	auto MeshActor = MeshVars.ChunkParams.OriginalChunk->ChunkMeshActor;
-	
-	// Iterate through merged faces
-	for (auto VoxelId : MeshVars.VoxelIdToLocalVoxelMap)
-	{
-		TSharedPtr<TArray<FVector>> Vertices = MakeShared<TArray<FVector>>();
-		TSharedPtr<TArray<int32>> Triangles = MakeShared<TArray<int32>>();
-		TSharedPtr<TArray<FVector2D>> UV0 = MakeShared<TArray<FVector2D>>();
-		TSharedPtr<TArray<FVector>> Normals = MakeShared<TArray<FVector>>();
-		TSharedPtr<TArray<FProcMeshTangent>> Tangents = MakeShared<TArray<FProcMeshTangent>>();
-
-		constexpr int VERTICES_PER_VOXEL = 24;
-		const int VERTICES_PER_CHUNK = VoxelGenerator->GetVoxelCountPerChunk()*VERTICES_PER_VOXEL; 
-		Vertices->Reserve(VERTICES_PER_CHUNK);
-		Triangles->Reserve(VERTICES_PER_CHUNK);
-		UV0->Reserve(VERTICES_PER_CHUNK);
-		Normals->Reserve(VERTICES_PER_CHUNK);
-		Tangents->Reserve(VERTICES_PER_CHUNK);
-		
-		int64 TriangleIndex = 0;
-		
-		for (uint8 FaceIndex = 0; FaceIndex < CHUNK_FACE_COUNT; FaceIndex++)
-		{
-			auto FaceContainer = MeshVars.Faces[FaceIndex];
-
-			auto SideFaces = FaceContainer[VoxelId.Value];
-
-			auto [Normal, Tangent] = FaceNormalsAndTangents[FaceIndex];
-
-			// Create quad foreach face
-			for (auto Face : *SideFaces)
-			{
-				// Create quad from 2 triangles
-				Vertices->Add(Face.GetFinalStartVertexDown(VoxelSize));
-				Vertices->Add(Face.GetFinalEndVertexDown(VoxelSize));
-				Vertices->Add(Face.GetFinalEndVertexUp(VoxelSize));
-				Vertices->Add(Face.GetFinalStartVertexUp(VoxelSize));
-
-				Triangles->Add(TriangleIndex);
-				Triangles->Add(TriangleIndex + 1);
-				Triangles->Add(TriangleIndex + 2);
-				Triangles->Add(TriangleIndex + 2);
-				Triangles->Add(TriangleIndex + 3);
-				Triangles->Add(TriangleIndex);
-
-				Normals->Add(Normal);
-				Normals->Add(Normal);
-				Normals->Add(Normal);
-				Normals->Add(Normal);
-
-				Tangents->Add(Tangent);
-				Tangents->Add(Tangent);
-				Tangents->Add(Tangent);
-				Tangents->Add(Tangent);
-				
-				UV0->Add(FVector2D(0, 0));
-				UV0->Add(FVector2D(1, 0));
-				UV0->Add(FVector2D(1, 1));
-				UV0->Add(FVector2D(0, 1));
-				
-				TriangleIndex+=4;
-				
-				if (!LocalVoxelTable.Contains(VoxelId.Key))
-				{
-					// Keep track of how many voxel quads are actually displayed
-					LocalVoxelTable.Add(VoxelId.Key, LocalVoxelTable.Num());
-					// Add voxel materials to mesh
-					const auto MaterialId = VoxelId.Value;
-					const auto VoxelType = VoxelGenerator->GetVoxelTypeById(VoxelId.Key);
-
-					MeshActor->ProceduralMeshComponent->SetMaterial(MaterialId, VoxelType.Value.Material);
-				}
-			}
+			// If array was pulled from a pool, just empty it 
+			FaceArray->Empty();
 		}
 
-		int32  SectionIndex = LocalVoxelTable[VoxelId.Key];
-
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, Vertices, Triangles, Normals, SectionIndex, UV0, Tangents]()
-		{
-			if(MeshActor.IsValid() &&  Vertices.IsValid() && Triangles.IsValid()){
-				   MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(SectionIndex, *Vertices.Get(), *Triangles.Get(), *Normals.Get(), *UV0.Get(), TArray<FLinearColor>(), *Tangents.Get(), true);
-			   }
-		});
-		
-		GlobalVertexCount += Vertices->Num();
+		// Preallocate memory needed for meshing
+		const uint32 EstimatedVoxels = VoxelGenerator->GetVoxelCountPerChunk() * VoxelTable.Num();
+		FaceArray->Reserve(EstimatedVoxels);
 	}
-
-	if (!MeshVars.ChunkParams.OriginalChunk.IsValid() || LocalVoxelTable.IsEmpty())
-	{
-		return;
-	}
-
-#if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT)
-	const FString MapName = GetWorld()->GetMapName();
-	FVoxelMeshingProfilingLogger::LogGeneratedVertices(MapName, GlobalVertexCount);
-#endif
-
-	MeshVars.ChunkParams.OriginalChunk->bHasMesh = true;
 }
 
 void UVoxelMesherBase::GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const
