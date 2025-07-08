@@ -18,13 +18,10 @@ struct FProcMeshSectionVars
 	
 	explicit FProcMeshSectionVars(const int VoxelCountPerChunk): GlobalTriangleIndex(0)
 	{
-		constexpr int VERTICES_PER_VOXEL = 24;
-		const int VERTICES_PER_CHUNK = VoxelCountPerChunk * VERTICES_PER_VOXEL;
-
-		Vertices.Reserve(VERTICES_PER_CHUNK);
-		Triangles.Reserve(VERTICES_PER_CHUNK);
-		UV0.Reserve(VERTICES_PER_CHUNK);
-		Normals.Reserve(VERTICES_PER_CHUNK);
-		Tangents.Reserve(VERTICES_PER_CHUNK);
+		Vertices.Reserve(VoxelCountPerChunk);
+		Triangles.Reserve(VoxelCountPerChunk);
+		UV0.Reserve(VoxelCountPerChunk);
+		Normals.Reserve(VoxelCountPerChunk);
+		Tangents.Reserve(VoxelCountPerChunk);
 	}
 };

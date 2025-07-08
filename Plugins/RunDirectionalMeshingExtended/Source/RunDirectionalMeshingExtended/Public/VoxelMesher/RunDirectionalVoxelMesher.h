@@ -15,8 +15,8 @@ class RUNDIRECTIONALMESHINGEXTENDED_API URunDirectionalVoxelMesher : public UVox
 	GENERATED_BODY()
 
 public:
-virtual void GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange) override;
-	
+	virtual void GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange) override;
+
 private:
 	struct FVoxelIndexParams
 	{
@@ -35,14 +35,28 @@ private:
 	                  const FMeshingDirections& FaceTemplate, const FMeshingDirections& ReversedFaceTemplate,
 	                  const FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const;
 
-	static void AddFace(const UVoxelGrid& VoxelGridObject,const FMeshingDirections& FaceTemplate, bool bIsBorder,
+	static void AddFace(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate, bool bIsBorder,
 	                    const int32& Index, const FIntVector& Position, const FVoxel& Voxel,
 	                    const int32& AxisVoxelIndex,
 	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces, const FChunkParams& ChunkParams);
 
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, FMesherVariables& MeshVars) const;
 
-	static void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face, TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex, double VoxelSize);
+	static void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face,
+	                                  TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex, double VoxelSize);
 
-	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable, const FVoxelChange& VoxelChange) const;
+	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable,
+	                   const FVoxelChange& VoxelChange) const;
+
+	static void DirectionalGreedyMergeZ(const FMesherVariables& MeshVars, EFaceDirection FaceDirection,
+	                                    TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
+	                                    TMap<uint32, uint32>& LocalVoxelTable, const double VoxelSize, const int Z);
+
+	static void DirectionalGreedyMergeX(const FMesherVariables& MeshVars, EFaceDirection FaceDirection,
+	                                    TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
+	                                    TMap<uint32, uint32>& LocalVoxelTable, const double VoxelSize, const int X);
+
+	static void DirectionalGreedyMerge(const FMesherVariables& MeshVars, EFaceDirection FaceDirection, TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
+	                                                               TMap<uint32, uint32>& LocalVoxelTable, const double VoxelSize,
+	                                                               const TFunctionRef<bool(FVoxelFace& Face)>& RowBorderCondition);
 };
