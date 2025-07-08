@@ -33,7 +33,7 @@ private:
 
 	void IncrementRun(int X, int Y, int Z, int32 AxisVoxelIndex, bool bIsMinBorder, bool bIsMaxBorder,
 	                  const FMeshingDirections& FaceTemplate, const FMeshingDirections& ReversedFaceTemplate,
-	                  FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const;
+	                  const FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const;
 
 	static void AddFace(const UVoxelGrid& VoxelGridObject,const FMeshingDirections& FaceTemplate, bool bIsBorder,
 	                    const int32& Index, const FIntVector& Position, const FVoxel& Voxel,
@@ -42,7 +42,7 @@ private:
 
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, FMesherVariables& MeshVars) const;
 
-	static void ConvertFaceToProcMesh(const FProcMeshSectionVars* QuadMeshSectionArray, const FVoxelFace& Face, TMap<uint32, uint32> LocalVoxelTable, int FaceIndex, double VoxelSize);
+	static void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face, TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex, double VoxelSize);
 
 	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable, const FVoxelChange& VoxelChange) const;
 };

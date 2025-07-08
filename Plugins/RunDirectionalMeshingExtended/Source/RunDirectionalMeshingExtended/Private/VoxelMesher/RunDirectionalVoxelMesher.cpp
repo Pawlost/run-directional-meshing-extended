@@ -82,11 +82,12 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 
 	int VoxelTypeCount = MeshVars.VoxelIdToLocalVoxelMap.Num();
 	
-	FProcMeshSectionVars QuadMeshSectionArray [VoxelTypeCount];
-
+	TSharedPtr<TArray<FProcMeshSectionVars>> QuadMeshSectionArray = MakeShared<TArray<FProcMeshSectionVars>>();
+	QuadMeshSectionArray->SetNum(VoxelTypeCount);
+	
 	for (int t = 0; t < VoxelTypeCount; t++)
 	{
-		QuadMeshSectionArray[t] = FProcMeshSectionVars(VoxelGenerator->GetVoxelCountPerChunk());
+		(*QuadMeshSectionArray)[t] = FProcMeshSectionVars(VoxelGenerator->GetVoxelCountPerChunk());
 	}
 
 	// Traverse through voxel grid
@@ -129,14 +130,9 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 				// Merge faces in sorted arrays
 				for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
 				{
-					//EFaceDirection::Top 
-					if (4 == f || 5 == f)
-					{
-						break;
-					}
-
+					//todo: fix top
 					auto& FaceContainer = *MeshVars.Faces[f];
-					const int LastElementIndex = FaceContainer.Num() - 1;
+					int LastElementIndex = FaceContainer.Num() - 1;
 
 					// Iterate from last face
 					for (int32 i = LastElementIndex - 1; i >= 0; i--)
@@ -173,14 +169,18 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 						}
 					}
 
+					LastElementIndex = FaceContainer.Num();
+					
 					// Convert final quads to vertices
 					for (int e = 0; e < LastElementIndex; e++)
 					{
 						FVoxelFace& Face = FaceContainer[e];
-						if (Face.StartVertexUp.Z < static_cast<int>(z) - 1)
+						// todo fix top and bottom
+						if (Face.StartVertexUp.Z < static_cast<int>(z) - 1 && f != 4 && f != 5)
 						{
-							ConvertFaceToProcMesh(QuadMeshSectionArray, Face, LocalVoxelTable, f, VoxelSize);
+							ConvertFaceToProcMesh(*QuadMeshSectionArray, Face, LocalVoxelTable, f, VoxelSize);
 							FaceContainer.RemoveAt(e, EAllowShrinking::No);
+							LastElementIndex = FaceContainer.Num();
 						}
 					}
 				}
@@ -199,24 +199,24 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 		// Create quad foreach face
 		for (auto Face : *FaceContainer)
 		{
-			ConvertFaceToProcMesh(QuadMeshSectionArray, Face, LocalVoxelTable, FaceIndex, VoxelSize);
+			ConvertFaceToProcMesh(*QuadMeshSectionArray, Face, LocalVoxelTable, FaceIndex, VoxelSize);
 		}
 	}
 
 	for (auto LocalVoxelType : LocalVoxelTable)
 	{
 		
-		auto SectionId = LocalVoxelType.Key;
-		const auto VoxelType = VoxelGenerator->GetVoxelTypeById(SectionId);
-		MeshActor->ProceduralMeshComponent->SetMaterial(LocalVoxelType.Value, VoxelType.Value.Material);
-		TSharedPtr<FProcMeshSectionVars> QuadMeshSection = MakeShareable<FProcMeshSectionVars>(&QuadMeshSectionArray[SectionId]);
+		auto SectionId = LocalVoxelType.Value;
+		const auto VoxelType = VoxelGenerator->GetVoxelTypeById(LocalVoxelType.Key);
+		MeshActor->ProceduralMeshComponent->SetMaterial(SectionId, VoxelType.Value.Material);
 		
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, QuadMeshSection, SectionId]()
+		AsyncTask(ENamedThreads::GameThread, [MeshActor, QuadMeshSectionArray, SectionId]()
 		{
+			FProcMeshSectionVars& QuadMeshSection = (*QuadMeshSectionArray)[SectionId];
 			// Add voxel materials to mesh
-			MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(SectionId, *QuadMeshSection->Vertices.Get(), *QuadMeshSection->Triangles.Get(), *QuadMeshSection->Normals.Get(), *QuadMeshSection->UV0.Get(), TArray<FLinearColor>(),
-				*QuadMeshSection->Tangents.Get(), true);
-		});
+			MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(SectionId, QuadMeshSection.Vertices, QuadMeshSection.Triangles, QuadMeshSection.Normals, QuadMeshSection.UV0, TArray<FLinearColor>(),
+				QuadMeshSection.Tangents, true);
+		});		
 	}
 
 	if (!MeshVars.ChunkParams.OriginalChunk.IsValid() || LocalVoxelTable.IsEmpty())
@@ -232,8 +232,8 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 	MeshVars.ChunkParams.OriginalChunk->bHasMesh = true;
 }
 
-void URunDirectionalVoxelMesher::ConvertFaceToProcMesh(const FProcMeshSectionVars* QuadMeshSectionArray,
-                                                       const FVoxelFace& Face, TMap<uint32, uint32> LocalVoxelTable,
+void URunDirectionalVoxelMesher::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
+                                                       const FVoxelFace& Face, TMap<uint32, uint32>& LocalVoxelTable,
                                                        const int FaceIndex, const double VoxelSize)
 {
 	const auto VoxelId = Face.Voxel.VoxelId;
@@ -249,42 +249,37 @@ void URunDirectionalVoxelMesher::ConvertFaceToProcMesh(const FProcMeshSectionVar
 		SectionId = LocalVoxelTable[VoxelId];
 	}
 
-	auto QuadSection = QuadMeshSectionArray[SectionId];
+	auto& QuadSection = QuadMeshSectionArray[SectionId];
 	auto [Normal, Tangent] = FaceNormalsAndTangents[FaceIndex];
-	auto VerticesArray = QuadSection.Vertices;
-	auto TrianglesArray = QuadSection.Triangles;
-	auto UV0Array = QuadSection.UV0;
-	auto NormalsArray = QuadSection.Normals;
-	auto TangentsArray = QuadSection.Tangents;
 	auto& TriangleIndex = QuadSection.GlobalTriangleIndex;
 
 	// Create quad from 2 triangles
-	VerticesArray->Add(Face.GetFinalStartVertexDown(VoxelSize));
-	VerticesArray->Add(Face.GetFinalEndVertexDown(VoxelSize));
-	VerticesArray->Add(Face.GetFinalEndVertexUp(VoxelSize));
-	VerticesArray->Add(Face.GetFinalStartVertexUp(VoxelSize));
+	QuadSection.Vertices.Add(Face.GetFinalStartVertexDown(VoxelSize));
+	QuadSection.Vertices.Add(Face.GetFinalEndVertexDown(VoxelSize));
+	QuadSection.Vertices.Add(Face.GetFinalEndVertexUp(VoxelSize));
+	QuadSection.Vertices.Add(Face.GetFinalStartVertexUp(VoxelSize));
 
-	TrianglesArray->Add(TriangleIndex);
-	TrianglesArray->Add(TriangleIndex + 1);
-	TrianglesArray->Add(TriangleIndex + 2);
-	TrianglesArray->Add(TriangleIndex + 2);
-	TrianglesArray->Add(TriangleIndex + 3);
-	TrianglesArray->Add(TriangleIndex);
+	QuadSection.Triangles.Add(TriangleIndex);
+	QuadSection.Triangles.Add(TriangleIndex + 1);
+	QuadSection.Triangles.Add(TriangleIndex + 2);
+	QuadSection.Triangles.Add(TriangleIndex + 2);
+	QuadSection.Triangles.Add(TriangleIndex + 3);
+	QuadSection.Triangles.Add(TriangleIndex);
 
-	NormalsArray->Add(Normal);
-	NormalsArray->Add(Normal);
-	NormalsArray->Add(Normal);
-	NormalsArray->Add(Normal);
+	QuadSection.Normals.Add(Normal);
+	QuadSection.Normals.Add(Normal);
+	QuadSection.Normals.Add(Normal);
+	QuadSection.Normals.Add(Normal);
 
-	TangentsArray->Add(Tangent);
-	TangentsArray->Add(Tangent);
-	TangentsArray->Add(Tangent);
-	TangentsArray->Add(Tangent);
+	QuadSection.Tangents.Add(Tangent);
+	QuadSection.Tangents.Add(Tangent);
+	QuadSection.Tangents.Add(Tangent);
+	QuadSection.Tangents.Add(Tangent);
 
-	UV0Array->Add(FVector2D(0, 0));
-	UV0Array->Add(FVector2D(1, 0));
-	UV0Array->Add(FVector2D(1, 1));
-	UV0Array->Add(FVector2D(0, 1));
+	QuadSection.UV0.Add(FVector2D(0, 0));
+	QuadSection.UV0.Add(FVector2D(1, 0));
+	QuadSection.UV0.Add(FVector2D(1, 1));
+	QuadSection.UV0.Add(FVector2D(0, 1));
 
 	TriangleIndex += 4;
 }
@@ -293,7 +288,7 @@ void URunDirectionalVoxelMesher::IncrementRun(const int X, const int Y, const in
                                               const bool bIsMinBorder, const bool bIsMaxBorder,
                                               const FMeshingDirections& FaceTemplate,
                                               const FMeshingDirections& ReversedFaceTemplate,
-                                              FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const
+                                              const FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const
 {
 	// Get voxel at current position of the run.
 	const auto Position = FIntVector(X, Y, Z);
