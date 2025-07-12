@@ -55,6 +55,67 @@ FVoxelFace FVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& I
 		InitialPosition +FIntVector(1, RunLenght, 0));
 }
 
+bool FVoxelFace::FrontFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.X <= Coord2;
+}
+
+bool FVoxelFace::BackFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return  Face.StartVertexUp.X < Coord2;
+}
+
+bool FVoxelFace::RightFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.Y <= Coord2;
+}
+
+bool FVoxelFace::LeftFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.Y < Coord2;
+}
+
+bool FVoxelFace::TopFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.Z <= Coord2;
+}
+
+bool FVoxelFace::BottomFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.Z < Coord2;
+}
+
+//-----------------------
+bool FVoxelFace::FrontFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.X == Coord2;
+}
+
+bool FVoxelFace::BackFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.X == Coord2 - 1;
+}
+
+bool FVoxelFace::LeftFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.Y == Coord2 - 1;
+}
+
+bool FVoxelFace::RightFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.Y == Coord2;
+}
+
+bool FVoxelFace::TopFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.Z == Coord2;
+}
+
+bool FVoxelFace::BottomFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
+{
+	return Face.StartVertexUp.Z == Coord2 - 1;
+}
+
 /**
  * Compare vertices and merge quads
  * @return true if previous face was merged
@@ -121,7 +182,7 @@ FVector FVoxelFace::GetFinalEndVertexDown(const double& VoxelSize) const
 	return static_cast<FVector>(EndVertexDown) * VoxelSize;
 }
 
-FVector FVoxelFace::GetFinalEndVertexUp(const double& voxelSize) const
+FVector FVoxelFace::GetFinalEndVertexUp(const double& VoxelSize) const
 {
-	return static_cast<FVector>(EndVertexUp) * voxelSize;
+	return static_cast<FVector>(EndVertexUp) * VoxelSize;
 }

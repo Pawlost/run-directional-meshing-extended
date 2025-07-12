@@ -29,7 +29,7 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelFace
 		EndVertexDown(EndVertexDown), EndVertexUp(EndVertexUp), StartVertexUp(StartVertexUp)
 	{
 	}
-	
+
 	static FVoxelFace CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 	static FVoxelFace CreateBackFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 	static FVoxelFace CreateLeftFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
@@ -37,6 +37,20 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelFace
 	static FVoxelFace CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 	static FVoxelFace CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 
+	static bool FrontFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool BackFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool LeftFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool RightFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool TopFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool BottomFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2);
+
+	static bool FrontFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool BackFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool LeftFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool RightFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool TopFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool BottomFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	
 	static bool MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace);
 	static bool MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace);
 	static bool MergeFaceUp(FVoxelFace& PrevFace, const FVoxelFace& NewFace);

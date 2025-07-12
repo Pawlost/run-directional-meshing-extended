@@ -15,3 +15,17 @@ struct FStaticMergeData
 	static FStaticMergeData TopFaceData;
 	static FStaticMergeData BottomFaceData;
 };
+
+struct FStaticGreedyMergeData
+{
+	const EFaceDirection FaceSide;
+	const TFunctionRef<bool(const FVoxelFace& Face, const int Coord1, const int Coord2)> RowBorderCondition;
+	const TFunctionRef<bool(const FVoxelFace& Face, const int Coord1, const int Coord2)> NextRowCondition;
+	
+	static FStaticGreedyMergeData FrontFace;
+	static FStaticGreedyMergeData BackFace;
+	static FStaticGreedyMergeData LeftFace;
+	static FStaticGreedyMergeData RightFace;
+	static FStaticGreedyMergeData TopFace;
+	static FStaticGreedyMergeData BottomFace;
+};
