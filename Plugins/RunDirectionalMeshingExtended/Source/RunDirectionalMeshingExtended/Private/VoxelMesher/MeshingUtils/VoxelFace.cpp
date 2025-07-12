@@ -55,55 +55,55 @@ FVoxelFace FVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& I
 		InitialPosition +FIntVector(1, RunLenght, 0));
 }
 
-bool FVoxelFace::FrontFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+bool FVoxelFace::FrontFaceRowCondition(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2)
 {
-	return Face.StartVertexUp.X <= Coord2;
+	return Face.StartVertexUp.Z < NewFace.StartVertexDown.Z;
 }
 
-bool FVoxelFace::BackFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+bool FVoxelFace::BackFaceRowCondition(const FVoxelFace& Face,  const FVoxelFace& NewFace, const int Coord2)
 {
-	return  Face.StartVertexUp.X < Coord2;
+	return  Face.StartVertexUp.Z < NewFace.StartVertexDown.Z;
 }
 
-bool FVoxelFace::RightFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+bool FVoxelFace::RightFaceRowCondition(const FVoxelFace& Face,  const FVoxelFace& NewFace, const int Coord2)
 {
-	return Face.StartVertexUp.Y <= Coord2;
+	return Face.StartVertexUp.Z < NewFace.StartVertexDown.Z;
 }
 
-bool FVoxelFace::LeftFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+bool FVoxelFace::LeftFaceRowCondition(const FVoxelFace& Face,  const FVoxelFace& NewFace, const int Coord2)
 {
-	return Face.StartVertexUp.Y < Coord2;
+	return Face.StartVertexUp.Z < NewFace.StartVertexDown.Z;
 }
 
-bool FVoxelFace::TopFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+bool FVoxelFace::TopFaceRowCondition(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2)
 {
-	return Face.StartVertexUp.Z <= Coord2;
+	return Face.StartVertexUp.X < NewFace.StartVertexDown.X;
 }
 
-bool FVoxelFace::BottomFaceRowCondition(const FVoxelFace& Face, const int Coord1, const int Coord2)
+bool FVoxelFace::BottomFaceRowCondition(const FVoxelFace& Face,  const FVoxelFace& NewFace, const int Coord2)
 {
-	return Face.StartVertexUp.Z < Coord2;
+	return Face.StartVertexUp.X <  NewFace.StartVertexDown.X;
 }
 
 //-----------------------
 bool FVoxelFace::FrontFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
 {
-	return Face.StartVertexUp.X == Coord2;
+	return Face.StartVertexUp.X == Coord2 + 1;
 }
 
 bool FVoxelFace::BackFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
 {
-	return Face.StartVertexUp.X == Coord2 - 1;
+	return Face.StartVertexUp.X == Coord2;
 }
 
 bool FVoxelFace::LeftFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
 {
-	return Face.StartVertexUp.Y == Coord2 - 1;
+	return Face.StartVertexUp.Y == Coord2;
 }
 
 bool FVoxelFace::RightFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
 {
-	return Face.StartVertexUp.Y == Coord2;
+	return Face.StartVertexUp.Y == Coord2 + 1;
 }
 
 bool FVoxelFace::TopFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
@@ -113,7 +113,7 @@ bool FVoxelFace::TopFaceNextRow(const FVoxelFace& Face, const int Coord1, const 
 
 bool FVoxelFace::BottomFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2)
 {
-	return Face.StartVertexUp.Z == Coord2 - 1;
+	return Face.StartVertexUp.Z == Coord2;
 }
 
 /**

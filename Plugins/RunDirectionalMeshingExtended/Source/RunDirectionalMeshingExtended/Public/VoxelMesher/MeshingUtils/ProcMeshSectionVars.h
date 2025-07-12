@@ -18,10 +18,10 @@ struct FProcMeshSectionVars
 	
 	explicit FProcMeshSectionVars(const int VoxelCountPerChunk): GlobalTriangleIndex(0)
 	{
-		Vertices.Reserve(VoxelCountPerChunk);
-		Triangles.Reserve(VoxelCountPerChunk);
-		UV0.Reserve(VoxelCountPerChunk);
-		Normals.Reserve(VoxelCountPerChunk);
-		Tangents.Reserve(VoxelCountPerChunk);
+		Vertices.Reserve(VoxelCountPerChunk * 12 + 1);
+		Triangles.Reserve(VoxelCountPerChunk * 24 + 1);
+		UV0.Reserve(VoxelCountPerChunk * 24 + 1);
+		Normals.Reserve(VoxelCountPerChunk * 12 + 1);
+		Tangents.Reserve(VoxelCountPerChunk * 12 + 1);
 	}
 };

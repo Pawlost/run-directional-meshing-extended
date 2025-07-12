@@ -19,7 +19,7 @@ struct FStaticMergeData
 struct FStaticGreedyMergeData
 {
 	const EFaceDirection FaceSide;
-	const TFunctionRef<bool(const FVoxelFace& Face, const int Coord1, const int Coord2)> RowBorderCondition;
+	const TFunctionRef<bool(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2)> RowBorderCondition;
 	const TFunctionRef<bool(const FVoxelFace& Face, const int Coord1, const int Coord2)> NextRowCondition;
 	
 	static FStaticGreedyMergeData FrontFace;

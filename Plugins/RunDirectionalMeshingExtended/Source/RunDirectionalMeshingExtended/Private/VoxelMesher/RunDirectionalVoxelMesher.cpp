@@ -1,5 +1,8 @@
 ﻿#include "VoxelMesher/RunDirectionalVoxelMesher.h"
 
+#include <rapidjson/reader.h>
+#include <rapidjson/reader.h>
+
 #include "Log/VoxelMeshingProfilingLogger.h"
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
@@ -150,6 +153,10 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 
 	for (uint8 FaceIndex = 0; FaceIndex < CHUNK_FACE_COUNT; FaceIndex++)
 	{
+#if CPUPROFILERTRACE_ENABLED
+		TRACE_CPUPROFILER_EVENT_SCOPE("Adding Mesh - RunDirectionalMeshing from VoxelGrid generation")
+#endif
+		
 		auto FaceContainer = MeshVars.Faces[FaceIndex];
 
 		// Create quad foreach face
@@ -178,6 +185,11 @@ void URunDirectionalVoxelMesher::GenerateProcMesh(const FMesherVariables& MeshVa
                                                   TMap<uint32, uint32> LocalVoxelTable,
                                                   TSharedPtr<TArray<FProcMeshSectionVars>>& QuadMeshSectionArray) const
 {
+
+#if CPUPROFILERTRACE_ENABLED
+	TRACE_CPUPROFILER_EVENT_SCOPE("Creating Actor - RunDirectionalMeshing from VoxelGrid generation")
+#endif
+	
 	auto MeshActor = MeshVars.ChunkParams.OriginalChunk->ChunkMeshActor;
 
 	for (auto LocalVoxelType : LocalVoxelTable)
@@ -211,11 +223,9 @@ void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& 
 
 	auto& FaceContainer = *MeshVars.Faces[FaceDirectionIndex];
 	int LastFaceIndex = FaceContainer.Num() - 1;
-	int ConvertRowIndex = -1;
-	int LimitRowIndex = 0;
 
 	// Iterate from last face
-	for (int32 i = LastFaceIndex - 1; i > LimitRowIndex; i--)
+	for (int32 i = LastFaceIndex - 1; i >= 0; i--)
 	{
 #if CPUPROFILERTRACE_ENABLED
 		TRACE_CPUPROFILER_EVENT_SCOPE("Directional optimization - RunDirectionalMeshing from VoxelGrid generation")
@@ -234,17 +244,11 @@ void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& 
 		{
 			FVoxelFace& Face = FaceContainer[BackTrackIndex];
 
-			if (LimitRowIndex == 0 && GreedyMergeData.NextRowCondition(Face, Coord1, Coord2))
+			if (GreedyMergeData.RowBorderCondition(Face, NextFace, Coord2))
 			{
-				LimitRowIndex = BackTrackIndex;
-			}
-			
-			if (GreedyMergeData.RowBorderCondition(Face, Coord1, Coord2))
-			{
-				ConvertRowIndex = BackTrackIndex;
 				break;
 			}
-
+			
 			if (FVoxelFace::MergeFaceUp(Face, NextFace))
 			{
 				// Break the iteration if merge was found
@@ -256,12 +260,18 @@ void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& 
 		}
 	}
 
-	for (int i = ConvertRowIndex; i > 0; i--)
+	LastFaceIndex = FaceContainer.Num();
+	for (int i = 0; i < LastFaceIndex; i++)
 	{
-		FVoxelFace& Face = FaceContainer[i];
+#if CPUPROFILERTRACE_ENABLED
+		TRACE_CPUPROFILER_EVENT_SCOPE("Create Mesh - RunDirectionalMeshing from VoxelGrid generation")
+#endif
+		
+		const FVoxelFace& Face = FaceContainer[i];
 		ConvertFaceToProcMesh(*QuadMeshSectionArray, Face, LocalVoxelTable, FaceDirectionIndex, VoxelSize);
-		FaceContainer.RemoveAt(i, EAllowShrinking::No);
 	}
+
+	FaceContainer.Empty();
 }
 
 void URunDirectionalVoxelMesher::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
@@ -286,32 +296,32 @@ void URunDirectionalVoxelMesher::ConvertFaceToProcMesh(TArray<FProcMeshSectionVa
 	auto& TriangleIndex = QuadSection.GlobalTriangleIndex;
 
 	// Create quad from 2 triangles
-	QuadSection.Vertices.Add(Face.GetFinalStartVertexDown(VoxelSize));
-	QuadSection.Vertices.Add(Face.GetFinalEndVertexDown(VoxelSize));
-	QuadSection.Vertices.Add(Face.GetFinalEndVertexUp(VoxelSize));
-	QuadSection.Vertices.Add(Face.GetFinalStartVertexUp(VoxelSize));
+	QuadSection.Vertices.Push(Face.GetFinalStartVertexDown(VoxelSize));
+	QuadSection.Vertices.Push(Face.GetFinalEndVertexDown(VoxelSize));
+	QuadSection.Vertices.Push(Face.GetFinalEndVertexUp(VoxelSize));
+	QuadSection.Vertices.Push(Face.GetFinalStartVertexUp(VoxelSize));
 
-	QuadSection.Triangles.Add(TriangleIndex);
-	QuadSection.Triangles.Add(TriangleIndex + 1);
-	QuadSection.Triangles.Add(TriangleIndex + 2);
-	QuadSection.Triangles.Add(TriangleIndex + 2);
-	QuadSection.Triangles.Add(TriangleIndex + 3);
-	QuadSection.Triangles.Add(TriangleIndex);
+	QuadSection.Triangles.Push(TriangleIndex);
+	QuadSection.Triangles.Push(TriangleIndex + 1);
+	QuadSection.Triangles.Push(TriangleIndex + 2);
+	QuadSection.Triangles.Push(TriangleIndex + 2);
+	QuadSection.Triangles.Push(TriangleIndex + 3);
+	QuadSection.Triangles.Push(TriangleIndex);
 
-	QuadSection.Normals.Add(Normal);
-	QuadSection.Normals.Add(Normal);
-	QuadSection.Normals.Add(Normal);
-	QuadSection.Normals.Add(Normal);
+	QuadSection.Normals.Push(Normal);
+	QuadSection.Normals.Push(Normal);
+	QuadSection.Normals.Push(Normal);
+	QuadSection.Normals.Push(Normal);
 
-	QuadSection.Tangents.Add(Tangent);
-	QuadSection.Tangents.Add(Tangent);
-	QuadSection.Tangents.Add(Tangent);
-	QuadSection.Tangents.Add(Tangent);
+	QuadSection.Tangents.Push(Tangent);
+	QuadSection.Tangents.Push(Tangent);
+	QuadSection.Tangents.Push(Tangent);
+	QuadSection.Tangents.Push(Tangent);
 
-	QuadSection.UV0.Add(FVector2D(0, 0));
-	QuadSection.UV0.Add(FVector2D(1, 0));
-	QuadSection.UV0.Add(FVector2D(1, 1));
-	QuadSection.UV0.Add(FVector2D(0, 1));
+	QuadSection.UV0.Push(FVector2D(0, 0));
+	QuadSection.UV0.Push(FVector2D(1, 0));
+	QuadSection.UV0.Push(FVector2D(1, 1));
+	QuadSection.UV0.Push(FVector2D(0, 1));
 
 	TriangleIndex += 4;
 }
