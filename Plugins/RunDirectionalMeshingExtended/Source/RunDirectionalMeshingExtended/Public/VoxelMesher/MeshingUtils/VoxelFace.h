@@ -37,19 +37,8 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelFace
 	static FVoxelFace CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 	static FVoxelFace CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 
-	static bool FrontFaceRowCondition(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2);
-	static bool BackFaceRowCondition(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2);
-	static bool LeftFaceRowCondition(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2);
-	static bool RightFaceRowCondition(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2);
-	static bool TopFaceRowCondition(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2);
-	static bool BottomFaceRowCondition(const FVoxelFace& Face, const FVoxelFace& NewFace, const int Coord2);
-
-	static bool FrontFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
-	static bool BackFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
-	static bool LeftFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
-	static bool RightFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
-	static bool TopFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
-	static bool BottomFaceNextRow(const FVoxelFace& Face, const int Coord1, const int Coord2);
+	static bool FaceRowConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	static bool FaceRowConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace);
 	
 	static bool MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace);
 	static bool MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace);

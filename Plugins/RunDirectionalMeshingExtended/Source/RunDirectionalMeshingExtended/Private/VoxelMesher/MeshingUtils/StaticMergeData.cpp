@@ -42,36 +42,30 @@ FStaticMergeData FStaticMergeData::BottomFaceData = FStaticMergeData(
 
 FStaticGreedyMergeData FStaticGreedyMergeData:: FrontFace = FStaticGreedyMergeData(
 	EFaceDirection::Front,
-	FVoxelFace::FrontFaceRowCondition,
-	FVoxelFace::FrontFaceNextRow
+	FVoxelFace::FaceRowConditionZ
 );
 
 FStaticGreedyMergeData FStaticGreedyMergeData::BackFace = FStaticGreedyMergeData(
 	EFaceDirection::Back,
-	FVoxelFace::BackFaceRowCondition,
-	FVoxelFace::BackFaceNextRow
+	FVoxelFace::FaceRowConditionZ
 );
 
 FStaticGreedyMergeData FStaticGreedyMergeData::RightFace = FStaticGreedyMergeData(
 	EFaceDirection::Right,
-	FVoxelFace::RightFaceRowCondition,
-	FVoxelFace::RightFaceNextRow
+	FVoxelFace::FaceRowConditionZ
 );
 
 FStaticGreedyMergeData FStaticGreedyMergeData::LeftFace = FStaticGreedyMergeData(
 	EFaceDirection::Left,
-	FVoxelFace::LeftFaceRowCondition,
-	FVoxelFace::LeftFaceNextRow
+	FVoxelFace::FaceRowConditionZ
 );
 
 FStaticGreedyMergeData FStaticGreedyMergeData::TopFace = FStaticGreedyMergeData(
 	EFaceDirection::Top,
-	FVoxelFace::TopFaceRowCondition,
-	FVoxelFace::TopFaceNextRow
+	FVoxelFace::FaceRowConditionX
 );
 
 FStaticGreedyMergeData FStaticGreedyMergeData::BottomFace = FStaticGreedyMergeData(
 	EFaceDirection::Bottom,
-	FVoxelFace::BottomFaceRowCondition,
-	FVoxelFace::BottomFaceNextRow
+	FVoxelFace::FaceRowConditionX
 );

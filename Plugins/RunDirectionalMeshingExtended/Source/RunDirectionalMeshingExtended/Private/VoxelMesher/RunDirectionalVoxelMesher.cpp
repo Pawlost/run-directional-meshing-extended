@@ -1,8 +1,5 @@
 ﻿#include "VoxelMesher/RunDirectionalVoxelMesher.h"
 
-#include <rapidjson/reader.h>
-#include <rapidjson/reader.h>
-
 #include "Log/VoxelMeshingProfilingLogger.h"
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
@@ -105,9 +102,7 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 		{
 			for (uint32 y = 0; y < ChunkDimension; y++)
 			{
-#if CPUPROFILERTRACE_ENABLED
-				TRACE_CPUPROFILER_EVENT_SCOPE("Quad strip - RunDirectionalMeshing from VoxelGrid generation")
-#endif
+				
 				/*
 				* Increment run for each chunk axis
 				* Coordinates are different in order to create a sorted array of quads/faces.
@@ -130,22 +125,22 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 
 		// Directional Greedy Meshing
 		DirectionalGreedyMerge(MeshVars, QuadMeshSectionArray, LocalVoxelTable,
-		                       VoxelSize, FStaticGreedyMergeData::FrontFace, 0, x);
+		                       VoxelSize, FStaticGreedyMergeData::FrontFace);
 
 		DirectionalGreedyMerge(MeshVars, QuadMeshSectionArray, LocalVoxelTable,
-		                       VoxelSize, FStaticGreedyMergeData::BackFace, 0, x);
+		                       VoxelSize, FStaticGreedyMergeData::BackFace);
 
 		DirectionalGreedyMerge(MeshVars, QuadMeshSectionArray, LocalVoxelTable,
-		                       VoxelSize, FStaticGreedyMergeData::RightFace, 0, x);
+		                       VoxelSize, FStaticGreedyMergeData::RightFace);
 
 		DirectionalGreedyMerge(MeshVars, QuadMeshSectionArray, LocalVoxelTable,
-		                       VoxelSize, FStaticGreedyMergeData::LeftFace, 0, x);
+		                       VoxelSize, FStaticGreedyMergeData::LeftFace);
 
 		DirectionalGreedyMerge(MeshVars, QuadMeshSectionArray, LocalVoxelTable,
-		                       VoxelSize, FStaticGreedyMergeData::TopFace, 0, x);
+		                       VoxelSize, FStaticGreedyMergeData::TopFace);
 
 		DirectionalGreedyMerge(MeshVars, QuadMeshSectionArray, LocalVoxelTable,
-		                       VoxelSize, FStaticGreedyMergeData::BottomFace, 0, x);
+		                       VoxelSize, FStaticGreedyMergeData::BottomFace);
 	}
 
 
@@ -211,13 +206,11 @@ void URunDirectionalVoxelMesher::GenerateProcMesh(const FMesherVariables& MeshVa
 	}
 }
 
-//todo: fix coordinate
 void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
                                                         const TSharedPtr<TArray<FProcMeshSectionVars>>&
                                                         QuadMeshSectionArray,
                                                         TMap<uint32, uint32>& LocalVoxelTable, const double VoxelSize,
-                                                        const FStaticGreedyMergeData& GreedyMergeData,
-                                                        const int Coord1, const int Coord2) const
+                                                        const FStaticGreedyMergeData& GreedyMergeData) const
 {
 	const auto FaceDirectionIndex = static_cast<uint8>(GreedyMergeData.FaceSide);
 
@@ -227,10 +220,6 @@ void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& 
 	// Iterate from last face
 	for (int32 i = FaceIndex; i >= 0; i--)
 	{
-#if CPUPROFILERTRACE_ENABLED
-		TRACE_CPUPROFILER_EVENT_SCOPE("Directional optimization - RunDirectionalMeshing from VoxelGrid generation")
-#endif
-
 		FVoxelFace& NextFace = FaceContainer[i + 1];
 
 		// Elements are removed and it must be updated
@@ -240,18 +229,14 @@ void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& 
 		FVoxelFace* Face = &FaceContainer[BackTrackIndex];
 		while (!FVoxelFace::MergeFaceUp(*Face, NextFace))
 		{
-#if CPUPROFILERTRACE_ENABLED
-		TRACE_CPUPROFILER_EVENT_SCOPE("Backtrack - RunDirectionalMeshing from VoxelGrid generation")
-#endif
-			
 			BackTrackIndex--;
-		
-			if (BackTrackIndex == -1 || GreedyMergeData.RowBorderCondition(*Face, NextFace, Coord2))
+
+			if (BackTrackIndex == -1 || GreedyMergeData.RowBorderCondition(*Face, NextFace))
 			{
 				ConvertFaceToProcMesh(*QuadMeshSectionArray, NextFace, LocalVoxelTable, FaceDirectionIndex, VoxelSize);
 				break;
 			}
-			
+
 			Face = &FaceContainer[BackTrackIndex];
 		}
 
@@ -261,10 +246,6 @@ void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& 
 	FaceIndex = FaceContainer.Num();
 	for (int i = 0; i < FaceIndex; i++)
 	{
-#if CPUPROFILERTRACE_ENABLED
-		TRACE_CPUPROFILER_EVENT_SCOPE("Create Mesh - RunDirectionalMeshing from VoxelGrid generation")
-#endif
-
 		const FVoxelFace& Face = FaceContainer[i];
 		ConvertFaceToProcMesh(*QuadMeshSectionArray, Face, LocalVoxelTable, FaceDirectionIndex, VoxelSize);
 	}

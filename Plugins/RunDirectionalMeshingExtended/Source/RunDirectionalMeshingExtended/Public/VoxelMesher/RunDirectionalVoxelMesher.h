@@ -50,7 +50,7 @@ private:
 
 	void DirectionalGreedyMerge(const FMesherVariables& MeshVars, const TSharedPtr<TArray<FProcMeshSectionVars>>& QuadMeshSectionArray,
 	                                                               TMap<uint32, uint32>& LocalVoxelTable, const double VoxelSize,
-	                                                               const FStaticGreedyMergeData& GreedyMergeData, int Coord1, int Coord2) const;
+	                                                               const FStaticGreedyMergeData& GreedyMergeData) const;
 
 	void GenerateProcMesh(const FMesherVariables& MeshVars, TMap<uint32, uint32> LocalVoxelTable,
 		TSharedPtr<TArray<FProcMeshSectionVars>>& QuadMeshSectionArray) const;
