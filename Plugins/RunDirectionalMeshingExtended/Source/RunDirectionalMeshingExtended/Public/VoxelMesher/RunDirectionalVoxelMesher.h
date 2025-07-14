@@ -40,18 +40,17 @@ private:
 	                    const int32& AxisVoxelIndex,
 	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces, const FChunkParams& ChunkParams);
 
-	void FaceGeneration(const UVoxelGrid& VoxelGridObject, FMesherVariables& MeshVars) const;
+	void FaceGeneration(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars) const;
 
-	static void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face,
-	                                  TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex, double VoxelSize);
+	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face,
+	                                  TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex) const;
 
 	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable,
 	                   const FVoxelChange& VoxelChange) const;
 
-	void DirectionalGreedyMerge(const FMesherVariables& MeshVars, const TSharedPtr<TArray<FProcMeshSectionVars>>& QuadMeshSectionArray,
-	                                                               TMap<uint32, uint32>& LocalVoxelTable, const double VoxelSize,
-	                                                               const FStaticGreedyMergeData& GreedyMergeData) const;
+	void DirectionalGreedyMerge(const FMesherVariables& MeshVars,
+	                                   TMap<uint32, uint32>& LocalVoxelTable,
+	                                   const FStaticGreedyMergeData& GreedyMergeData) const;
 
-	void GenerateProcMesh(const FMesherVariables& MeshVars, TMap<uint32, uint32> LocalVoxelTable,
-		TSharedPtr<TArray<FProcMeshSectionVars>>& QuadMeshSectionArray) const;
+	void GenerateProcMesh(const FMesherVariables& MeshVars, TMap<uint32, uint32> LocalVoxelTable) const;
 };

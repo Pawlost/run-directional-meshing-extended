@@ -2,9 +2,9 @@
 
 #include "Log/VoxelMeshingProfilingLogger.h"
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
-#include "Spawner/ChunkSpawnerBase.h"
 #include "Voxel/RLEVoxel.h"
 #include "Voxel/Grid/VoxelGrid.h"
+#include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
 
 void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase)
 {
@@ -106,19 +106,29 @@ bool UVoxelMesherBase::EmptyActor(const FMesherVariables& MeshVars)
 	return false;
 }
 
-void UVoxelMesherBase::InitFaceContainers(FMesherVariables& MeshVars) const
+void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Mesh generation preallocation")
 #endif
+	
+	auto VoxelTypeCount = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.Num();
 
-	MeshVars.VoxelIdToLocalVoxelMap.Reserve(MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.Num());
-	MeshVars.VoxelIdToLocalVoxelMap.Empty();
-
-	for (const auto VoxelId : MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable)
+	if (MeshVars.QuadMeshSectionArray == nullptr)
 	{
-		const auto LocalVoxelId = MeshVars.VoxelIdToLocalVoxelMap.Num();
-		MeshVars.VoxelIdToLocalVoxelMap.Add(VoxelId.Key, LocalVoxelId);
+		MeshVars.QuadMeshSectionArray = MakeShared<TArray<FProcMeshSectionVars>>();
+	}
+
+	for (int t = 0; t < VoxelTypeCount; t++)
+	{
+		auto& QuadMeshSectionArray = *MeshVars.QuadMeshSectionArray;
+		if (QuadMeshSectionArray.IsValidIndex(t))
+		{
+			QuadMeshSectionArray[t].EmptyValues();
+		}else
+		{
+			QuadMeshSectionArray.Emplace(VoxelGenerator->GetVoxelCountPerChunk());
+		}
 	}
 
 	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
@@ -139,63 +149,7 @@ void UVoxelMesherBase::InitFaceContainers(FMesherVariables& MeshVars) const
 		}
 
 		// Preallocate memory needed for meshing
-		const uint32 EstimatedVoxels = VoxelGenerator->GetVoxelCountPerChunk() * VoxelTable.Num();
+		const uint32 EstimatedVoxels = VoxelGenerator->GetVoxelCountPerChunkDimension() * VoxelTable.Num();
 		FaceArray->Reserve(EstimatedVoxels);
 	}
-}
-
-void UVoxelMesherBase::GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const
-{
-	const auto World = GetWorld();
-	if (!IsValid(World))
-	{
-		return;
-	}
-
-	//Spawn actor
-	const auto Chunk = ChunkParams->OriginalChunk;
-	TWeakObjectPtr<AChunkRMCActor> ActorPtr = Chunk->ChunkMeshActor;
-	const auto SpawnLocation = FVector(Chunk->GridPosition) * VoxelGenerator->GetChunkAxisSize();
-
-	FAttachmentTransformRules ActorAttachmentRules = FAttachmentTransformRules::KeepWorldTransform;
-	if (!ChunkParams->WorldTransform)
-	{
-		ActorAttachmentRules = FAttachmentTransformRules::KeepRelativeTransform;
-	}
-
-	if (ActorPtr == nullptr)
-	{
-		// If there is no actor spawn new one.
-		ActorPtr = World->SpawnActor<AChunkRMCActor>(AChunkRMCActor::StaticClass(), SpawnLocation,
-		                                             FRotator::ZeroRotator);
-
-		if (!ActorPtr.IsValid() || !ChunkParams->SpawnerPtr.IsValid())
-		{
-			return;
-		}
-
-		ActorPtr->AttachToActor(ChunkParams->SpawnerPtr.Get(), ActorAttachmentRules);
-	}
-	else
-	{
-		if (!ActorPtr.IsValid())
-		{
-			return;
-		}
-		
-		// If actor exists, ensure correct location
-		if (!ChunkParams->WorldTransform)
-		{
-			ActorPtr->SetActorRelativeLocation(SpawnLocation);
-		}
-		else
-		{
-			ActorPtr->SetActorLocation(SpawnLocation);
-		}
-	}
-	
-	Chunk->ChunkMeshActor = ActorPtr;
-
-
-	ActorPtr->PrepareMesh();
 }

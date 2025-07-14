@@ -6,7 +6,7 @@
 struct FVoxelPosition;
 struct FVoxelChange;
 struct FFaceToDirection;
-class AChunkRMCActor;
+class AChunkActor;
 
 UCLASS(Abstract)
 class RUNDIRECTIONALMESHINGEXTENDED_API AAreaChunkSpawnerBase : public AChunkSpawnerBase
@@ -35,13 +35,11 @@ protected:
 	bool ShowChunkBorders = false;
 	virtual void BeginPlay() override;
 
-	TQueue<TWeakObjectPtr<AChunkRMCActor>, EQueueMode::Mpsc> UnusedActorsPool;
+	TQueue<TWeakObjectPtr<AChunkActor>, EQueueMode::Mpsc> UnusedActorsPool;
 
 	virtual void GenerateArea() PURE_VIRTUAL(AAreaChunkSpawnerBase::GenerateArea)
 	void GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, FVoxelChange* VoxelChange = nullptr);
 	virtual void SpawnChunk(const FIntVector& ChunkGridPosition, TSharedFuture<void>* OutAsyncExecution = nullptr);
-
-
 
 private:
 	void AddChunkFromGrid(FMesherVariables& MesherVars, const FFaceToDirection& FaceDirection);

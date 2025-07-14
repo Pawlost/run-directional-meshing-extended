@@ -32,7 +32,6 @@ void AAreaChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPositi
 		auto Chunk = *FoundChunk;
 		
 		FMesherVariables MesherVars;
-		MesherVars.ChunkParams.ExecutedOnMainThread = true;
 		Chunk->bIsActive = false;
 		FVoxelChange Modification(VoxelName, VoxelPosition.VoxelPosition);
 		GenerateChunkMesh(MesherVars, Chunk->GridPosition, &Modification);
@@ -86,7 +85,6 @@ void AAreaChunkSpawnerBase::BeginPlay()
 			//Spawn center chunk
 			SpawnChunk(CenterGridPosition);
 			FMesherVariables MesherVars;
-			MesherVars.ChunkParams.ExecutedOnMainThread = true;
 			GenerateChunkMesh(MesherVars, CenterGridPosition);
 		}
 
@@ -128,6 +126,22 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	if (Chunk->ChunkMeshActor == nullptr)
 	{
 		UnusedActorsPool.Dequeue(Chunk->ChunkMeshActor);
+	}
+
+	auto Spawner = MakeShared<FChunkParams>(MesherVars.ChunkParams);
+	
+	if (IsInGameThread())
+	{
+		//Creating AsyncTask from main thread will cause deadlock
+		GenerateActorMesh(Spawner);
+	}
+	else
+	{
+		// Synchronize Mesh generation with game thread.
+		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
+		{
+			GenerateActorMesh(Spawner);
+		}).Wait();
 	}
 
 	//Mesh could be spawned on a Async Thread similarly to voxel models but it is not done so to showcase real time speed of mesh generation (requirement for bachelor thesis)

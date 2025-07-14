@@ -55,9 +55,7 @@ protected:
 
 	static bool EmptyActor(const FMesherVariables& MeshVars);
 	
-	void InitFaceContainers(FMesherVariables& MeshVars) const;
-	
-	void GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const;
+	void PreallocateArrays(FMesherVariables& MeshVars) const;
 	
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;

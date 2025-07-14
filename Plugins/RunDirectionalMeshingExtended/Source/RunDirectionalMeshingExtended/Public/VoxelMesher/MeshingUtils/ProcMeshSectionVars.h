@@ -24,4 +24,13 @@ struct FProcMeshSectionVars
 		Normals.Reserve(VoxelCountPerChunk * 12 + 1);
 		Tangents.Reserve(VoxelCountPerChunk * 12 + 1);
 	}
+
+	void EmptyValues()
+	{
+		Vertices.Empty();
+		Triangles.Empty();
+		UV0.Empty();
+		Normals.Empty();
+		Tangents.Empty();
+	}
 };

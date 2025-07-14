@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "Voxel/VoxelPosition.h"
+#include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "ChunkSpawnerBase.generated.h"
 
 struct FVoxelPosition;
@@ -63,6 +64,8 @@ protected:
 	
 	// Wait for all futures
 	static void WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks);
+	
+	void GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const;
 
 	bool bIsInitialized = false;
 };

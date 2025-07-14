@@ -1,13 +1,13 @@
-﻿#include "Chunk/ChunkRMCActor.h"
+﻿#include "Chunk/ChunkActor.h"
 
-AChunkRMCActor::AChunkRMCActor() 
+AChunkActor::AChunkActor() 
 {
 	// Register and set RealTimeMeshComponent which will render and store generated mesh.
 	ProceduralMeshComponent = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("RealtimeMeshComponent"));
 	SetRootComponent(ProceduralMeshComponent);
 }
 
-void AChunkRMCActor::ClearMesh() const
+void AChunkActor::ClearMesh() const
 {
 	if (!IsValid(this))
 	{
@@ -17,16 +17,8 @@ void AChunkRMCActor::ClearMesh() const
 	ProceduralMeshComponent->ClearAllMeshSections();
 }
 
-void AChunkRMCActor::PrepareMesh() const
-{
-}
 
-void AChunkRMCActor::BeginPlay()
-{
-	
-}
-
-void AChunkRMCActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AChunkActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	ClearMesh();
 	Super::EndPlay(EndPlayReason);

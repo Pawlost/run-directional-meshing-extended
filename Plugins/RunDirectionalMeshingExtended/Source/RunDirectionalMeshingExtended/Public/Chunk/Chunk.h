@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "ChunkRMCActor.h"
+#include "ChunkActor.h"
 #include "Chunk.generated.h"
 
 class UVoxelModel;
@@ -11,7 +11,7 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FChunk
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TWeakObjectPtr<AChunkRMCActor> ChunkMeshActor = nullptr;
+	TWeakObjectPtr<AChunkActor> ChunkMeshActor = nullptr;
 
 	// Saving voxel grids is not implemented in this demo, but a property specifier for saving has been added.
 

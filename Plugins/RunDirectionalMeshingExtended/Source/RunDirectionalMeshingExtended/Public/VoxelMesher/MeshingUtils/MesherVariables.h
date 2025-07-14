@@ -2,6 +2,7 @@
 #include "FaceDirection.h"
 #include "Chunk/Chunk.h"
 #include "VoxelMesher/MeshingUtils/VoxelFace.h"
+#include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
 #include "MesherVariables.generated.h"
 
 class AChunkSpawnerBase;
@@ -19,7 +20,6 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FChunkParams
 
 	bool WorldTransform = false;
 	bool ShowBorders = false;
-	bool ExecutedOnMainThread = false;
 };
 
 USTRUCT()
@@ -29,5 +29,5 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FMesherVariables
 
 	TSharedPtr<TArray<FVoxelFace>> Faces[CHUNK_FACE_COUNT];
 	FChunkParams ChunkParams;
-	TMap<uint16, uint16> VoxelIdToLocalVoxelMap; 
+	TSharedPtr<TArray<FProcMeshSectionVars>> QuadMeshSectionArray;
 };

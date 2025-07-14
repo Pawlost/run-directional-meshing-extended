@@ -152,3 +152,58 @@ void AChunkSpawnerBase::WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks)
 
 	Tasks.Empty();
 }
+
+
+void AChunkSpawnerBase::GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const
+{
+	const auto World = GetWorld();
+	if (!IsValid(World))
+	{
+		return;
+	}
+
+	//Spawn actor
+	const auto Chunk = ChunkParams->OriginalChunk;
+	TWeakObjectPtr<AChunkActor> ActorPtr = Chunk->ChunkMeshActor;
+	const auto SpawnLocation = FVector(Chunk->GridPosition) * VoxelGenerator->GetChunkAxisSize();
+
+	FAttachmentTransformRules ActorAttachmentRules = FAttachmentTransformRules::KeepWorldTransform;
+	if (!ChunkParams->WorldTransform)
+	{
+		ActorAttachmentRules = FAttachmentTransformRules::KeepRelativeTransform;
+	}
+
+	if (ActorPtr == nullptr)
+	{
+		// If there is no actor spawn new one.
+		ActorPtr = World->SpawnActor<AChunkActor>(AChunkActor::StaticClass(), SpawnLocation,
+													 FRotator::ZeroRotator);
+
+		if (!ActorPtr.IsValid() || !ChunkParams->SpawnerPtr.IsValid())
+		{
+			return;
+		}
+
+		ActorPtr->AttachToActor(ChunkParams->SpawnerPtr.Get(), ActorAttachmentRules);
+	}
+	else
+	{
+		if (!ActorPtr.IsValid())
+		{
+			return;
+		}
+		
+		// If actor exists, ensure correct location
+		if (!ChunkParams->WorldTransform)
+		{
+			ActorPtr->SetActorRelativeLocation(SpawnLocation);
+		}
+		else
+		{
+			ActorPtr->SetActorLocation(SpawnLocation);
+		}
+	}
+	
+	Chunk->ChunkMeshActor = ActorPtr;
+}
+
