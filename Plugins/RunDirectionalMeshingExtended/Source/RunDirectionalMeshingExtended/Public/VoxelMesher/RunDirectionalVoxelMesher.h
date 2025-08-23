@@ -18,27 +18,39 @@ public:
 	virtual void GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange) override;
 
 private:
-	struct FVoxelIndexParams
+	struct FVoxelParams
 	{
-		bool IsBorder;
+		FVoxel CurrentVoxel;
+		FIntVector FacePosition;
+	};
+	
+	struct FBorderVoxelIndexParams
+	{
+		int32 SideChunkVoxelIndex;
+		FStaticMergeData StaticData;
+		FVoxelParams VoxelParams;
+	};
+	
+	struct FInnerVoxelIndexParams
+	{
 		int32 ForwardVoxelIndex;
 		int32 PreviousVoxelIndex;
-		int32 CurrentVoxelIndex;
-		FVoxel CurrentVoxel;
-		EFaceDirection FaceDirection;
+		FVoxelParams VoxelParams;
 	};
 
-	static bool IsBorderVoxelVisible(const FVoxelIndexParams& FaceData, const FChunkParams& ChunkStruct);
-	static bool IsVoxelVisible(const UVoxelGrid& VoxelGridObject, const FVoxelIndexParams& FaceData);
+	static bool IsBorderVoxelVisible(const FBorderVoxelIndexParams& FaceData, const FChunkParams& ChunkStruct);
+	static bool IsVoxelVisible(const UVoxelGrid& VoxelGridObject, const FInnerVoxelIndexParams& FaceData);
 
-	void IncrementRun(int X, int Y, int Z, int32 AxisVoxelIndex, bool bIsMinBorder, bool bIsMaxBorder,
+	void IncrementRun(int X, int Y, int Z, 
 	                  const FMeshingDirections& FaceTemplate, const FMeshingDirections& ReversedFaceTemplate,
 	                  const FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const;
 
-	static void AddFace(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate, bool bIsBorder,
-	                    const int32& Index, const FIntVector& Position, const FVoxel& Voxel,
-	                    const int32& AxisVoxelIndex,
-	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces, const FChunkParams& ChunkParams);
+	static void CheckVoxelNeighborhood(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate,
+						const int32& Index, const FVoxelParams& VoxelParams,
+	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
+
+
+	static void AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
 
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars) const;
 
@@ -53,4 +65,11 @@ private:
 	                                   const FStaticGreedyMergeData& GreedyMergeData) const;
 
 	void GenerateProcMesh(const FMesherVariables& MeshVars, TMap<uint32, uint32> LocalVoxelTable) const;
+
+	
+	void IncrementBorderRun(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars,
+	                        const FMeshingDirections& FaceTemplate, const FIntVector& Position, int BorderIndex) const;
+	void CheckBorderX(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
+	void CheckBorderY(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
+	void CheckBorderZ(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
 };

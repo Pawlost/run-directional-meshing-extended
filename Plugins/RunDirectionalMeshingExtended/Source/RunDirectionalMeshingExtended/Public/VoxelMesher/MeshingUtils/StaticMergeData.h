@@ -4,7 +4,7 @@
 
 struct FStaticMergeData
 {
-	const EFaceDirection FaceSide;
+	const EFaceDirection FaceDirection;
 	const TFunctionRef<bool(FVoxelFace& PrevFace, const FVoxelFace& NewFace)> RunDirectionFaceMerge;
 	const TFunctionRef<FVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;
 	
