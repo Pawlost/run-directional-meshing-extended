@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "MeshingUtils/FaceDirection.h"
 #include "MeshingUtils/MeshingDirections.h"
+#include "MeshingUtils/ProcMeshSectionVars.h"
 #include "Voxel/Generator/VoxelGeneratorBase.h"
 #include "VoxelMesherBase.generated.h"
 
@@ -57,6 +58,10 @@ protected:
 	
 	void PreallocateArrays(FMesherVariables& MeshVars) const;
 	
+	void GenerateProcMesh(const FMesherVariables& MeshVars, TMap<uint32, uint32> LocalVoxelTable) const;
+	
+	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face,
+								  TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex) const;
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 };

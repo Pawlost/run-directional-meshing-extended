@@ -8,7 +8,6 @@
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "Voxel/RLEVoxel.h"
 #include "Voxel/Grid/RLEVoxelGrid.h"
-/*
 void URLERunDirectionalVoxelMesher::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid)
 {
 
@@ -45,7 +44,7 @@ void URLERunDirectionalVoxelMesher::CompressVoxelGrid(FChunk& Chunk, TArray<FVox
 #endif
 }
 
-void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars) const
+void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable) const
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Meshing - RunDirectionalMeshing from RLECompression generation")
@@ -144,29 +143,29 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 					if (IndexParams.TraversedRun - XIndex < 0)
 					{
 						// Back
-						CreateFace(MeshVars, FStaticMergeData::BackFaceData, InitialPosition, IndexParams.CurrentRLERun,
+						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::BackFaceData, InitialPosition, IndexParams.CurrentRLERun,
 							   YEnd);
 					}
 
 					// Front
-					CreateFace(MeshVars, FStaticMergeData::FrontFaceData, InitialPosition, IndexParams.CurrentRLERun, YEnd);
+					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::FrontFaceData, InitialPosition, IndexParams.CurrentRLERun, YEnd);
 
 					// Top
-					CreateFace(MeshVars, FStaticMergeData::TopFaceData, InitialPosition, IndexParams.CurrentRLERun, YEnd);
+					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::TopFaceData, InitialPosition, IndexParams.CurrentRLERun, YEnd);
 						
 					// Tail culling
 					if (z == 0 || IndexParams.TraversedRun - ZIndex < 0){
 						// Bottom
-						CreateFace(MeshVars, FStaticMergeData::BottomFaceData, InitialPosition, IndexParams.CurrentRLERun,
+						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::BottomFaceData, InitialPosition, IndexParams.CurrentRLERun,
 					           YEnd);
 					}
 					
 					// Right
-					CreateFace(MeshVars, FStaticMergeData::RightFaceData, InitialPosition, IndexParams.CurrentRLERun,
+					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::RightFaceData, InitialPosition, IndexParams.CurrentRLERun,
 					           YEnd);
 
 					// Left
-					CreateFace(MeshVars, FStaticMergeData::LeftFaceData, InitialPosition, IndexParams.CurrentRLERun,
+					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::LeftFaceData, InitialPosition, IndexParams.CurrentRLERun,
 					           YEnd);
 				}
 				
@@ -257,11 +256,14 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVo
 		IndexParams.NewVoxelGrid = nullptr;
 	}
 
-	InitFaceContainers(MeshVars);
+	PreallocateArrays(MeshVars);
 
-	FaceGeneration(IndexParams, MeshVars);
 	
-	GenerateMeshFromFaces(MeshVars);
+	TMap<uint32, uint32> LocalVoxelTable;
+
+	FaceGeneration(IndexParams, MeshVars, LocalVoxelTable);
+	
+	GenerateProcMesh(MeshVars, LocalVoxelTable);
 	
 	if (IndexParams.VoxelChange != nullptr)
 	{
@@ -269,13 +271,13 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVo
 	}
 }
 
-void URLERunDirectionalVoxelMesher::CreateFace(FMesherVariables& MeshVars, const FStaticMergeData& StaticData,
-                                          const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel, const int YEnd)
+void URLERunDirectionalVoxelMesher::CreateFace(const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, const FStaticMergeData& StaticData,
+                                          const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel, const int YEnd) const
 {
-	const int LocalVoxelId = MeshVars.VoxelIdToLocalVoxelMap[RLEVoxel.Voxel.VoxelId];
 	const FVoxelFace NewFace = StaticData.FaceCreator(RLEVoxel.Voxel, InitialPosition, YEnd);
-	const auto FaceContainerIndex = static_cast<uint8>(StaticData.FaceSide);
-	MeshVars.Faces[FaceContainerIndex][LocalVoxelId]->Push(NewFace);
+	const auto FaceIndex = static_cast<uint8>(StaticData.FaceDirection);
+	
+	ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, NewFace, LocalVoxelTable, FaceIndex);
 }
 
 bool URLERunDirectionalVoxelMesher::CalculateStartRunEditIndex(FIndexParams& IndexParams, const int RunEnd)
@@ -450,4 +452,4 @@ void URLERunDirectionalVoxelMesher::FirstRunEditIndex(FIndexParams& IndexParams)
 			}
 		}
 	}
-}*/
+}

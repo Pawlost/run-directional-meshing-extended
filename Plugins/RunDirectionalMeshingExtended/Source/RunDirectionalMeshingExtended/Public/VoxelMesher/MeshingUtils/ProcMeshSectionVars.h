@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "ProceduralMeshComponent.h"
 
 #include "ProcMeshSectionVars.generated.h"
 

@@ -11,8 +11,7 @@ UCLASS(ClassGroup=(Meshers), Blueprintable)
 class RUNDIRECTIONALMESHINGEXTENDED_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 {
 	GENERATED_BODY()
-	
-/*
+
 public:
 	virtual void GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange) override;
 	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid) override;
@@ -44,7 +43,8 @@ private:
 		FVoxelChange* VoxelChange = nullptr; 
 	};
 	
-	static void CreateFace(FMesherVariables& MeshVars, const FStaticMergeData& StaticData, const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel, const int YEnd);
+	void CreateFace(const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable,  const FStaticMergeData& StaticData,
+										const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel, const int YEnd) const;
 
 	static bool CalculateStartRunEditIndex(FIndexParams& IndexParams, int RunEnd);
 
@@ -52,5 +52,5 @@ private:
 
 	static void FirstRunEditIndex(FIndexParams& IndexParams);
 	static void CalculateMidRun(const int MidRunLenght, const int EndRunLength, FIndexParams& IndexParams);
-	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars) const;*/
+	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable) const;
 };

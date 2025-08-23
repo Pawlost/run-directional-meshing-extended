@@ -54,21 +54,16 @@ private:
 
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars) const;
 
-	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face,
-	                                  TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex) const;
-
 	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable,
 	                   const FVoxelChange& VoxelChange) const;
 
 	void DirectionalGreedyMerge(const FMesherVariables& MeshVars,
 	                                   TMap<uint32, uint32>& LocalVoxelTable,
 	                                   const FStaticGreedyMergeData& GreedyMergeData) const;
-
-	void GenerateProcMesh(const FMesherVariables& MeshVars, TMap<uint32, uint32> LocalVoxelTable) const;
-
 	
 	void IncrementBorderRun(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars,
 	                        const FMeshingDirections& FaceTemplate, const FIntVector& Position, int BorderIndex) const;
+	
 	void CheckBorderX(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
 	void CheckBorderY(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
 	void CheckBorderZ(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;

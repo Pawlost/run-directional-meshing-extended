@@ -210,36 +210,6 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 	MeshVars.ChunkParams.OriginalChunk->bHasMesh = true;
 }
 
-void URunDirectionalVoxelMesher::GenerateProcMesh(const FMesherVariables& MeshVars,
-                                                  TMap<uint32, uint32> LocalVoxelTable) const
-{
-#if CPUPROFILERTRACE_ENABLED
-	TRACE_CPUPROFILER_EVENT_SCOPE("Creating Actor - RunDirectionalMeshing from VoxelGrid generation")
-#endif
-
-	auto MeshActor = MeshVars.ChunkParams.OriginalChunk->ChunkMeshActor;
-
-	for (auto LocalVoxelType : LocalVoxelTable)
-	{
-		auto SectionId = LocalVoxelType.Value;
-		const auto VoxelType = VoxelGenerator->GetVoxelTypeById(LocalVoxelType.Key);
-		MeshActor->ProceduralMeshComponent->SetMaterial(SectionId, VoxelType.Value.Material);
-		auto QuadMeshSectionArray = MeshVars.QuadMeshSectionArray;
-
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, QuadMeshSectionArray, SectionId]()
-		{
-			FProcMeshSectionVars& QuadMeshSection = (*QuadMeshSectionArray)[SectionId];
-
-			MeshActor->ProceduralMeshComponent->ClearMeshSection(SectionId);
-			// Add voxel materials to mesh
-			MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(
-				SectionId, QuadMeshSection.Vertices, QuadMeshSection.Triangles, QuadMeshSection.Normals,
-				QuadMeshSection.UV0, TArray<FLinearColor>(),
-				QuadMeshSection.Tangents, true);
-		});
-	}
-}
-
 void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
                                                         TMap<uint32, uint32>& LocalVoxelTable,
                                                         const FStaticGreedyMergeData& GreedyMergeData) const
@@ -411,58 +381,4 @@ void URunDirectionalVoxelMesher::ChangeVoxelId(const UVoxelGrid& VoxelGridObject
 			VoxelGenerator->ChangeKnownVoxelAtIndex(*VoxelGridObject.VoxelGrid, VoxelTable, Index, VoxelId);
 		}
 	}
-}
-
-void URunDirectionalVoxelMesher::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
-													   const FVoxelFace& Face, TMap<uint32, uint32>& LocalVoxelTable,
-													   const int FaceIndex) const
-{
-	const double VoxelSize = VoxelGenerator->GetVoxelSize();
-	
-	const auto VoxelId = Face.Voxel.VoxelId;
-	int32 SectionId;
-	if (!LocalVoxelTable.Contains(VoxelId))
-	{
-		SectionId = LocalVoxelTable.Num();
-		// Keep track of how many voxel quads are actually displayed
-		LocalVoxelTable.Add(VoxelId, SectionId);
-	}
-	else
-	{
-		SectionId = LocalVoxelTable[VoxelId];
-	}
-
-	auto& QuadSection = QuadMeshSectionArray[SectionId];
-	auto [Normal, Tangent] = FaceNormalsAndTangents[FaceIndex];
-	auto& TriangleIndex = QuadSection.GlobalTriangleIndex;
-
-	// Create quad from 2 triangles
-	QuadSection.Vertices.Push(Face.GetFinalStartVertexDown(VoxelSize));
-	QuadSection.Vertices.Push(Face.GetFinalEndVertexDown(VoxelSize));
-	QuadSection.Vertices.Push(Face.GetFinalEndVertexUp(VoxelSize));
-	QuadSection.Vertices.Push(Face.GetFinalStartVertexUp(VoxelSize));
-
-	QuadSection.Triangles.Push(TriangleIndex);
-	QuadSection.Triangles.Push(TriangleIndex + 1);
-	QuadSection.Triangles.Push(TriangleIndex + 2);
-	QuadSection.Triangles.Push(TriangleIndex + 2);
-	QuadSection.Triangles.Push(TriangleIndex + 3);
-	QuadSection.Triangles.Push(TriangleIndex);
-
-	QuadSection.Normals.Push(Normal);
-	QuadSection.Normals.Push(Normal);
-	QuadSection.Normals.Push(Normal);
-	QuadSection.Normals.Push(Normal);
-
-	QuadSection.Tangents.Push(Tangent);
-	QuadSection.Tangents.Push(Tangent);
-	QuadSection.Tangents.Push(Tangent);
-	QuadSection.Tangents.Push(Tangent);
-
-	QuadSection.UV0.Push(FVector2D(0, 0));
-	QuadSection.UV0.Push(FVector2D(1, 0));
-	QuadSection.UV0.Push(FVector2D(1, 1));
-	QuadSection.UV0.Push(FVector2D(0, 1));
-
-	TriangleIndex += 4;
 }
