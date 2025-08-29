@@ -38,6 +38,8 @@ private:
 		FRLEVoxel CurrentRLERun;
 		FVoxel ReplacedVoxel = FVoxel();
 		int32 EditAreaIndex = 0;
+
+		// Index in voxel data
 		int32 RunIndex = -1;
 		
 		FVoxelChange* VoxelChange = nullptr; 

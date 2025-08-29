@@ -50,8 +50,6 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	TRACE_CPUPROFILER_EVENT_SCOPE("Meshing - RunDirectionalMeshing from RLECompression generation")
 #endif
 
-	bool bEdited = false;
-
 	IndexParams.CurrentRLERun = IndexParams.VoxelGrid->GetData()[0];
 	IndexParams.TraversedRun = IndexParams.CurrentRLERun.RunLenght;
 
@@ -68,7 +66,6 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 		for (int z = 0; z < ChunkDimension; z++)
 		{
 			IndexParams.YStart = 0;
-			bool bIsNewRun;
 
 			// Calculate index
 			while (IndexParams.YStart < ChunkDimension)
@@ -77,13 +74,11 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 				{
 					if (IndexParams.EditAreaIndex == 0)
 					{
-						bIsNewRun = true;
 						IndexParams.RunIndex++;
 						IndexParams.CurrentRLERun = IndexParams.VoxelGrid->GetData()[IndexParams.RunIndex];
 					}
 					else
 					{
-						bIsNewRun = false;
 						IndexParams.CurrentRLERun = IndexParams.NewVoxelGrid->GetData()[IndexParams.NewVoxelGrid->Num()
 							- IndexParams.EditAreaIndex];
 						IndexParams.EditAreaIndex--;
@@ -94,38 +89,7 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 				}
 				else
 				{
-					bIsNewRun = false;
 					YEnd = IndexParams.CurrentRLERun.RunLenght - IndexParams.TraversedRun;
-				}
-
-				// No action is need when in edit area, otherwise try to apply change and add next run to a new array
-				if (IndexParams.VoxelChange != nullptr)
-				{
-					// Add only full runs
-					if (bIsNewRun)
-					{
-						// Add only outside edit area
-						IndexParams.NewVoxelGrid->Push(IndexParams.CurrentRLERun);
-					}
-
-					//MID RUN EDIT
-					if (!bEdited && x == IndexParams.VoxelChange->VoxelPosition.X && z == IndexParams.VoxelChange->VoxelPosition.Z &&
-						IndexParams.YStart <= IndexParams.VoxelChange->VoxelPosition.Y)
-					{
-						const auto RunEnd = IndexParams.YStart + YEnd;
-						if (RunEnd >= IndexParams.VoxelChange->VoxelPosition.Y)
-						{
-							// Calculated once per meshing
-							bEdited = true;
-
-							if (!CalculateStartRunEditIndex(IndexParams, RunEnd))
-							{
-								return;
-							}
-
-							continue;
-						}
-					}
 				}
 				
 				// Step to end
@@ -139,78 +103,15 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 					// Generate run faces
 					auto InitialPosition = FIntVector(x, IndexParams.YStart, z);
 
-					// Tail culling
-					if (IndexParams.TraversedRun - XIndex < 0)
-					{
-						// Back
-						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::BackFaceData, InitialPosition, IndexParams.CurrentRLERun,
-							   YEnd);
-					}
-
 					// Front
 					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::FrontFaceData, InitialPosition, IndexParams.CurrentRLERun, YEnd);
-
-					// Top
-					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::TopFaceData, InitialPosition, IndexParams.CurrentRLERun, YEnd);
-						
-					// Tail culling
-					if (z == 0 || IndexParams.TraversedRun - ZIndex < 0){
-						// Bottom
-						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::BottomFaceData, InitialPosition, IndexParams.CurrentRLERun,
-					           YEnd);
-					}
 					
-					// Right
-					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::RightFaceData, InitialPosition, IndexParams.CurrentRLERun,
-					           YEnd);
-
-					// Left
-					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::LeftFaceData, InitialPosition, IndexParams.CurrentRLERun,
-					           YEnd);
 				}
 				
 				IndexParams.TraversedRun += YEnd;
 				IndexParams.YStart += YEnd;
 			}
-
-			// END RUN EDIT
-			if (IndexParams.VoxelChange != nullptr && !bEdited && IndexParams.VoxelChange->VoxelPosition.Y == 0 && (x == IndexParams.VoxelChange->
-				VoxelPosition.X && z + 1 ==
-				IndexParams.VoxelChange->VoxelPosition.Z || x + 1 == IndexParams.VoxelChange->VoxelPosition.X && IndexParams.VoxelChange->VoxelPosition.Z ==
-				0 && z == ChunkDimension - 1))
-			{
-				// Calculated once per meshing
-				bEdited = true;
-
-				if (!CalculateBorderRunEditIndex(IndexParams))
-				{
-					return;
-				}
-			}
 		}
-	}
-
-	if (IndexParams.VoxelChange != nullptr)
-	{
-		if (!IndexParams.EditVoxel.IsEmptyVoxel())
-		{
-			MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable[IndexParams.EditVoxel.VoxelId]++;
-		}
-
-		if (!IndexParams.ReplacedVoxel.IsEmptyVoxel())
-		{
-			MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable[IndexParams.ReplacedVoxel.VoxelId]--;
-
-			if (MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable[IndexParams.ReplacedVoxel.VoxelId] <= 0)
-			{
-				MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.Remove(IndexParams.ReplacedVoxel.VoxelId);
-			}
-		}
-
-#if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT)
-		const FString MapName = GetWorld()->GetMapName();
-		FVoxelMeshingProfilingLogger::LogAllocatedMemory(MapName, IndexParams.NewVoxelGrid->GetAllocatedSize());
-#endif
 	}
 }
 
