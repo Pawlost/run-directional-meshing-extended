@@ -27,21 +27,69 @@ private:
 		EFaceDirection FaceDirection;
 	};
 
+	struct FIntervalEnd
+	{
+		// Voxel sequence (run) to be traversed
+		// If null the end is a chunk dimension, not end of sequence
+		FRLEVoxel* CurrentRun = nullptr;
+
+		// TODO: merge bools into enums
+		// If true this interval simulates neighboring chunk
+		bool IsOuterInterval = true;
+		// If true and is OuterIntervals it will generate border mesh 
+		bool ShowBorders = true;
+
+		// Traversed Run + current run sequence
+		int RunEnd = 0;
+		
+		// Index of an run in a voxel array
+		int32 RunIndex = -1;
+	};
+
+	// Type of faces the meshing interval should generate
+	enum EIntervalType {
+		FullCulledFace = 0,
+		FrontTopFace = 1,
+		BackFace = 2,
+		TopFace = 3,
+		BottomFace = 4,
+		FrontFace = 5,
+		BackBottomFace = 6,
+		EmptyFace = 7,
+	};
+
+	struct FMeshingInterval
+	{
+		// Determines which quad faces should be generated
+		EIntervalType CurrentIntervalType;
+		
+		// Current voxel sequence that was already traversed.
+		int TraversedVoxelSequence = 0;
+
+		// After reaching closest end, updates it and sets next voxel interval to next
+		// End is equivalent to event in Discrete Event Simulation 
+		FIntervalEnd NextIntervalEnds[4];
+
+		// Current Y coordinate
+		int Y = 0;
+
+		// Variable with final location of a quad
+		int IntervalEnd;
+		
+		FRLEVoxel* CurrentVoxel = nullptr;
+	};
+	
 	struct FIndexParams
 	{
 		TSharedPtr<TArray<FRLEVoxel>> NewVoxelGrid;
 		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 		
-		int TraversedRun = 0;
-		int YStart = 0;
+		FMeshingInterval CurrentInterval; 
+
 		FVoxel EditVoxel;
-		FRLEVoxel CurrentRLERun;
 		FVoxel ReplacedVoxel = FVoxel();
 		int32 EditAreaIndex = 0;
 
-		// Index in voxel data
-		int32 RunIndex = -1;
-		
 		FVoxelChange* VoxelChange = nullptr; 
 	};
 	
