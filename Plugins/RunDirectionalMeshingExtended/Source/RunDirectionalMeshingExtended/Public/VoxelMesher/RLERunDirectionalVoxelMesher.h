@@ -68,7 +68,7 @@ private:
 
 		// After reaching closest end, updates it and sets next voxel interval to next
 		// End is equivalent to event in Discrete Event Simulation 
-		FIntervalEnd NextIntervalEnds[4];
+		FIntervalEnd NextIntervalEnds[3];
 
 		// Current Y coordinate
 		int Y = 0;
