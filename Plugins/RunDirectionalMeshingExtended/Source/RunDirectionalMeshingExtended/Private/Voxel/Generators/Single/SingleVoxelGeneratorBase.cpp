@@ -34,6 +34,7 @@ FVoxel USingleVoxelGeneratorBase::GetVoxelByName(const FName& VoxelName) const
 		{
 			const auto VoxelType = VoxelTypeHandle.DataTable->FindRow<FVoxelType>(
 				VoxelTypeHandle.RowName, "Could not find voxel name in row handle");
+			//TODO: VoxelType should not be null (somehow set default)
 			return FVoxel(Index, VoxelType->bIsTransparent);
 		}
 	}
