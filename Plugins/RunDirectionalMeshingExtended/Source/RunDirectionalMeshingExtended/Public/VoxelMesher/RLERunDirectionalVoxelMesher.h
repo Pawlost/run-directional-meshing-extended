@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <vector>
+
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
 #include "Voxel/RLEVoxel.h"
@@ -16,6 +18,8 @@ public:
 	virtual void GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange) override;
 	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid) override;
 
+	URLERunDirectionalVoxelMesher();
+
 private:
 	struct FVoxelIndexParams
 	{
@@ -26,12 +30,12 @@ private:
 		FRLEVoxel CurrentVoxel;
 		EFaceDirection FaceDirection;
 	};
-
+	
 	struct FIntervalEnd
 	{
 		// Voxel sequence (run) to be traversed
 		// If null the end is a chunk dimension, not end of sequence
-		FRLEVoxel* CurrentRun = nullptr;
+		const FRLEVoxel* CurrentRun = nullptr;
 
 		// TODO: merge bools into enums
 		// If true this interval simulates neighboring chunk
@@ -47,6 +51,7 @@ private:
 	};
 
 	// Type of faces the meshing interval should generate
+	// Index to IntervalFaces array
 	enum EIntervalType {
 		FullCulledFace = 0,
 		FrontTopFace = 1,
@@ -58,11 +63,24 @@ private:
 		EmptyFace = 7,
 	};
 
+	enum EIntervalEndIndex
+	{
+		Leading = 0,
+		FollowingX = 1,
+		FollowingZ = 2
+	};
+
+	struct FIntervalFace
+	{
+		const FStaticMergeData FaceData;
+		FIntVector Offset;
+		EIntervalEndIndex IntervalEndIndex;
+	};
+	
+	TStaticArray<TArray<FIntervalFace>, 8> IntervalFaces;
+
 	struct FMeshingInterval
 	{
-		// Determines which quad faces should be generated
-		EIntervalType CurrentIntervalType;
-		
 		// Current voxel sequence that was already traversed.
 		int TraversedVoxelSequence = 0;
 
@@ -72,11 +90,6 @@ private:
 
 		// Current Y coordinate
 		int Y = 0;
-
-		// Variable with final location of a quad
-		int IntervalEnd;
-		
-		FRLEVoxel* CurrentVoxel = nullptr;
 	};
 	
 	struct FIndexParams
@@ -102,5 +115,5 @@ private:
 
 	static void FirstRunEditIndex(FIndexParams& IndexParams);
 	static void CalculateMidRun(const int MidRunLenght, const int EndRunLength, FIndexParams& IndexParams);
-	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable) const;
+	void FaceGeneration(FIndexParams& IndexParams, const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable) const;
 };
