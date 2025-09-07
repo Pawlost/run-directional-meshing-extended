@@ -145,36 +145,18 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 					}
 				}
 				
-				if (IndexParams.CurrentInterval.NextIntervalEnds[0].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
+				for (int32 i = 0; i < 3; i++)
 				{
-					auto& Interval = IndexParams.CurrentInterval.NextIntervalEnds[0];
-					Interval.RunIndex++;
-					Interval.CurrentRun = &IndexParams.VoxelGrid->GetData()[Interval.RunIndex];   
-					Interval.RunEnd = Interval.CurrentRun->RunLenght + IndexParams.CurrentInterval.TraversedVoxelSequence;
-					Interval.IsOuterInterval = false;
-					Interval.ShowBorders = false;
+					if (IndexParams.CurrentInterval.NextIntervalEnds[i].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
+					{
+						auto& Interval = IndexParams.CurrentInterval.NextIntervalEnds[i];
+						Interval.RunIndex++;
+						Interval.CurrentRun = &IndexParams.VoxelGrid->GetData()[Interval.RunIndex];   
+						Interval.RunEnd = Interval.CurrentRun->RunLenght + IndexParams.CurrentInterval.TraversedVoxelSequence;
+						Interval.IsOuterInterval = false;
+						Interval.ShowBorders = false;
+					}
 				}
-
-				if (IndexParams.CurrentInterval.NextIntervalEnds[1].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
-				{
-					auto& Interval = IndexParams.CurrentInterval.NextIntervalEnds[1];
-					Interval.RunIndex++;
-					Interval.CurrentRun = &IndexParams.VoxelGrid->GetData()[Interval.RunIndex];
-					Interval.RunEnd = Interval.CurrentRun->RunLenght + IndexParams.CurrentInterval.TraversedVoxelSequence;
-					Interval.IsOuterInterval = false;
-					Interval.ShowBorders = false;
-				}
-				
-				if (IndexParams.CurrentInterval.NextIntervalEnds[2].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
-				{
-					auto& Interval = IndexParams.CurrentInterval.NextIntervalEnds[2];
-					Interval.RunIndex++;
-					Interval.CurrentRun = &IndexParams.VoxelGrid->GetData()[Interval.RunIndex];
-					Interval.RunEnd = Interval.CurrentRun->RunLenght + IndexParams.CurrentInterval.TraversedVoxelSequence;
-					Interval.IsOuterInterval = false;
-					Interval.ShowBorders = false;
-				}
-				
 			} while (IndexParams.CurrentInterval.Y < ChunkDimension);
 		}
 	}
