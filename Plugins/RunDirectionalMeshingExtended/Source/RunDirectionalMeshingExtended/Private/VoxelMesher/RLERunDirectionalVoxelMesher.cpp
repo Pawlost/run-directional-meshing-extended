@@ -61,103 +61,110 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	IndexParams.CurrentInterval.NextIntervalEnds[2] = { IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun, true, true, IndexParams.CurrentInterval.TraversedVoxelSequence +  ChunkDimension};
 
 	// Traverse through voxel grid
-	for (int x = 0; x < ChunkDimension; x++)
+	while (IndexParams.CurrentInterval.TraversedVoxelSequence < ChunkDimension*ChunkDimension*ChunkDimension)
 	{
-		for (int z = 0; z < ChunkDimension; z++)
-		{
-			IndexParams.CurrentInterval.Y = 0;
+		const int X = IndexParams.CurrentInterval.TraversedVoxelSequence / (ChunkDimension * ChunkDimension);
+		const int Z = ((IndexParams.CurrentInterval.TraversedVoxelSequence / ChunkDimension) % ChunkDimension);
+		IndexParams.CurrentInterval.Y = IndexParams.CurrentInterval.TraversedVoxelSequence %  ChunkDimension;
 			
-			do
+		while (IndexParams.CurrentInterval.Y < ChunkDimension)
+		{
+			if (IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun->IsVoxelEmpty() && IndexParams.CurrentInterval.NextIntervalEnds[0].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
 			{
-				// Calculate index
-				// Smallest interval should always be increase of Y dimension
-				int MinValue = (ChunkDimension - IndexParams.CurrentInterval.Y) + IndexParams.CurrentInterval.TraversedVoxelSequence;
-				
-				int IntervalFlag = 0;
-				
-				for (int32 i = 0; i < 3; i++)
+				auto InitialPosition = FIntVector(X, IndexParams.CurrentInterval.Y % (ChunkDimension + 1), Z);
+				auto RunIndex = IndexParams.CurrentInterval.NextIntervalEnds[0].RunIndex + 1;
+				if (IndexParams.VoxelGrid->IsValidIndex(RunIndex)){
+					auto Voxel = &IndexParams.VoxelGrid->GetData()[RunIndex];
+					// Left
+					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::LeftFaceData, InitialPosition, *Voxel, IndexParams.CurrentInterval.IntervalEnd);
+				}
+			}
+
+			for (int32 i = 0; i < 3; i++)
+			{
+				if (IndexParams.CurrentInterval.NextIntervalEnds[i].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
 				{
 					auto& Interval = IndexParams.CurrentInterval.NextIntervalEnds[i];
+					Interval.RunIndex++;
+					Interval.CurrentRun = &IndexParams.VoxelGrid->GetData()[Interval.RunIndex];   
+					Interval.RunEnd = Interval.CurrentRun->RunLenght + IndexParams.CurrentInterval.TraversedVoxelSequence;
+					Interval.IsOuterInterval = false;
+					Interval.ShowBorders = false;
+				}
+			}
+			
+			// Calculate index
+			// Smallest interval should always be increase of Y dimension
+			int MinValue = IndexParams.CurrentInterval.NextIntervalEnds[0].RunEnd;
+				
+			int IntervalFlag = 0;
+				
+			for (int32 i = 0; i < 3; i++)
+			{
+				auto& Interval = IndexParams.CurrentInterval.NextIntervalEnds[i];
 
-					int EmptyVoxel = ((Interval.IsOuterInterval && Interval.ShowBorders)  || Interval.CurrentRun->IsVoxelEmpty());
-					IntervalFlag |= EmptyVoxel << i;
+				int EmptyVoxel = ((Interval.IsOuterInterval && Interval.ShowBorders)  || Interval.CurrentRun->IsVoxelEmpty());
+				IntervalFlag |= EmptyVoxel << i;
 
-					if (Interval.RunEnd < MinValue)
-					{
-						MinValue = Interval.RunEnd;
-					}
+				if (Interval.RunEnd < MinValue)
+				{
+					MinValue = Interval.RunEnd;
+				}
+			}
+
+			IndexParams.CurrentInterval.CurrentIntervalType = static_cast<EIntervalType>(IntervalFlag);
+				
+			IndexParams.CurrentInterval.IntervalEnd = MinValue - IndexParams.CurrentInterval.TraversedVoxelSequence;
+				
+			// Generate run faces
+			auto InitialPosition = FIntVector(X, IndexParams.CurrentInterval.Y, Z);
+				
+			if (IndexParams.CurrentInterval.CurrentIntervalType != EmptyFace)
+			{
+				auto YSequence = (ChunkDimension - IndexParams.CurrentInterval.Y) + IndexParams.CurrentInterval.TraversedVoxelSequence;
+				if (YSequence < MinValue)
+				{
+					MinValue = YSequence;
 				}
 
-				IndexParams.CurrentInterval.CurrentIntervalType = static_cast<EIntervalType>(IntervalFlag);
-				
 				IndexParams.CurrentInterval.IntervalEnd = MinValue - IndexParams.CurrentInterval.TraversedVoxelSequence;
-				
-				// Generate run faces
-				auto InitialPosition = FIntVector(x, IndexParams.CurrentInterval.Y, z);
-				
-				if (IndexParams.CurrentInterval.CurrentIntervalType != EmptyFace)
+					
+				if (IndexParams.CurrentInterval.CurrentIntervalType != FullCulledFace)
 				{
-					if (IndexParams.CurrentInterval.CurrentIntervalType != FullCulledFace)
+					// Front
+					if (IndexParams.CurrentInterval.CurrentIntervalType == FrontFace || IndexParams.CurrentInterval.CurrentIntervalType == FrontTopFace)
 					{
-						// Front
-						if (IndexParams.CurrentInterval.CurrentIntervalType == FrontFace || IndexParams.CurrentInterval.CurrentIntervalType == FrontTopFace)
-						{
-							CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::FrontFaceData, InitialPosition - FIntVector(1, 0, 0), *IndexParams.CurrentInterval.NextIntervalEnds[1].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
-						}
-
-						// Back
-						if (IndexParams.CurrentInterval.CurrentIntervalType == BackFace || IndexParams.CurrentInterval.CurrentIntervalType == BackBottomFace)
-						{
-							CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::BackFaceData, InitialPosition, *IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
-						}
-
-						// Top
-						if (IndexParams.CurrentInterval.CurrentIntervalType == TopFace || IndexParams.CurrentInterval.CurrentIntervalType == FrontTopFace)
-						{
-							CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::TopFaceData, InitialPosition - FIntVector(0, 0,1), *IndexParams.CurrentInterval.NextIntervalEnds[2].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
-						}
-
-						// Bottom
-						if (IndexParams.CurrentInterval.CurrentIntervalType == BottomFace || IndexParams.CurrentInterval.CurrentIntervalType == BackBottomFace)
-						{
-							CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::BottomFaceData, InitialPosition, *IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
-						}
+						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::FrontFaceData, InitialPosition - FIntVector(1, 0, 0), *IndexParams.CurrentInterval.NextIntervalEnds[1].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
 					}
-				}
 
-				IndexParams.CurrentInterval.TraversedVoxelSequence = MinValue;
-				IndexParams.CurrentInterval.Y += IndexParams.CurrentInterval.IntervalEnd;
-
-				if (!IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun->IsVoxelEmpty() && IndexParams.CurrentInterval.NextIntervalEnds[0].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
-				{
-					// Right
-					CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::RightFaceData, InitialPosition, *IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
-				}
-				
-				if (IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun->IsVoxelEmpty() && IndexParams.CurrentInterval.NextIntervalEnds[0].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
-				{
-					InitialPosition = FIntVector(x, IndexParams.CurrentInterval.Y, z);
-					auto RunIndex = IndexParams.CurrentInterval.NextIntervalEnds[0].RunIndex + 1;
-					if (IndexParams.VoxelGrid->IsValidIndex(RunIndex)){
-						auto Voxel = &IndexParams.VoxelGrid->GetData()[RunIndex];
-						// Left
-						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::LeftFaceData, InitialPosition, *Voxel, IndexParams.CurrentInterval.IntervalEnd);
-					}
-				}
-				
-				for (int32 i = 0; i < 3; i++)
-				{
-					if (IndexParams.CurrentInterval.NextIntervalEnds[i].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
+					// Back
+					if (IndexParams.CurrentInterval.CurrentIntervalType == BackFace || IndexParams.CurrentInterval.CurrentIntervalType == BackBottomFace)
 					{
-						auto& Interval = IndexParams.CurrentInterval.NextIntervalEnds[i];
-						Interval.RunIndex++;
-						Interval.CurrentRun = &IndexParams.VoxelGrid->GetData()[Interval.RunIndex];   
-						Interval.RunEnd = Interval.CurrentRun->RunLenght + IndexParams.CurrentInterval.TraversedVoxelSequence;
-						Interval.IsOuterInterval = false;
-						Interval.ShowBorders = false;
+						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::BackFaceData, InitialPosition, *IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
+					}
+
+					// Top
+					if (IndexParams.CurrentInterval.CurrentIntervalType == TopFace || IndexParams.CurrentInterval.CurrentIntervalType == FrontTopFace)
+					{
+						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::TopFaceData, InitialPosition - FIntVector(0, 0,1), *IndexParams.CurrentInterval.NextIntervalEnds[2].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
+					}
+
+					// Bottom
+					if (IndexParams.CurrentInterval.CurrentIntervalType == BottomFace || IndexParams.CurrentInterval.CurrentIntervalType == BackBottomFace)
+					{
+						CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::BottomFaceData, InitialPosition, *IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
 					}
 				}
-			} while (IndexParams.CurrentInterval.Y < ChunkDimension);
+			}
+
+			IndexParams.CurrentInterval.TraversedVoxelSequence = MinValue;
+			IndexParams.CurrentInterval.Y += IndexParams.CurrentInterval.IntervalEnd;
+
+			if (!IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun->IsVoxelEmpty() && IndexParams.CurrentInterval.NextIntervalEnds[0].RunEnd == IndexParams.CurrentInterval.TraversedVoxelSequence)
+			{
+				// Right
+				CreateFace(MeshVars, LocalVoxelTable, FStaticMergeData::RightFaceData, InitialPosition, *IndexParams.CurrentInterval.NextIntervalEnds[0].CurrentRun, IndexParams.CurrentInterval.IntervalEnd);
+			}
 		}
 	}
 }

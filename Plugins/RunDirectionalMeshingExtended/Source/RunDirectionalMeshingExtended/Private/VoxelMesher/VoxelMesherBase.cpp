@@ -189,17 +189,7 @@ void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadM
 	const double VoxelSize = VoxelGenerator->GetVoxelSize();
 	
 	const auto VoxelId = Face.Voxel.VoxelId;
-	int32 SectionId;
-	if (!LocalVoxelTable.Contains(VoxelId))
-	{
-		SectionId = LocalVoxelTable.Num();
-		// Keep track of how many voxel quads are actually displayed
-		LocalVoxelTable.Add(VoxelId, SectionId);
-	}
-	else
-	{
-		SectionId = LocalVoxelTable[VoxelId];
-	}
+	const int32 SectionId = LocalVoxelTable.FindOrAdd(VoxelId, LocalVoxelTable.Num());
 
 	auto& QuadSection = QuadMeshSectionArray[SectionId];
 	auto [Normal, Tangent] = FaceNormalsAndTangents[FaceIndex];
