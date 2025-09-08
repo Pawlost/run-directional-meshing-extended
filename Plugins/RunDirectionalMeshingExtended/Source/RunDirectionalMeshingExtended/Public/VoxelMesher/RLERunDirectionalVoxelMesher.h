@@ -39,7 +39,7 @@ private:
 
 		// TODO: merge bools into enums
 		// If true this interval simulates neighboring chunk
-		bool IsOuterInterval = true;
+		bool IsBorderInterval = true;
 		// If true and is OuterIntervals it will generate border mesh 
 		bool ShowBorders = true;
 
@@ -78,26 +78,18 @@ private:
 	};
 	
 	TStaticArray<TArray<FIntervalFace>, 8> IntervalFaces;
-
-	struct FMeshingInterval
+	
+	struct FIndexParams
 	{
+		TSharedPtr<TArray<FRLEVoxel>> NewVoxelGrid;
+		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
+
 		// Current voxel sequence that was already traversed.
 		int TraversedVoxelSequence = 0;
 
 		// After reaching closest end, updates it and sets next voxel interval to next
 		// End is equivalent to event in Discrete Event Simulation 
 		FIntervalEnd NextIntervalEnds[3];
-
-		// Current Y coordinate
-		int Y = 0;
-	};
-	
-	struct FIndexParams
-	{
-		TSharedPtr<TArray<FRLEVoxel>> NewVoxelGrid;
-		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
-		
-		FMeshingInterval CurrentInterval; 
 
 		FVoxel EditVoxel;
 		FVoxel ReplacedVoxel = FVoxel();
