@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include <vector>
-
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
 #include "Voxel/RLEVoxel.h"
@@ -36,18 +34,12 @@ private:
 		// Voxel sequence (run) to be traversed
 		// If null the end is a chunk dimension, not end of sequence
 		const FRLEVoxel* CurrentRun = nullptr;
-
-		// TODO: merge bools into enums
-		// If true this interval simulates neighboring chunk
-		bool IsBorderInterval = true;
-		// If true and is OuterIntervals it will generate border mesh 
-		bool ShowBorders = true;
-
+		
 		// Traversed Run + current run sequence
 		int RunEnd = 0;
 		
 		// Index of an run in a voxel array
-		int32 RunIndex = -1;
+		uint32 RunIndex = 0;
 	};
 
 	// Type of faces the meshing interval should generate
@@ -76,8 +68,20 @@ private:
 		FIntVector Offset;
 		EIntervalEndIndex IntervalEndIndex;
 	};
-	
+	// 8 = interval combinations
 	TStaticArray<TArray<FIntervalFace>, 8> IntervalFaces;
+
+	/*Front = 0,
+	Back = 1,
+	Right = 2,
+	Left = 3,
+	Bottom = 4,
+	Top = 5*/
+	
+	const FStaticMergeData BorderFaces[6] = {
+		FStaticMergeData::FrontFaceData, FStaticMergeData::BackFaceData, FStaticMergeData::RightFaceData,
+		FStaticMergeData::LeftFaceData, FStaticMergeData::BottomFaceData, FStaticMergeData::TopFaceData
+	};
 	
 	struct FIndexParams
 	{

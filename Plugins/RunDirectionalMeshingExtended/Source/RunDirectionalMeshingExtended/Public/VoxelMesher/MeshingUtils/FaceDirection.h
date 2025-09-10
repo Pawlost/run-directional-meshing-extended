@@ -3,7 +3,7 @@
 #define CHUNK_FACE_COUNT 6
 
 UENUM()
-enum class EFaceDirection : uint8
+enum EFaceDirection : uint8
 {
 	Front = 0,
 	Back = 1,

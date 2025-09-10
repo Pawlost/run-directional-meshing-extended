@@ -5,7 +5,7 @@
 #include "ChunkSpawnerBase.generated.h"
 
 struct FVoxelPosition;
-enum class EFaceDirection : uint8;
+enum EFaceDirection : uint8;
 struct FChunk;
 struct FMesherVariables;
 class UVoxelGeneratorBase;
