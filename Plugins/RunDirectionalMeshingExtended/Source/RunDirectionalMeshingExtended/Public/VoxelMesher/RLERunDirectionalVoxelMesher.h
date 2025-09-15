@@ -45,14 +45,14 @@ private:
 	// Type of faces the meshing interval should generate
 	// Index to IntervalFaces array
 	enum EIntervalType {
-		FullCulledFace = 0,
-		FrontTopFace = 1,
-		BackFace = 2,
-		TopFace = 3,
-		BottomFace = 4,
-		FrontFace = 5,
-		BackBottomFace = 6,
-		EmptyFace = 7,
+		FullCulledFaceInterval = 0,
+		FrontTopFaceInterval = 1,
+		BackFaceInterval = 2,
+		TopFaceInterval = 3,
+		BottomFaceInterval = 4,
+		FrontFaceInterval = 5,
+		BackBottomFaceInterval = 6,
+		EmptyFaceInterval = 7,
 	};
 
 	enum EIntervalEndIndex
@@ -78,11 +78,6 @@ private:
 	Bottom = 4,
 	Top = 5*/
 	
-	const FStaticMergeData BorderFaces[6] = {
-		FStaticMergeData::FrontFaceData, FStaticMergeData::BackFaceData, FStaticMergeData::RightFaceData,
-		FStaticMergeData::LeftFaceData, FStaticMergeData::BottomFaceData, FStaticMergeData::TopFaceData
-	};
-	
 	struct FIndexParams
 	{
 		TSharedPtr<TArray<FRLEVoxel>> NewVoxelGrid;
@@ -102,8 +97,10 @@ private:
 		FVoxelChange* VoxelChange = nullptr; 
 	};
 	
-	void CreateFace(const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable,  const FStaticMergeData& StaticData,
-										const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel, const int YEnd) const;
+	void CreateFace(const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable,
+											   const FStaticMergeData& StaticData,
+											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
+											   const int YEnd, FVoxelFace* PreviousFaces) const;
 
 	static bool CalculateStartRunEditIndex(FIndexParams& IndexParams, int RunEnd);
 
@@ -111,5 +108,17 @@ private:
 
 	static void FirstRunEditIndex(FIndexParams& IndexParams);
 	static void CalculateMidRun(const int MidRunLenght, const int EndRunLength, FIndexParams& IndexParams);
-	void FaceGeneration(FIndexParams& IndexParams, const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable) const;
+	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable);
+
+	void CreateBorderFace(const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable,
+											   const FStaticMergeData& StaticData,
+											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
+											   const int YEnd, EFaceDirection FaceDirection);
+
+	void CreateFrontFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
+	void CreateBackFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
+	void CreateTopFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
+	void CreateBottomFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
+	void CreateLeftFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
+	void CreateRightFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
 };

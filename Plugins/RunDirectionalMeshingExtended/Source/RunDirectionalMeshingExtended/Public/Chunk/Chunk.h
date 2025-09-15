@@ -14,7 +14,6 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FChunk
 	TWeakObjectPtr<AChunkActor> ChunkMeshActor = nullptr;
 
 	// Saving voxel grids is not implemented in this demo, but a property specifier for saving has been added.
-
 	UPROPERTY()
 	TObjectPtr<UVoxelModel> VoxelModel;
 

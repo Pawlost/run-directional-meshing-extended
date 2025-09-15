@@ -9,12 +9,12 @@ AChunkActor::AChunkActor()
 
 void AChunkActor::ClearMesh() const
 {
-	if (!IsValid(this))
+/*	if (!IsValid(this))
 	{
 		return;
 	}
 	
-	ProceduralMeshComponent->ClearAllMeshSections();
+	ProceduralMeshComponent->ClearAllMeshSections();*/
 }
 
 
