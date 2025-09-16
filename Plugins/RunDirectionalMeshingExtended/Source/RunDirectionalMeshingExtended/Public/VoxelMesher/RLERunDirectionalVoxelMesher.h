@@ -89,7 +89,9 @@ private:
 		// After reaching closest end, updates it and sets next voxel interval to next
 		// End is equivalent to event in Discrete Event Simulation 
 		FIntervalEnd NextIntervalEnds[3];
-
+		uint8 IntervalFlag = 0;
+		int MinValue = 0;
+		
 		FVoxel EditVoxel;
 		FVoxel ReplacedVoxel = FVoxel();
 		int32 EditAreaIndex = 0;
@@ -108,13 +110,17 @@ private:
 
 	static void FirstRunEditIndex(FIndexParams& IndexParams);
 	static void CalculateMidRun(const int MidRunLenght, const int EndRunLength, FIndexParams& IndexParams);
-	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable);
 
 	void CreateBorderFace(const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable,
 											   const FStaticMergeData& StaticData,
 											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 											   const int YEnd, EFaceDirection FaceDirection);
+	
+	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable);
 
+	// return true when interval advanced
+	bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalType);
+	
 	void CreateFrontFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
 	void CreateBackFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
 	void CreateTopFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
