@@ -132,6 +132,7 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 		int Y = IndexParams.TraversedVoxelSequence % ChunkDimension;
 		
 		// Check borders
+		
 		//TODO: uncomment
         uint8 BorderMask = 0;
         BorderMask |= (X == ChunkDimension-1) << EFaceDirection::Front;
@@ -143,17 +144,16 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 		
 		do
 		{
+			// Reset interval flag
 			IndexParams.IntervalFlag = 0;
-			
-			// Move interval one step ahead if at the run end
-
 			
 			const FRLEVoxel* PreviousRun = IndexParams.NextIntervalEnds[EIntervalEndIndex::Leading].CurrentRun;
 			
-			if (AdvanceInterval(IndexParams, EIntervalEndIndex::Leading))
+			if (AdvanceInterval(IndexParams, EIntervalEndIndex::Leading, false, false))
 			{
 				auto& Interval = IndexParams.NextIntervalEnds[EIntervalEndIndex::Leading];
 
+				// Generate Left and Right faces when interval advances
 				if (PreviousRun->Voxel.IsEmptyVoxel() && Y != 0)
 				{
 					InitialPosition = FIntVector(X, Y, Z);
@@ -169,15 +169,11 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 
 			// Calculate index
 			// Smallest interval should always be increase of Y dimension
-			IndexParams.MinValue = IndexParams.NextIntervalEnds[EIntervalEndIndex::Leading].RunEnd;
+			auto LeadingInterval = IndexParams.NextIntervalEnds[EIntervalEndIndex::Leading];
+			IndexParams.MinValue = LeadingInterval.RunEnd;
 
-			AdvanceInterval(IndexParams, EIntervalEndIndex::FollowingX);
-			AdvanceInterval(IndexParams, EIntervalEndIndex::FollowingZ);
-			
-			// Prevents Z following at the bottom of a chunk traversal (otherwise bottom follows top at x - 1)
-			// Achieved by setting FollowingZ to Leading interval flag without changing value of the other intervals
-			const bool ZIntervalToggle = (Z == 0) & ((IndexParams.IntervalFlag & 1) != (IndexParams.IntervalFlag >> EIntervalEndIndex::FollowingZ));
-			IndexParams.IntervalFlag ^= ZIntervalToggle << EIntervalEndIndex::FollowingZ;
+			AdvanceInterval(IndexParams, EIntervalEndIndex::FollowingX, X == 0, LeadingInterval.CurrentRun->Voxel.IsEmptyVoxel());
+			AdvanceInterval(IndexParams, EIntervalEndIndex::FollowingZ, Z == 0, LeadingInterval.CurrentRun->Voxel.IsEmptyVoxel());
 			
 			// Generate culled faces
 			if (IndexParams.IntervalFlag != EIntervalType::EmptyFaceInterval)
@@ -187,8 +183,6 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 				IntervalEnd = IndexParams.MinValue - IndexParams.TraversedVoxelSequence;
 
 				InitialPosition = FIntVector(X, Y, Z);
-				
-				const auto& LeadingInterval = IndexParams.NextIntervalEnds[EIntervalEndIndex::Leading];
 
 				if (BorderMask != 0 && !LeadingInterval.CurrentRun->IsVoxelEmpty())
 				{
@@ -218,6 +212,7 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 		} while (Y < ChunkDimension);
 	}
 
+	// TODO: rewrite
 	for (int direction = 0; direction < CHUNK_FACE_COUNT; direction++)
 	{
 		auto& PreviousFace = PreviousFaces[direction];
@@ -241,24 +236,30 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	}
 }
 
-bool URLERunDirectionalVoxelMesher::AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalType)
+bool URLERunDirectionalVoxelMesher::AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex,
+	const int BorderCondition, const int LeadingIntervalEmpty)
 {
 	bool AdvanceInterval = false;
-	if (auto& Interval = IndexParams.NextIntervalEnds[IntervalType]; Interval.RunEnd == IndexParams.TraversedVoxelSequence)
+	if (auto& Interval = IndexParams.NextIntervalEnds[IntervalFlagIndex]; Interval.RunEnd == IndexParams.TraversedVoxelSequence)
 	{
+		// Advance interval in chunk voxel sequence
 		Interval.RunIndex++;
 		Interval.CurrentRun = &(*IndexParams.VoxelGrid)[Interval.RunIndex];
 		Interval.RunEnd = Interval.CurrentRun->RunLenght + IndexParams.TraversedVoxelSequence;
 		AdvanceInterval = true;
 	}
+
+	// Sample interval
 	
 	// Move interval one step ahead if at the run end
-	const auto& Interval = IndexParams.NextIntervalEnds[IntervalType];
-	const int EmptyVoxel = Interval.CurrentRun->IsVoxelEmpty();
+	const auto& Interval = IndexParams.NextIntervalEnds[IntervalFlagIndex];
+	const int IntervalEmptyVoxel = Interval.CurrentRun->IsVoxelEmpty();
 
 	// Create mask based on interval combination, the mask is used as an index to array to prevent branching
 	// Indexes are described in github documentation
-	IndexParams.IntervalFlag |= EmptyVoxel << IntervalType;
+	// Set interval flag
+	// Using xor at the chunk border prevents generating quads facing inside
+	IndexParams.IntervalFlag |= ((BorderCondition && (LeadingIntervalEmpty != IntervalEmptyVoxel)) ^ IntervalEmptyVoxel) << IntervalFlagIndex;
 	IndexParams.MinValue = FMath::Min(Interval.RunEnd, IndexParams.MinValue);
 
 	return AdvanceInterval;
