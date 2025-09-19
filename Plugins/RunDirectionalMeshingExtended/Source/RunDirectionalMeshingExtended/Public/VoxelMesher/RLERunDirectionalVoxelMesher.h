@@ -119,7 +119,7 @@ private:
 	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable);
 
 	// return true when interval advanced
-	bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, int BorderCondition, int LeadingValue);
+	bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, bool BorderCondition, bool LeadingValue);
 	
 	void CreateFrontFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
 	void CreateBackFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);

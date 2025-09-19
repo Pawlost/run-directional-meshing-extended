@@ -13,7 +13,7 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FRLEVoxel
 {
 	GENERATED_BODY()
 	
-	int RunLenght;
+	int RunLenght = 0;
 	FVoxel Voxel;
 	
 	FORCEINLINE bool IsVoxelEmpty() const
