@@ -110,21 +110,12 @@ private:
 
 	static void FirstRunEditIndex(FIndexParams& IndexParams);
 	static void CalculateMidRun(const int MidRunLenght, const int EndRunLength, FIndexParams& IndexParams);
-
-	void CreateBorderFace(const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable,
-											   const FStaticMergeData& StaticData,
-											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-											   const int YEnd, EFaceDirection FaceDirection);
 	
 	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable);
 
 	// return true when interval advanced
-	bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, bool BorderCondition, bool LeadingValue);
+	static bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, bool BorderCondition, bool LeadingValue);
 	
-	void CreateFrontFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
-	void CreateBackFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
-	void CreateTopFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
-	void CreateBottomFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
-	void CreateLeftFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
-	void CreateRightFace(FMesherVariables& MeshVars, int X, int Y, int Z, const FRLEVoxel& Voxel);
+	void AddBorderSample(FMesherVariables& MeshVars, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght);
+	void GenerateBorder(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, int Index, const FMeshingDirections& MeshingDirection, FIntVector QuadPosition) const;
 };
