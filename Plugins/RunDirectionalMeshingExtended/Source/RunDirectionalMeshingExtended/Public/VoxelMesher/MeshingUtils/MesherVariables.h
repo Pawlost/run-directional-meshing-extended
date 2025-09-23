@@ -3,7 +3,6 @@
 #include "Chunk/Chunk.h"
 #include "VoxelMesher/MeshingUtils/VoxelFace.h"
 #include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
-#include "Voxel/RLEVoxel.h"
 #include "MesherVariables.generated.h"
 
 class AChunkSpawnerBase;
@@ -28,7 +27,6 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FMesherVariables
 {
 	GENERATED_BODY()
 	
-	TStaticArray<TArray<FRLEVoxel>, CHUNK_FACE_COUNT> BorderChunks;
 	TSharedPtr<TArray<FVoxelFace>> Faces[CHUNK_FACE_COUNT];
 	FChunkParams ChunkParams;
 	TSharedPtr<TArray<FProcMeshSectionVars>> QuadMeshSectionArray;

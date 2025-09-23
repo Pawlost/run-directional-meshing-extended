@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
 #include "Voxel/RLEVoxel.h"
+#include "Voxel/Grid/RLEVoxelGrid.h"
 #include "RLERunDirectionalVoxelMesher.generated.h"
 
 class URLEVoxelGrid;
@@ -68,18 +69,23 @@ private:
 		FIntVector Offset;
 		EIntervalEndIndex IntervalEndIndex;
 	};
+	
 	// 8 = interval combinations
 	TStaticArray<TArray<FIntervalFace>, 8> IntervalFaces;
 
-	/*Front = 0,
+	/*
+	Front = 0,
 	Back = 1,
 	Right = 2,
 	Left = 3,
 	Bottom = 4,
-	Top = 5*/
-	
+	Top = 5
+	*/
 	struct FIndexParams
 	{
+
+		TSharedPtr<TArray<FRLEVoxel>> SampledBorderChunks[CHUNK_FACE_COUNT];
+		
 		TSharedPtr<TArray<FRLEVoxel>> NewVoxelGrid;
 		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 
@@ -105,9 +111,7 @@ private:
 											   const int YEnd, FVoxelFace* PreviousFaces) const;
 
 	static bool CalculateStartRunEditIndex(FIndexParams& IndexParams, int RunEnd);
-
 	static bool CalculateBorderRunEditIndex(FIndexParams& IndexParams);
-
 	static void FirstRunEditIndex(FIndexParams& IndexParams);
 	static void CalculateMidRun(const int MidRunLenght, const int EndRunLength, FIndexParams& IndexParams);
 	
@@ -115,7 +119,8 @@ private:
 
 	// return true when interval advanced
 	static bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, bool BorderCondition, bool LeadingValue);
-	
-	void AddBorderSample(FMesherVariables& MeshVars, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght);
-	void GenerateBorder(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, int Index, const FMeshingDirections& MeshingDirection, FIntVector QuadPosition) const;
+	void AddBorderSample(const FIndexParams& IndexParams, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
+	void GenerateBorder(const FMesherVariables& MeshVars, TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks, TMap<uint32, uint32>& LocalVoxelTable, const FMeshingDirections& FaceTemplate, int X, int Y) const;
+	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
+	void BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks) const;
 };

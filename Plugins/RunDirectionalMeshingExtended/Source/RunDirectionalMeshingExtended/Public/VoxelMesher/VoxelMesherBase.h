@@ -25,12 +25,20 @@ public:
 	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid);
 
 protected:
-	FMeshingDirections FrontFaceTemplate = FMeshingDirections(FStaticMergeData::FrontFaceData);
-	FMeshingDirections BackFaceTemplate = FMeshingDirections(FStaticMergeData::BackFaceData);
-	FMeshingDirections RightFaceTemplate = FMeshingDirections(FStaticMergeData::RightFaceData);
-	FMeshingDirections LeftFaceTemplate = FMeshingDirections(FStaticMergeData::LeftFaceData);
-	FMeshingDirections TopFaceTemplate = FMeshingDirections(FStaticMergeData::TopFaceData);
-	FMeshingDirections BottomFaceTemplate = FMeshingDirections(FStaticMergeData::BottomFaceData);
+
+	/*
+	Front = 0,
+	Back = 1,
+	Right = 2,
+	Left = 3,
+	Bottom = 4,
+	Top = 5
+	*/
+	FMeshingDirections FaceTemplates[CHUNK_FACE_COUNT] = {
+		FMeshingDirections(FStaticMergeData::FrontFaceData), FMeshingDirections(FStaticMergeData::BackFaceData),
+		FMeshingDirections(FStaticMergeData::RightFaceData), FMeshingDirections(FStaticMergeData::LeftFaceData),
+		FMeshingDirections(FStaticMergeData::BottomFaceData), FMeshingDirections(FStaticMergeData::TopFaceData)
+	};
 	
 	struct FNormalsAndTangents
 	{
@@ -52,7 +60,7 @@ protected:
  
 	void UpdateAllFacesParams();
 	void UpdateFaceParams(FMeshingDirections& Face, FIntVector ForwardVoxelIndexVector,
-						  FIntVector PreviousVoxelIndexVector, FIntVector ChunkBorderIndexVector) const;
+						  FIntVector ChunkBorderIndexVector, FIntVector PreviousVoxelIndexVector) const;
 
 	static bool EmptyActor(const FMesherVariables& MeshVars);
 	

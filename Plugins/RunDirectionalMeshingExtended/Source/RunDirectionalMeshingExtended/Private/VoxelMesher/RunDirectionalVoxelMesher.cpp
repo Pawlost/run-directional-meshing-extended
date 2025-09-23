@@ -65,7 +65,7 @@ void URunDirectionalVoxelMesher::IncrementBorderRun(const UVoxelGrid& VoxelGridO
 
 void URunDirectionalVoxelMesher::CheckBorderX(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, const int Y, const int Z) const
 {
-	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
+/*	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
 	const auto Position = FIntVector(0, Y, Z);
 	const auto ReversePosition = FIntVector(ChunkDimension - 1, Y, Z);
 			
@@ -75,12 +75,12 @@ void URunDirectionalVoxelMesher::CheckBorderX(const UVoxelGrid& VoxelGridObject,
 
 	// Front
 	BorderIndex = VoxelGenerator->CalculateVoxelIndex(Position);
-	IncrementBorderRun(VoxelGridObject, MeshVars, FrontFaceTemplate, ReversePosition, BorderIndex);
+	IncrementBorderRun(VoxelGridObject, MeshVars, FrontFaceTemplate, ReversePosition, BorderIndex);*/
 }
 
 void URunDirectionalVoxelMesher::CheckBorderY(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, const int Y, const int Z) const
 {
-	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
+/*	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
 	const auto Position = FIntVector(Y, 0, Z);
 	const auto ReversePosition = FIntVector(Y, ChunkDimension - 1, Z);
 			
@@ -90,12 +90,12 @@ void URunDirectionalVoxelMesher::CheckBorderY(const UVoxelGrid& VoxelGridObject,
 
 	// Right
 	BorderIndex = VoxelGenerator->CalculateVoxelIndex(Position);
-	IncrementBorderRun(VoxelGridObject, MeshVars, RightFaceTemplate, ReversePosition, BorderIndex);
+	IncrementBorderRun(VoxelGridObject, MeshVars, RightFaceTemplate, ReversePosition, BorderIndex);*/
 }
 
 void URunDirectionalVoxelMesher::CheckBorderZ(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, const int Y, const int Z) const
 {
-	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
+/*	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
 	const auto Position = FIntVector(Z, Y, 0);
 	const auto ReversePosition = FIntVector(Z, Y, ChunkDimension - 1);
 			
@@ -105,7 +105,7 @@ void URunDirectionalVoxelMesher::CheckBorderZ(const UVoxelGrid& VoxelGridObject,
 
 	// Top
 	BorderIndex = VoxelGenerator->CalculateVoxelIndex(Position);
-	IncrementBorderRun(VoxelGridObject, MeshVars, TopFaceTemplate, ReversePosition, BorderIndex);
+	IncrementBorderRun(VoxelGridObject, MeshVars, TopFaceTemplate, ReversePosition, BorderIndex);*/
 }
 
 
@@ -152,13 +152,13 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 				* Indices are same for face and reversed face.
 				*
 				* The run direction is from left to right, bottom to top and left to right.
-				*/
+				*//*
 				IncrementRun(x, y, z, BackFaceTemplate, FrontFaceTemplate,
 				             MeshVars, VoxelGridObject);
 				IncrementRun(y, x, z, LeftFaceTemplate, RightFaceTemplate,
 				             MeshVars, VoxelGridObject);
 				IncrementRun(z, y, x,BottomFaceTemplate, TopFaceTemplate,
-				             MeshVars, VoxelGridObject);
+				             MeshVars, VoxelGridObject);*/
 			}
 		}
 

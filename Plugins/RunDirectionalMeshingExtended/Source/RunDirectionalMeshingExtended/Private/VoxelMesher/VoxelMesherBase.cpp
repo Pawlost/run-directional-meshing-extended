@@ -2,7 +2,6 @@
 
 #include "Log/VoxelMeshingProfilingLogger.h"
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
-#include "Voxel/RLEVoxel.h"
 #include "Voxel/Grid/VoxelGrid.h"
 #include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
 
@@ -53,29 +52,29 @@ void UVoxelMesherBase::UpdateAllFacesParams()
 {
 	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
 	//Axis X
-	UpdateFaceParams(FrontFaceTemplate, FIntVector(1, 0, 0),
+	UpdateFaceParams(FaceTemplates[EFaceDirection::Front], FIntVector(1, 0, 0),
 					 FIntVector(0, 0, 0),
 					FIntVector(0, -1, 0));
 
-	UpdateFaceParams(BackFaceTemplate, FIntVector(-1, 0, 0),
+	UpdateFaceParams(FaceTemplates[EFaceDirection::Back], FIntVector(-1, 0, 0),
 				FIntVector(ChunkDimension - 1, 0, 0),
 				FIntVector(0, -1, 0));
 
 	//Axis Y
-	UpdateFaceParams(RightFaceTemplate, FIntVector(0, 1, 0),
+	UpdateFaceParams(FaceTemplates[EFaceDirection::Right], FIntVector(0, 1, 0),
 					 FIntVector(0, 0, 0),
 					 FIntVector(-1, 0, 0));
 
-	UpdateFaceParams(LeftFaceTemplate,FIntVector(0, -1, 0),
+	UpdateFaceParams(FaceTemplates[EFaceDirection::Left],FIntVector(0, -1, 0),
 					 FIntVector(0, ChunkDimension - 1, 0),
 					 FIntVector(-1, 0, 0));
 
 	// Axis Z
-	UpdateFaceParams(BottomFaceTemplate, FIntVector(0, 0, -1),
+	UpdateFaceParams(FaceTemplates[EFaceDirection::Bottom], FIntVector(0, 0, -1),
 	                 FIntVector(0, 0, ChunkDimension - 1),
 	                 FIntVector(0, -1, 0));
 
-	UpdateFaceParams(TopFaceTemplate, FIntVector(0, 0, 1),
+	UpdateFaceParams(FaceTemplates[EFaceDirection::Top], FIntVector(0, 0, 1),
 	                 FIntVector(0, 0, 0),
 	                 FIntVector(0, -1, 0));
 }
@@ -114,12 +113,15 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 	
 	auto VoxelTypeCount = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.Num();
 
+	// TODO: rewrite, keep preallocation
+	MeshVars.QuadMeshSectionArray = nullptr;
+	
 	if (MeshVars.QuadMeshSectionArray == nullptr)
 	{
 		MeshVars.QuadMeshSectionArray = MakeShared<TArray<FProcMeshSectionVars>>();
 	}
 
-	for (int t = 0; t < VoxelTypeCount; t++)
+	for (int t = 0; t < 10; t++)
 	{
 		auto& QuadMeshSectionArray = *MeshVars.QuadMeshSectionArray;
 		if (QuadMeshSectionArray.IsValidIndex(t))
@@ -166,11 +168,11 @@ void UVoxelMesherBase::GenerateProcMesh(const FMesherVariables& MeshVars, TMap<u
 	{
 		auto SectionId = LocalVoxelType.Value;
 		const auto VoxelType = VoxelGenerator->GetVoxelTypeById(LocalVoxelType.Key);
-		MeshActor->ProceduralMeshComponent->SetMaterial(SectionId, VoxelType.Value.Material);
 		auto QuadMeshSectionArray = MeshVars.QuadMeshSectionArray;
 
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, QuadMeshSectionArray, SectionId]()
+		AsyncTask(ENamedThreads::GameThread, [MeshActor, QuadMeshSectionArray, SectionId, VoxelType]()
 		{
+			MeshActor->ProceduralMeshComponent->SetMaterial(SectionId, VoxelType.Value.Material);
 			FProcMeshSectionVars& QuadMeshSection = (*QuadMeshSectionArray)[SectionId];
 
 			MeshActor->ProceduralMeshComponent->ClearMeshSection(SectionId);
@@ -181,6 +183,8 @@ void UVoxelMesherBase::GenerateProcMesh(const FMesherVariables& MeshVars, TMap<u
 				QuadMeshSection.Tangents, true);
 		});
 	}
+
+	MeshVars.ChunkParams.OriginalChunk->bHasMesh = !LocalVoxelTable.IsEmpty();
 }
 
 void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face,

@@ -37,6 +37,14 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelFace
 	static FVoxelFace CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 	static FVoxelFace CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 
+	
+	static FIntVector FrontBorderLocation(const int X, const int Y, const int ChunkDimension);
+	static FIntVector BackBorderLocation(const int X, const int Y, const int ChunkDimension);
+	static FIntVector LeftBorderLocation(const int X, const int Y, const int ChunkDimension);
+	static FIntVector RightBorderLocation(const int X, const int Y, const int ChunkDimension);
+	static FIntVector TopBorderLocation(const int X, const int Y, const int ChunkDimension);
+	static FIntVector BottomBorderLocation(const int X, const int Y, const int ChunkDimension);
+
 	static bool FaceRowConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace);
 	static bool FaceRowConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace);
 	

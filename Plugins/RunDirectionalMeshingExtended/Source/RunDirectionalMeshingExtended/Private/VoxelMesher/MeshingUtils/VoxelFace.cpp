@@ -55,6 +55,36 @@ FVoxelFace FVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& I
 		InitialPosition +FIntVector(1, RunLenght, 0));
 }
 
+FIntVector FVoxelFace::FrontBorderLocation(const int X, const int Y, const int ChunkDimension)
+{
+	return FIntVector(ChunkDimension - 1, Y, X);
+}
+
+FIntVector FVoxelFace::BackBorderLocation(const int X, const int Y, const int ChunkDimension)
+{
+	return FIntVector(0, Y, X);
+}
+
+FIntVector FVoxelFace::LeftBorderLocation(const int X, const int Y, const int ChunkDimension)
+{
+	return FIntVector(Y, 0, X);
+}
+
+FIntVector FVoxelFace::RightBorderLocation(const int X, const int Y, const int ChunkDimension)
+{
+	return FIntVector(Y, ChunkDimension - 1, X);
+}
+
+FIntVector FVoxelFace::TopBorderLocation(const int X, const int Y, const int ChunkDimension)
+{
+	return FIntVector(X, Y, ChunkDimension - 1);
+}
+
+FIntVector FVoxelFace::BottomBorderLocation(const int X, const int Y, const int ChunkDimension)
+{
+	return FIntVector(X, Y, 0);
+}
+
 bool FVoxelFace::FaceRowConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace)
 {
 	return Face.StartVertexUp.Z < NewFace.StartVertexDown.Z;

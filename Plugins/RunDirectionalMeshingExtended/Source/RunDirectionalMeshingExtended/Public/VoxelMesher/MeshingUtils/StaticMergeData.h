@@ -5,9 +5,13 @@
 struct FStaticMergeData
 {
 	const EFaceDirection FaceDirection;
+	const EFaceDirection InverseFaceDirection;
+	bool IsInverseDirection;
+	
 	const TFunctionRef<bool(FVoxelFace& PrevFace, const FVoxelFace& NewFace)> RunDirectionFaceMerge;
 	const TFunctionRef<FVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;
-	
+	const TFunctionRef<FIntVector(int X, int Y, int ChunkDimension)> BorderLocation;
+
 	static FStaticMergeData FrontFaceData;
 	static FStaticMergeData BackFaceData;
 	static FStaticMergeData LeftFaceData;
