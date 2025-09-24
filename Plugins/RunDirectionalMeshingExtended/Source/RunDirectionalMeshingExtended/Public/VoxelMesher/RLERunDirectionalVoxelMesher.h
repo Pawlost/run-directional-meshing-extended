@@ -66,7 +66,6 @@ private:
 	struct FIntervalFace
 	{
 		const FStaticMergeData FaceData;
-		FIntVector Offset;
 		EIntervalEndIndex IntervalEndIndex;
 	};
 	

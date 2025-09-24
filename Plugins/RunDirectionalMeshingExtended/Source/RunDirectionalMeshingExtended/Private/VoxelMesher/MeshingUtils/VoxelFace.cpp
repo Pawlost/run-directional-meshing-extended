@@ -2,10 +2,10 @@
 
 FVoxelFace FVoxelFace::CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght){
 	return FVoxelFace(Voxel,
-		InitialPosition + FIntVector(1, RunLenght, 0),
-		 InitialPosition + FIntVector(1, 0, 0),
-		InitialPosition + FIntVector(1, 0, 1),
-		InitialPosition + FIntVector(1, RunLenght, 1));
+		InitialPosition + FIntVector(0, RunLenght, 0),
+		 InitialPosition + FIntVector(0, 0, 0),
+		InitialPosition + FIntVector(0, 0, 1),
+		InitialPosition + FIntVector(0, RunLenght, 1));
 }
 
 
@@ -31,19 +31,19 @@ FVoxelFace FVoxelFace::CreateLeftFace(const FVoxel& Voxel, const FIntVector& Ini
 FVoxelFace FVoxelFace::CreateRightFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
 {
 	return FVoxelFace(Voxel,
-		InitialPosition + FIntVector(0, RunLenght, 0),
-		 InitialPosition + FIntVector(1, RunLenght, 0),
-		InitialPosition + FIntVector(1, RunLenght, 1),
-		InitialPosition + FIntVector(0, RunLenght, 1));
+		InitialPosition + FIntVector(0, RunLenght - 1, 0),
+		 InitialPosition + FIntVector(1, RunLenght - 1, 0),
+		InitialPosition + FIntVector(1, RunLenght - 1, 1),
+		InitialPosition + FIntVector(0, RunLenght - 1, 1));
 }
 
 FVoxelFace FVoxelFace::CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
 {
 	return FVoxelFace(Voxel,
-		InitialPosition + FIntVector(0, 0, 1),
-		 InitialPosition + FIntVector(0, RunLenght, 1),
-		InitialPosition + FIntVector(1, RunLenght, 1),
-		InitialPosition + FIntVector(1, 0, 1));
+		InitialPosition + FIntVector(0, 0, 0),
+		 InitialPosition + FIntVector(0, RunLenght, 0),
+		InitialPosition + FIntVector(1, RunLenght, 0),
+		InitialPosition + FIntVector(1, 0, 0));
 }
 
 FVoxelFace FVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
@@ -57,7 +57,7 @@ FVoxelFace FVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& I
 
 FIntVector FVoxelFace::FrontBorderLocation(const int X, const int Y, const int ChunkDimension)
 {
-	return FIntVector(ChunkDimension - 1, Y, X);
+	return FIntVector(ChunkDimension, Y, X);
 }
 
 FIntVector FVoxelFace::BackBorderLocation(const int X, const int Y, const int ChunkDimension)
@@ -72,12 +72,12 @@ FIntVector FVoxelFace::LeftBorderLocation(const int X, const int Y, const int Ch
 
 FIntVector FVoxelFace::RightBorderLocation(const int X, const int Y, const int ChunkDimension)
 {
-	return FIntVector(Y, ChunkDimension - 1, X);
+	return FIntVector(Y, ChunkDimension, X);
 }
 
 FIntVector FVoxelFace::TopBorderLocation(const int X, const int Y, const int ChunkDimension)
 {
-	return FIntVector(X, Y, ChunkDimension - 1);
+	return FIntVector(X, Y, ChunkDimension);
 }
 
 FIntVector FVoxelFace::BottomBorderLocation(const int X, const int Y, const int ChunkDimension)
