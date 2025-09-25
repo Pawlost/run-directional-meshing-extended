@@ -229,3 +229,45 @@ void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadM
 
 	TriangleIndex += 4;
 }
+
+void UVoxelMesherBase::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
+														TMap<uint32, uint32>& LocalVoxelTable,
+														const FStaticMergeData& MergeData) const
+{
+	auto& FaceContainer = *MeshVars.Faces[MergeData.FaceDirection];
+	int FaceIndex = FaceContainer.Num() - 2;
+
+	// Iterate from last face
+	for (int32 i = FaceIndex; i >= 0; i--)
+	{
+		FVoxelFace& NextFace = FaceContainer[i + 1];
+
+		// Elements are removed and it must be updated
+		int BackTrackIndex = i;
+
+		FVoxelFace* Face = &FaceContainer[BackTrackIndex];
+		while (!FVoxelFace::MergeFaceUp(*Face, NextFace))
+		{
+			BackTrackIndex--;
+
+			if (BackTrackIndex == -1 || MergeData.RowBorderCondition(*Face, NextFace))
+			{
+				ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, NextFace, LocalVoxelTable, MergeData.FaceDirection);
+				break;
+			}
+
+			Face = &FaceContainer[BackTrackIndex];
+		}
+
+		FaceContainer.Pop(EAllowShrinking::No);
+	}
+
+	FaceIndex = FaceContainer.Num();
+	for (int i = 0; i < FaceIndex; i++)
+	{
+		const FVoxelFace& Face = FaceContainer[i];
+		ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, Face, LocalVoxelTable, MergeData.FaceDirection);
+	}
+
+	FaceContainer.Empty();
+}

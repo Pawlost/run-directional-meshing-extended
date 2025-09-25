@@ -25,7 +25,13 @@ public:
 	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid);
 
 protected:
-
+	
+	struct FVoxelParams
+	{
+		FVoxel CurrentVoxel;
+		FIntVector FacePosition;
+	};
+	
 	/*
 	Front = 0,
 	Back = 1,
@@ -72,4 +78,8 @@ protected:
 								  TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex) const;
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
+
+	void DirectionalGreedyMerge(const FMesherVariables& MeshVars,
+								   TMap<uint32, uint32>& LocalVoxelTable,
+								   const FStaticMergeData& MergeData) const;
 };

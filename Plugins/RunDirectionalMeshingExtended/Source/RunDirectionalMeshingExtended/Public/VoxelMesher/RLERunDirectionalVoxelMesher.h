@@ -119,7 +119,15 @@ private:
 	// return true when interval advanced
 	static bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, bool BorderCondition, bool LeadingValue);
 	void AddBorderSample(const FIndexParams& IndexParams, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
-	void GenerateBorder(const FMesherVariables& MeshVars, TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks, TMap<uint32, uint32>& LocalVoxelTable, const FMeshingDirections& FaceTemplate, int X, int Y) const;
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
-	void BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks) const;
+	void BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks);
+	
+	void GenerateBorder(
+		TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces,
+		const TSharedPtr<TArray<FVoxelFace>>& ReversedChunkFaces,
+		const FMeshingDirections& FaceTemplate, int X, int Y);
+	
+
+	// TODO: uncopy
+	void AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
 };

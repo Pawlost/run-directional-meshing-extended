@@ -18,11 +18,6 @@ public:
 	virtual void GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange) override;
 
 private:
-	struct FVoxelParams
-	{
-		FVoxel CurrentVoxel;
-		FIntVector FacePosition;
-	};
 	
 	struct FBorderVoxelIndexParams
 	{
@@ -56,10 +51,6 @@ private:
 
 	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable,
 	                   const FVoxelChange& VoxelChange) const;
-
-	void DirectionalGreedyMerge(const FMesherVariables& MeshVars,
-	                                   TMap<uint32, uint32>& LocalVoxelTable,
-	                                   const FStaticGreedyMergeData& GreedyMergeData) const;
 	
 	void IncrementBorderRun(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars,
 	                        const FMeshingDirections& FaceTemplate, const FIntVector& Position, int BorderIndex) const;

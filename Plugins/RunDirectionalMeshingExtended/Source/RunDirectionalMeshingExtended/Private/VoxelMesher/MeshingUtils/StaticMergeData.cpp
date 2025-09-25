@@ -6,9 +6,9 @@ FStaticMergeData FStaticMergeData:: FrontFaceData = FStaticMergeData(
 	true,
 	FVoxelFace::MergeFaceStart,
 	FVoxelFace::CreateFrontFace,
-	FVoxelFace::FrontBorderLocation
+	FVoxelFace::FrontBorderLocation,
+	FVoxelFace::FaceRowConditionZ
 );
-
 
 FStaticMergeData FStaticMergeData::BackFaceData = FStaticMergeData(
 	EFaceDirection::Back,
@@ -16,7 +16,8 @@ FStaticMergeData FStaticMergeData::BackFaceData = FStaticMergeData(
 	false,
 	FVoxelFace::MergeFaceEnd,
 	FVoxelFace::CreateBackFace,
-	FVoxelFace::BackBorderLocation
+	FVoxelFace::BackBorderLocation,
+	FVoxelFace::FaceRowConditionZ
 );
 
 FStaticMergeData FStaticMergeData::RightFaceData = FStaticMergeData(
@@ -25,7 +26,8 @@ FStaticMergeData FStaticMergeData::RightFaceData = FStaticMergeData(
 	true,
 	FVoxelFace::MergeFaceEnd,
 	FVoxelFace::CreateRightFace,
-	FVoxelFace::RightBorderLocation
+	FVoxelFace::RightBorderLocation,
+	FVoxelFace::FaceRowConditionZ
 );
 
 FStaticMergeData FStaticMergeData::LeftFaceData = FStaticMergeData(
@@ -34,7 +36,8 @@ FStaticMergeData FStaticMergeData::LeftFaceData = FStaticMergeData(
 	false,
 	FVoxelFace::MergeFaceStart,
 	FVoxelFace::CreateLeftFace,
-	FVoxelFace::LeftBorderLocation
+	FVoxelFace::LeftBorderLocation,
+	FVoxelFace::FaceRowConditionZ
 );
 
 FStaticMergeData FStaticMergeData::TopFaceData = FStaticMergeData(
@@ -43,7 +46,8 @@ FStaticMergeData FStaticMergeData::TopFaceData = FStaticMergeData(
 	true,
 	FVoxelFace::MergeFaceEnd,
 	FVoxelFace::CreateTopFace,
-	FVoxelFace::TopBorderLocation
+	FVoxelFace::TopBorderLocation,
+	FVoxelFace::FaceRowConditionX
 );
 
 FStaticMergeData FStaticMergeData::BottomFaceData = FStaticMergeData(
@@ -52,38 +56,6 @@ FStaticMergeData FStaticMergeData::BottomFaceData = FStaticMergeData(
 	false,
 	FVoxelFace::MergeFaceStart,
 	FVoxelFace::CreateBottomFace,
-	FVoxelFace::BottomBorderLocation
-);
-
-//-------------------
-
-
-FStaticGreedyMergeData FStaticGreedyMergeData:: FrontFace = FStaticGreedyMergeData(
-	EFaceDirection::Front,
-	FVoxelFace::FaceRowConditionZ
-);
-
-FStaticGreedyMergeData FStaticGreedyMergeData::BackFace = FStaticGreedyMergeData(
-	EFaceDirection::Back,
-	FVoxelFace::FaceRowConditionZ
-);
-
-FStaticGreedyMergeData FStaticGreedyMergeData::RightFace = FStaticGreedyMergeData(
-	EFaceDirection::Right,
-	FVoxelFace::FaceRowConditionZ
-);
-
-FStaticGreedyMergeData FStaticGreedyMergeData::LeftFace = FStaticGreedyMergeData(
-	EFaceDirection::Left,
-	FVoxelFace::FaceRowConditionZ
-);
-
-FStaticGreedyMergeData FStaticGreedyMergeData::TopFace = FStaticGreedyMergeData(
-	EFaceDirection::Top,
-	FVoxelFace::FaceRowConditionX
-);
-
-FStaticGreedyMergeData FStaticGreedyMergeData::BottomFace = FStaticGreedyMergeData(
-	EFaceDirection::Bottom,
+	FVoxelFace::BottomBorderLocation,
 	FVoxelFace::FaceRowConditionX
 );

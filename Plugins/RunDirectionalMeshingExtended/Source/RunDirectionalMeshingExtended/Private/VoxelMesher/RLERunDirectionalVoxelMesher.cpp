@@ -338,7 +338,7 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 
 		} while (Y < ChunkDimension);
 
-		// Right
+		// Right Border
 		if(Y == ChunkDimension)
 		{
 			AddBorderSample(IndexParams, FIntVector(0, X, Z), EFaceDirection::Right, *PreviousRun, 1);
@@ -357,9 +357,10 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	}
 }
 
-void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks) const
+void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks)
 {
 	const int ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
+	const int ChunkLayer = VoxelGenerator->GetVoxelCountPerChunkLayer();
 
 	// Generate border
 	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
@@ -369,13 +370,24 @@ void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars,
 		if (BorderChunk->IsSampled && BorderChunk->IsInverseSampled && !BorderChunk->IsGenerated)
 		{
 			BorderChunk->IsGenerated = true;
+			auto FaceTemplate = FaceTemplates[f];
+
+			auto& ChunkFaces = MeshVars.Faces[FaceTemplate.StaticMeshingData.FaceDirection];
+			ChunkFaces = MakeShared<TArray<FVoxelFace>>();
+			
+			auto& InverseChunkFaces = MeshVars.Faces[FaceTemplate.StaticMeshingData.InverseFaceDirection];
+			InverseChunkFaces->Reserve(ChunkLayer);
+			
 			for (int x = 0; x < ChunkDimension; x++)
 			{
 				for (int y = 0; y < ChunkDimension; y++)
 				{
-					GenerateBorder(MeshVars, BorderChunks, LocalVoxelTable, FaceTemplates[f], x, y);
+					GenerateBorder(BorderChunks, ChunkFaces, InverseChunkFaces, FaceTemplate, x, y);
 				}
 			}
+
+			DirectionalGreedyMerge(MeshVars, LocalVoxelTable, FaceTemplate.StaticMeshingData);
+			DirectionalGreedyMerge(MeshVars, LocalVoxelTable, FaceTemplates[FaceTemplate.StaticMeshingData.InverseFaceDirection].StaticMeshingData);
 		}
 	}
 }
@@ -409,7 +421,10 @@ bool URLERunDirectionalVoxelMesher::AdvanceInterval(FIndexParams& IndexParams, c
 	return AdvanceInterval;
 }
 
-void URLERunDirectionalVoxelMesher::GenerateBorder(const FMesherVariables& MeshVars, TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks, TMap<uint32, uint32>& LocalVoxelTable, const FMeshingDirections& FaceTemplate, int X, int Y) const
+void URLERunDirectionalVoxelMesher::GenerateBorder(
+	TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces,
+	const TSharedPtr<TArray<FVoxelFace>>& ReversedChunkFaces,
+	const FMeshingDirections& FaceTemplate, int X, int Y)
 {
 	const int ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
 
@@ -429,7 +444,6 @@ void URLERunDirectionalVoxelMesher::GenerateBorder(const FMesherVariables& MeshV
 	
 	// GenerateQuad
 	const FIntVector QuadPosition =  FaceTemplate.StaticMeshingData.BorderLocation(X, Y, ChunkDimension);
-
 	
 	if(FaceTemplate.StaticMeshingData.IsInverseDirection){
 		const auto Temp = SampledVoxel;
@@ -439,15 +453,15 @@ void URLERunDirectionalVoxelMesher::GenerateBorder(const FMesherVariables& MeshV
 	
 	if (!SampledVoxel.IsVoxelEmpty() && InverseSampledVoxel.IsVoxelEmpty())
 	{
-		const FVoxelFace NewFace = FaceTemplate.StaticMeshingData.FaceCreator(SampledVoxel.Voxel, QuadPosition, 1);
-		ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, NewFace, LocalVoxelTable, FaceDirection);
+		FVoxelParams FaceParam = {SampledVoxel.Voxel, QuadPosition};
+		AddFace(FaceTemplate, FaceParam, ChunkFaces);
 	}
 
 	auto InverseFaceTemplate = FaceTemplates[FaceTemplate.StaticMeshingData.InverseFaceDirection];
 	if (!InverseSampledVoxel.IsVoxelEmpty() && SampledVoxel.IsVoxelEmpty())
 	{
-		const FVoxelFace NewFace = InverseFaceTemplate.StaticMeshingData.FaceCreator(InverseSampledVoxel.Voxel, QuadPosition, 1);
-		ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, NewFace, LocalVoxelTable, InverseFaceTemplate.StaticMeshingData.FaceDirection);
+		FVoxelParams FaceParam = {InverseSampledVoxel.Voxel, QuadPosition};
+		AddFace(InverseFaceTemplate, FaceParam, ReversedChunkFaces);
 	}
 }
 
@@ -499,4 +513,24 @@ void URLERunDirectionalVoxelMesher::AddBorderSample(const FIndexParams& IndexPar
 		BorderVoxel = VoxelSample;
 		BorderVoxel.RunLenght = RunLenght;
 	}
+}
+
+void URLERunDirectionalVoxelMesher::AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces)
+{
+	// Generate new face with coordinates
+	const FVoxelFace NewFace = FaceTemplate.StaticMeshingData.FaceCreator(FaceParams.CurrentVoxel, FaceParams.FacePosition, 1);
+
+	if (!ChunkFaces->IsEmpty())
+	{
+		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
+		FVoxelFace& PrevFace = ChunkFaces->Last();
+
+		if (FaceTemplate.StaticMeshingData.RunDirectionFaceMerge(PrevFace, NewFace))
+		{
+			// Return when new face was merged
+			return;
+		}
+	}
+
+	ChunkFaces->Push(NewFace);
 }

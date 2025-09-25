@@ -164,6 +164,7 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 
 
 		// Directional Greedy Meshing
+		/*
 		DirectionalGreedyMerge(MeshVars, LocalVoxelTable,
 		                       FStaticGreedyMergeData::FrontFace);
 
@@ -180,7 +181,7 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 		                       FStaticGreedyMergeData::TopFace);
 
 		DirectionalGreedyMerge(MeshVars,  LocalVoxelTable,
-		                       FStaticGreedyMergeData::BottomFace);
+		                       FStaticGreedyMergeData::BottomFace);*/
 	}
 
 	// Iterate through merged faces
@@ -208,50 +209,6 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 #endif
 
 	MeshVars.ChunkParams.OriginalChunk->bHasMesh = true;
-}
-
-void URunDirectionalVoxelMesher::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
-                                                        TMap<uint32, uint32>& LocalVoxelTable,
-                                                        const FStaticGreedyMergeData& GreedyMergeData) const
-{
-	const auto FaceDirectionIndex = static_cast<uint8>(GreedyMergeData.FaceSide);
-
-	auto& FaceContainer = *MeshVars.Faces[FaceDirectionIndex];
-	int FaceIndex = FaceContainer.Num() - 2;
-
-	// Iterate from last face
-	for (int32 i = FaceIndex; i >= 0; i--)
-	{
-		FVoxelFace& NextFace = FaceContainer[i + 1];
-
-		// Elements are removed and it must be updated
-		int BackTrackIndex = i;
-
-		FVoxelFace* Face = &FaceContainer[BackTrackIndex];
-		while (!FVoxelFace::MergeFaceUp(*Face, NextFace))
-		{
-			BackTrackIndex--;
-
-			if (BackTrackIndex == -1 || GreedyMergeData.RowBorderCondition(*Face, NextFace))
-			{
-				ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, NextFace, LocalVoxelTable, FaceDirectionIndex);
-				break;
-			}
-
-			Face = &FaceContainer[BackTrackIndex];
-		}
-
-		FaceContainer.Pop(EAllowShrinking::No);
-	}
-
-	FaceIndex = FaceContainer.Num();
-	for (int i = 0; i < FaceIndex; i++)
-	{
-		const FVoxelFace& Face = FaceContainer[i];
-		ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, Face, LocalVoxelTable, FaceDirectionIndex);
-	}
-
-	FaceContainer.Empty();
 }
 
 void URunDirectionalVoxelMesher::IncrementRun(const int X, const int Y, const int Z,
