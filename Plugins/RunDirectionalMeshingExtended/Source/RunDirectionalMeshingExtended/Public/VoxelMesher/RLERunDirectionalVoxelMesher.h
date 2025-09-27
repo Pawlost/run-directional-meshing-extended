@@ -104,10 +104,10 @@ private:
 		FVoxelChange* VoxelChange = nullptr; 
 	};
 	
-	void CreateFace(const FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable,
+	void CreateFace(const FMesherVariables& MeshVars,
 											   const FStaticMergeData& StaticData,
 											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-											   const int YEnd, FVoxelFace* PreviousFaces) const;
+											   const int YEnd) const;
 
 	static bool CalculateStartRunEditIndex(FIndexParams& IndexParams, int RunEnd);
 	static bool CalculateBorderRunEditIndex(FIndexParams& IndexParams);
@@ -122,8 +122,7 @@ private:
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
 	void BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks);
 	
-	void GenerateBorder(
-		TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces,
-		const TSharedPtr<TArray<FVoxelFace>>& ReversedChunkFaces,
-		const FMeshingDirections& FaceTemplate, int X, int Y);
+	void GenerateBorder(FMesherVariables& MeshVars,
+		TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
+		const FMeshingDirections& FaceTemplate, const FMeshingDirections& InverseFaceTemplate, int X, int Y);
 };

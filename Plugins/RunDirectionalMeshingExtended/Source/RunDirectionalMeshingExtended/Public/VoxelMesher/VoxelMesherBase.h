@@ -83,5 +83,5 @@ protected:
 								   TMap<uint32, uint32>& LocalVoxelTable,
 								   const FStaticMergeData& MergeData) const;
 
-	static void AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
+	static void AddFace(const FStaticMergeData& FaceMeshingData, const FVoxelFace& NewFace, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
 };

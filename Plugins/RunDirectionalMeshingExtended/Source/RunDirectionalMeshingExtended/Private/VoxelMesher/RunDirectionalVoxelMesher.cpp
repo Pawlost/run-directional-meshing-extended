@@ -59,7 +59,7 @@ void URunDirectionalVoxelMesher::IncrementBorderRun(const UVoxelGrid& VoxelGridO
 			
 	if (IsBorderVoxelVisible(BorderVoxelIndexParams, MeshVars.ChunkParams))
 	{
-		AddFace(FaceTemplate, VoxelParams, MeshVars.Faces[FaceContainerIndex]);
+	//	AddFace(FaceTemplate, VoxelParams, MeshVars.Faces[FaceContainerIndex]);
 	}
 }
 
@@ -264,7 +264,7 @@ void URunDirectionalVoxelMesher::CheckVoxelNeighborhood(const UVoxelGrid& VoxelG
 	// Check if face should be generated
 	if (IsVoxelVisible(VoxelGridObject, VoxelIndexParams))
 	{
-		AddFace(FaceTemplate, VoxelParams, ChunkFaces);
+		//AddFace(FaceTemplate, VoxelParams, ChunkFaces);
 	}
 }
 
