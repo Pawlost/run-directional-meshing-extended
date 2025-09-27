@@ -26,12 +26,6 @@ public:
 
 protected:
 	
-	struct FVoxelParams
-	{
-		FVoxel CurrentVoxel;
-		FIntVector FacePosition;
-	};
-	
 	/*
 	Front = 0,
 	Back = 1,
@@ -82,4 +76,6 @@ protected:
 	void DirectionalGreedyMerge(const FMesherVariables& MeshVars,
 								   TMap<uint32, uint32>& LocalVoxelTable,
 								   const FStaticMergeData& MergeData) const;
+	
+	static void AddFace(const FStaticMergeData& FaceMergeData, const FVoxelFace& NewFace, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
 };

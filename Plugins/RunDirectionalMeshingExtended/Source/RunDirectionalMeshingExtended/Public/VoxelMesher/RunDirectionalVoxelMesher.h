@@ -23,14 +23,14 @@ private:
 	{
 		int32 SideChunkVoxelIndex;
 		FStaticMergeData StaticData;
-		FVoxelParams VoxelParams;
+	//	FVoxelParams VoxelParams;
 	};
 	
 	struct FInnerVoxelIndexParams
 	{
 		int32 ForwardVoxelIndex;
 		int32 PreviousVoxelIndex;
-		FVoxelParams VoxelParams;
+		//FVoxelParams VoxelParams;
 	};
 
 	static bool IsBorderVoxelVisible(const FBorderVoxelIndexParams& FaceData, const FChunkParams& ChunkStruct);
@@ -40,12 +40,9 @@ private:
 	                  const FMeshingDirections& FaceTemplate, const FMeshingDirections& ReversedFaceTemplate,
 	                  const FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const;
 
-	static void CheckVoxelNeighborhood(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate,
+	/*static void CheckVoxelNeighborhood(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate,
 						const int32& Index, const FVoxelParams& VoxelParams,
-	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
-
-
-	static void AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
+	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);*/
 
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars) const;
 

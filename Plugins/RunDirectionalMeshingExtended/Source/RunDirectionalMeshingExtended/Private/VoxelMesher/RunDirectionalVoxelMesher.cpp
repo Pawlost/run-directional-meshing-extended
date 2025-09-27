@@ -44,7 +44,7 @@ void URunDirectionalVoxelMesher::IncrementBorderRun(const UVoxelGrid& VoxelGridO
 	// Check voxel visibility in side chunk (crosschunk)
 	const auto FaceContainerIndex = static_cast<uint8>(FaceTemplate.StaticMeshingData.FaceDirection);
 
-	const FVoxelParams VoxelParams =
+/*	const FVoxelParams VoxelParams =
 	{
 		Voxel,
 		Position
@@ -60,7 +60,7 @@ void URunDirectionalVoxelMesher::IncrementBorderRun(const UVoxelGrid& VoxelGridO
 	if (IsBorderVoxelVisible(BorderVoxelIndexParams, MeshVars.ChunkParams))
 	{
 		AddFace(FaceTemplate, VoxelParams, MeshVars.Faces[FaceContainerIndex]);
-	}
+	}*/
 }
 
 void URunDirectionalVoxelMesher::CheckBorderX(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, const int Y, const int Z) const
@@ -235,7 +235,7 @@ void URunDirectionalVoxelMesher::IncrementRun(const int X, const int Y, const in
 		const auto FaceContainerIndex = static_cast<uint8>(FaceTemplate.StaticMeshingData.FaceDirection);
 		const auto ReversedFaceContainerIndex = static_cast<uint8>(ReversedFaceTemplate.StaticMeshingData.FaceDirection);
 
-		const FVoxelParams VoxelParams =
+	/*	const FVoxelParams VoxelParams =
 		{
 			Voxel,
 			Position
@@ -245,10 +245,10 @@ void URunDirectionalVoxelMesher::IncrementRun(const int X, const int Y, const in
 		CheckVoxelNeighborhood(VoxelGridObject, FaceTemplate, Index, VoxelParams,
 			MeshVars.Faces[FaceContainerIndex]);
 		CheckVoxelNeighborhood(VoxelGridObject, ReversedFaceTemplate, Index, VoxelParams,
-		        MeshVars.Faces[ReversedFaceContainerIndex]);
+		        MeshVars.Faces[ReversedFaceContainerIndex]);*/
 	}
 }
-
+/*
 void URunDirectionalVoxelMesher::CheckVoxelNeighborhood(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate,
                                          const int32& Index, const FVoxelParams& VoxelParams,
                                          const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces)
@@ -267,50 +267,30 @@ void URunDirectionalVoxelMesher::CheckVoxelNeighborhood(const UVoxelGrid& VoxelG
 		AddFace(FaceTemplate, VoxelParams, ChunkFaces);
 	}
 }
-
-void URunDirectionalVoxelMesher::AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces)
-{
-	// Generate new face with coordinates
-	const FVoxelFace NewFace = FaceTemplate.StaticMeshingData.FaceCreator(FaceParams.CurrentVoxel, FaceParams.FacePosition, 1);
-
-	if (!ChunkFaces->IsEmpty())
-	{
-		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
-		FVoxelFace& PrevFace = ChunkFaces->Last();
-
-		if (FaceTemplate.StaticMeshingData.RunDirectionFaceMerge(PrevFace, NewFace))
-		{
-			// Return when new face was merged
-			return;
-		}
-	}
-
-	ChunkFaces->Push(NewFace);
-}
-
+*/
 bool URunDirectionalVoxelMesher::IsBorderVoxelVisible(const FBorderVoxelIndexParams& FaceData,
                                                       const FChunkParams& ChunkStruct)
 {
 	// Check voxel visibility in side chunk (crosschunk)
-	const auto FaceContainerIndex = static_cast<uint8>(FaceData.StaticData.FaceDirection);
+/*	const auto FaceContainerIndex = static_cast<uint8>(FaceData.StaticData.FaceDirection);
 	const auto SideChunk = ChunkStruct.SideChunks[FaceContainerIndex];
 	if (SideChunk != nullptr && SideChunk->VoxelModel != nullptr)
 	{
 		const auto& NextVoxel = SideChunk->VoxelModel->GetVoxelAtIndex(FaceData.SideChunkVoxelIndex);
 		return NextVoxel.IsTransparent() && NextVoxel != FaceData.VoxelParams.CurrentVoxel;
-	}
+	}*/
 
-	return SideChunk == nullptr && ChunkStruct.ShowBorders;
+	return false; // SideChunk == nullptr && ChunkStruct.ShowBorders;
 }
 
 bool URunDirectionalVoxelMesher::IsVoxelVisible(const UVoxelGrid& VoxelGridObject, const FInnerVoxelIndexParams& FaceData)
 {
-	if (VoxelGridObject.VoxelGrid->IsValidIndex(FaceData.ForwardVoxelIndex))
+/*	if (VoxelGridObject.VoxelGrid->IsValidIndex(FaceData.ForwardVoxelIndex))
 	{
 		// Check if next voxel is visible based on calculated index
 		const auto NextVoxel = VoxelGridObject.VoxelGrid->GetData()[FaceData.ForwardVoxelIndex];
 		return NextVoxel.IsTransparent() && NextVoxel != FaceData.VoxelParams.CurrentVoxel;
-	}
+	}*/
 	return false;
 }
 

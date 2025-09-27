@@ -271,3 +271,21 @@ void UVoxelMesherBase::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
 
 	FaceContainer.Empty();
 }
+
+void UVoxelMesherBase::AddFace(const FStaticMergeData& FaceMergeData, const FVoxelFace& NewFace, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces)
+{
+	// Generate new face with coordinates
+	if (!ChunkFaces->IsEmpty())
+	{
+		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
+		FVoxelFace& PrevFace = ChunkFaces->Last();
+
+		if (FaceMergeData.RunDirectionFaceMerge(PrevFace, NewFace))
+		{
+			// Return when new face was merged
+			return;
+		}
+	}
+
+	ChunkFaces->Push(NewFace);
+}
