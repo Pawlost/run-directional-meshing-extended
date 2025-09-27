@@ -268,26 +268,6 @@ void URunDirectionalVoxelMesher::CheckVoxelNeighborhood(const UVoxelGrid& VoxelG
 	}
 }
 
-void URunDirectionalVoxelMesher::AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces)
-{
-	// Generate new face with coordinates
-	const FVoxelFace NewFace = FaceTemplate.StaticMeshingData.FaceCreator(FaceParams.CurrentVoxel, FaceParams.FacePosition, 1);
-
-	if (!ChunkFaces->IsEmpty())
-	{
-		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
-		FVoxelFace& PrevFace = ChunkFaces->Last();
-
-		if (FaceTemplate.StaticMeshingData.RunDirectionFaceMerge(PrevFace, NewFace))
-		{
-			// Return when new face was merged
-			return;
-		}
-	}
-
-	ChunkFaces->Push(NewFace);
-}
-
 bool URunDirectionalVoxelMesher::IsBorderVoxelVisible(const FBorderVoxelIndexParams& FaceData,
                                                       const FChunkParams& ChunkStruct)
 {

@@ -44,9 +44,7 @@ private:
 						const int32& Index, const FVoxelParams& VoxelParams,
 	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
 
-
-	static void AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
-
+	
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars) const;
 
 	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable,

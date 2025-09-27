@@ -126,8 +126,4 @@ private:
 		TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces,
 		const TSharedPtr<TArray<FVoxelFace>>& ReversedChunkFaces,
 		const FMeshingDirections& FaceTemplate, int X, int Y);
-	
-
-	// TODO: uncopy
-	void AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
 };

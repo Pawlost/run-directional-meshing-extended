@@ -11,10 +11,6 @@
 
 void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange)
 {
-	if (EmptyActor(MeshVars))
-	{
-		return;
-	}
 
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RLE RunDirectionalMeshing generation")
@@ -109,7 +105,8 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVo
 	}
 
 	PreallocateArrays(MeshVars);
-	
+
+	//TODO: remove chunk voxel table
 	TMap<uint32, uint32> LocalVoxelTable;
 
 	FaceGeneration(IndexParams, MeshVars, LocalVoxelTable);
@@ -374,8 +371,10 @@ void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars,
 
 			auto& ChunkFaces = MeshVars.Faces[FaceTemplate.StaticMeshingData.FaceDirection];
 			ChunkFaces = MakeShared<TArray<FVoxelFace>>();
+			ChunkFaces->Reserve(ChunkLayer);
 			
 			auto& InverseChunkFaces = MeshVars.Faces[FaceTemplate.StaticMeshingData.InverseFaceDirection];
+			InverseChunkFaces = MakeShared<TArray<FVoxelFace>>();
 			InverseChunkFaces->Reserve(ChunkLayer);
 			
 			for (int x = 0; x < ChunkDimension; x++)
@@ -513,24 +512,4 @@ void URLERunDirectionalVoxelMesher::AddBorderSample(const FIndexParams& IndexPar
 		BorderVoxel = VoxelSample;
 		BorderVoxel.RunLenght = RunLenght;
 	}
-}
-
-void URLERunDirectionalVoxelMesher::AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces)
-{
-	// Generate new face with coordinates
-	const FVoxelFace NewFace = FaceTemplate.StaticMeshingData.FaceCreator(FaceParams.CurrentVoxel, FaceParams.FacePosition, 1);
-
-	if (!ChunkFaces->IsEmpty())
-	{
-		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
-		FVoxelFace& PrevFace = ChunkFaces->Last();
-
-		if (FaceTemplate.StaticMeshingData.RunDirectionFaceMerge(PrevFace, NewFace))
-		{
-			// Return when new face was merged
-			return;
-		}
-	}
-
-	ChunkFaces->Push(NewFace);
 }

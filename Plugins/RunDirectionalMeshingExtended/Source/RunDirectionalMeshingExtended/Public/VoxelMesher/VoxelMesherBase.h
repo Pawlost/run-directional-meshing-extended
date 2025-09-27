@@ -82,4 +82,6 @@ protected:
 	void DirectionalGreedyMerge(const FMesherVariables& MeshVars,
 								   TMap<uint32, uint32>& LocalVoxelTable,
 								   const FStaticMergeData& MergeData) const;
+
+	static void AddFace(const FMeshingDirections& FaceTemplate, const FVoxelParams& FaceParams, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
 };
