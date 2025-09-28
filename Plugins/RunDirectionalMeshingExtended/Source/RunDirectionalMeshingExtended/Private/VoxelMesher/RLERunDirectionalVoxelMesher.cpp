@@ -1,5 +1,6 @@
 ﻿#include "VoxelMesher/RLERunDirectionalVoxelMesher.h"
 
+#include "SelectionSet.h"
 #include "Log/VoxelMeshingProfilingLogger.h"
 
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
@@ -342,9 +343,11 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	// TODO: move
 	for (int direction = 0; direction < CHUNK_FACE_COUNT; direction++)
 	{
-		for (auto Face : *(MeshVars.Faces[direction]))
+		auto& Faces = *(MeshVars.Faces[direction]);
+		for (int f = Faces.Num() - 1; f >= 0 ; f--)
 		{
-			ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, Face, LocalVoxelTable, direction);
+			ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, Faces[f], LocalVoxelTable, direction);
+			Faces.Pop();
 		}
 	}
 }
@@ -352,7 +355,6 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks)
 {
 	const int ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
-	const int ChunkLayer = VoxelGenerator->GetVoxelCountPerChunkLayer();
 
 	// Generate border
 	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
@@ -364,14 +366,6 @@ void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars,
 			BorderChunk->IsGenerated = true;
 			auto& FaceTemplate = FaceTemplates[f];
 			auto& InverseFaceTemplate = FaceTemplates[FaceTemplate.StaticMeshingData.InverseFaceDirection];
-
-			auto& ChunkFaces = MeshVars.Faces[FaceTemplate.StaticMeshingData.FaceDirection];
-			ChunkFaces = MakeShared<TArray<FVoxelFace>>();
-			ChunkFaces->Reserve(ChunkLayer);
-			
-			auto& InverseChunkFaces = MeshVars.Faces[FaceTemplate.StaticMeshingData.InverseFaceDirection];
-			InverseChunkFaces = MakeShared<TArray<FVoxelFace>>();
-			InverseChunkFaces->Reserve(ChunkLayer);
 			
 			for (int x = 0; x < ChunkDimension; x++)
 			{
