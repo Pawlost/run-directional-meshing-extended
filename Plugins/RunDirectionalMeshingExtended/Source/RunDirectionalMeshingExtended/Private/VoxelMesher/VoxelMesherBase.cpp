@@ -113,9 +113,11 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 #endif
 	
 	auto VoxelTypeCount = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.Num();
+	auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
 
 	// TODO: rewrite, keep preallocation
 	MeshVars.QuadMeshSectionArray = nullptr;
+
 	
 	if (MeshVars.QuadMeshSectionArray == nullptr)
 	{
@@ -247,7 +249,7 @@ void UVoxelMesherBase::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
 		int BackTrackIndex = i;
 
 		FVoxelFace* Face = &FaceContainer[BackTrackIndex];
-		while (!FVoxelFace::MergeFaceUp(*Face, NextFace))
+		while (!MergeData.GreedyMerge(*Face, NextFace))
 		{
 			BackTrackIndex--;
 

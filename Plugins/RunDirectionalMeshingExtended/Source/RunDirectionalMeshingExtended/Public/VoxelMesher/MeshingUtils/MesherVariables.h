@@ -28,6 +28,9 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FMesherVariables
 	GENERATED_BODY()
 	
 	TSharedPtr<TArray<FVoxelFace>> Faces[CHUNK_FACE_COUNT];
+	TArray<FVoxelFace> RightFaceData;
+	TArray<FVoxelFace> LeftFaceData;
+	
 	FChunkParams ChunkParams;
 	TSharedPtr<TArray<FProcMeshSectionVars>> QuadMeshSectionArray;
 };

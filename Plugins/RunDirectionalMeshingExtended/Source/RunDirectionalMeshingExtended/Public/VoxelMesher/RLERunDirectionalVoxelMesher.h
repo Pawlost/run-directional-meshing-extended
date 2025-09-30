@@ -118,6 +118,14 @@ private:
 
 	// return true when interval advanced
 	static bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, bool BorderCondition, bool LeadingValue);
+	void CreateLeftFace(const FMesherVariables& MeshVars, const FStaticMergeData& StaticData,
+						const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel, int YEnd) const;
+
+	static void CreateSideFace(const FMesherVariables& MeshVars,
+	                           const FStaticMergeData& StaticData,
+	                           const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
+	                           const int YEnd, TArray<FVoxelFace>& SideFaceData);
+	
 	void AddBorderSample(const FIndexParams& IndexParams, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
 	void BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks);

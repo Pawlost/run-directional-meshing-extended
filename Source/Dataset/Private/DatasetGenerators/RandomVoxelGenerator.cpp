@@ -18,7 +18,7 @@ void URandomVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 		{
 			for (uint32 z = 0; z < ChunkDimension; z++)
 			{
-				if(RandStream.FRand() < Threshold)
+				if(RandStream.FRandRange(0, 1) < Threshold)
 				{
 					FIntVector VoxelPosition(x, y, z);
 					const auto Index = CalculateVoxelIndex(VoxelPosition);

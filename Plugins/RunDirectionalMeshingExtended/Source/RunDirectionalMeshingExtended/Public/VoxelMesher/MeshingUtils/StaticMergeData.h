@@ -9,6 +9,7 @@ struct FStaticMergeData
 	bool IsInverseDirection;
 	
 	const TFunctionRef<bool(FVoxelFace& PrevFace, const FVoxelFace& NewFace)> RunDirectionFaceMerge;
+	const TFunctionRef<bool(FVoxelFace& PrevFace, const FVoxelFace& NewFace)> GreedyMerge;
 	const TFunctionRef<FVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;
 	const TFunctionRef<FIntVector(int X, int Y, int ChunkDimension)> BorderLocation;
 	const TFunctionRef<bool(const FVoxelFace& Face, const FVoxelFace& NewFace)> RowBorderCondition;

@@ -132,7 +132,7 @@ bool FVoxelFace::MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
 
 /**
  * Compare vertices and merge quads
- * @return true if previous face was merged
+ * @return true if previous face was merged into new
  */
 bool FVoxelFace::MergeFaceUp(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
 {
