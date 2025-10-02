@@ -235,9 +235,9 @@ void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadM
 
 void UVoxelMesherBase::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
 														TMap<uint32, uint32>& LocalVoxelTable,
-														const FStaticMergeData& MergeData) const
+														const FStaticMergeData& MergeData,
+														TArray<FVoxelFace>& FaceContainer) const
 {
-	auto& FaceContainer = *MeshVars.Faces[MergeData.FaceDirection];
 	int FaceIndex = FaceContainer.Num() - 2;
 
 	// Iterate from last face

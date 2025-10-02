@@ -80,8 +80,9 @@ protected:
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 
 	void DirectionalGreedyMerge(const FMesherVariables& MeshVars,
-								   TMap<uint32, uint32>& LocalVoxelTable,
-								   const FStaticMergeData& MergeData) const;
+														TMap<uint32, uint32>& LocalVoxelTable,
+														const FStaticMergeData& MergeData,
+														TArray<FVoxelFace>& FaceContainer) const;
 
 	static void AddFace(const FStaticMergeData& FaceMeshingData, const FVoxelFace& NewFace, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
 };
