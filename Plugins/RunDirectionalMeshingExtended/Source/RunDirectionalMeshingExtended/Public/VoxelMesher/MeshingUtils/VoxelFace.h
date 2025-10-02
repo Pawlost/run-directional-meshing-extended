@@ -51,6 +51,10 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelFace
 	static bool MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace);
 	static bool MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace);
 	static bool MergeFaceUp(FVoxelFace& PrevFace, const FVoxelFace& NewFace);
+	
+	static int GetXLocation(const FIntVector& Location);
+	static int GetYLocation(const FIntVector& Location);
+	static int GetZLocation(const FIntVector& Location);
 
 	FVector GetFinalStartVertexDown(const double& VoxelSize) const;
 	FVector GetFinalStartVertexUp(const double& VoxelSize) const;

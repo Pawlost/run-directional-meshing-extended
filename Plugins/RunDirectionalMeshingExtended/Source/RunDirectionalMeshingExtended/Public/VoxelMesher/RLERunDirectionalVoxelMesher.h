@@ -103,11 +103,11 @@ private:
 
 		FVoxelChange* VoxelChange = nullptr; 
 	};
-	
-	void CreateFace(const FMesherVariables& MeshVars,
-											   const FStaticMergeData& StaticData,
-											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-											   const int YEnd) const;
+
+	static void CreateFace(const FMesherVariables& MeshVars,
+	                       const FStaticMergeData& StaticData,
+	                       const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
+	                       const int YEnd);
 
 	static bool CalculateStartRunEditIndex(FIndexParams& IndexParams, int RunEnd);
 	static bool CalculateBorderRunEditIndex(FIndexParams& IndexParams);

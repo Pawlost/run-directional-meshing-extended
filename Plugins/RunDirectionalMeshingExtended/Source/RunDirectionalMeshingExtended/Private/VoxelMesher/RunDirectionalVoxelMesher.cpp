@@ -185,7 +185,7 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 	}
 
 	// Iterate through merged faces
-	for (uint8 FaceIndex = 0; FaceIndex < CHUNK_FACE_COUNT; FaceIndex++)
+/*	for (uint8 FaceIndex = 0; FaceIndex < CHUNK_FACE_COUNT; FaceIndex++)
 	{
 		auto FaceContainer = MeshVars.Faces[FaceIndex];
 
@@ -194,7 +194,7 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 		{
 			ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, Face, LocalVoxelTable, FaceIndex);
 		}
-	}
+	}*/
 
 	GenerateProcMesh(MeshVars, LocalVoxelTable);
 
@@ -242,10 +242,10 @@ void URunDirectionalVoxelMesher::IncrementRun(const int X, const int Y, const in
 		};
 		
 		// Generate face for each direction
-		CheckVoxelNeighborhood(VoxelGridObject, FaceTemplate, Index, VoxelParams,
+		/*CheckVoxelNeighborhood(VoxelGridObject, FaceTemplate, Index, VoxelParams,
 			MeshVars.Faces[FaceContainerIndex]);
 		CheckVoxelNeighborhood(VoxelGridObject, ReversedFaceTemplate, Index, VoxelParams,
-		        MeshVars.Faces[ReversedFaceContainerIndex]);
+		        MeshVars.Faces[ReversedFaceContainerIndex]);*/
 	}
 }
 

@@ -147,6 +147,21 @@ bool FVoxelFace::MergeFaceUp(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
 	return false;
 }
 
+int FVoxelFace::GetXLocation(const FIntVector& Location)
+{
+	return Location.X;
+}
+
+int FVoxelFace::GetYLocation(const FIntVector& Location)
+{
+	return Location.Y;
+}
+
+int FVoxelFace::GetZLocation(const FIntVector& Location)
+{
+	return Location.Z;
+}
+
 FVector FVoxelFace::GetFinalStartVertexDown(const double& VoxelSize) const
 {
 	return static_cast<FVector>(StartVertexDown) * VoxelSize;

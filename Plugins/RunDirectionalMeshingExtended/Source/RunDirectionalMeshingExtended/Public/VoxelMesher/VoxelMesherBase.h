@@ -84,5 +84,5 @@ protected:
 														const FStaticMergeData& MergeData,
 														TArray<FVoxelFace>& FaceContainer) const;
 
-	static void AddFace(const FStaticMergeData& FaceMeshingData, const FVoxelFace& NewFace, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
+	static void AddFace(const FStaticMergeData& FaceMeshingData, const FVoxelFace& NewFace, TArray<FVoxelFace>& ChunkFaces);
 };

@@ -13,6 +13,7 @@ struct FStaticMergeData
 	const TFunctionRef<FVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;
 	const TFunctionRef<FIntVector(int X, int Y, int ChunkDimension)> BorderLocation;
 	const TFunctionRef<bool(const FVoxelFace& Face, const FVoxelFace& NewFace)> RowBorderCondition;
+	const TFunctionRef<int(FIntVector Location)> GetMainDirection;
 
 	static FStaticMergeData FrontFaceData;
 	static FStaticMergeData BackFaceData;

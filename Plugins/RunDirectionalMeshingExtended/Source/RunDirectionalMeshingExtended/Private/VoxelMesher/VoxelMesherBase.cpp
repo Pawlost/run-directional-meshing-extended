@@ -114,6 +114,7 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 	
 	auto VoxelTypeCount = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.Num();
 	auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
+	auto ChunkLayer = VoxelGenerator->GetVoxelCountPerChunkLayer();
 
 	// TODO: rewrite, keep preallocation
 	MeshVars.QuadMeshSectionArray = nullptr;
@@ -135,7 +136,7 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 			QuadMeshSectionArray.Emplace(VoxelGenerator->GetVoxelCountPerChunk());
 		}
 	}
-
+	
 	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
 		TMap<int32, uint32>& VoxelTable = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable;
@@ -144,7 +145,7 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 		if (FaceArray == nullptr || !FaceArray.IsValid())
 		{
 			// In case voxel table is not available this code needs to be rewritten to add local voxels id dynamically during voxel grid traversal
-			FaceArray = MakeShared<TArray<FVoxelFace>>();
+			FaceArray = MakeShared<TArray<TArray<FVoxelFace>>>();
 			MeshVars.Faces[f] = FaceArray;
 		}
 		else
@@ -153,9 +154,11 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 			FaceArray->Empty();
 		}
 
-		// Preallocate memory needed for meshing
-		const uint32 EstimatedVoxels = VoxelGenerator->GetVoxelCountPerChunkDimension() * VoxelTable.Num();
-		FaceArray->Reserve(EstimatedVoxels);
+		MeshVars.Faces[f]->SetNum(ChunkDimension);
+		for (uint32 y = 0; y < ChunkDimension; y++)
+		{
+			(*MeshVars.Faces[f])[y].Reserve(ChunkLayer);
+		}
 	}
 }
 
@@ -266,22 +269,20 @@ void UVoxelMesherBase::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
 	}
 
 	FaceIndex = FaceContainer.Num();
-	for (int i = 0; i < FaceIndex; i++)
+	for (int i = FaceIndex - 1; i >= 0; i--)
 	{
-		const FVoxelFace& Face = FaceContainer[i];
-		ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, Face, LocalVoxelTable, MergeData.FaceDirection);
+		ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, FaceContainer[i], LocalVoxelTable, MergeData.FaceDirection);
+		FaceContainer.Pop(EAllowShrinking::No);
 	}
-
-	FaceContainer.Empty();
 }
 
-void UVoxelMesherBase::AddFace(const FStaticMergeData& FaceMeshingData, const FVoxelFace& NewFace, const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces)
+void UVoxelMesherBase::AddFace(const FStaticMergeData& FaceMeshingData, const FVoxelFace& NewFace, TArray<FVoxelFace>& ChunkFaces)
 {
 	// Generate new face with coordinates
-	if (!ChunkFaces->IsEmpty())
+	if (!ChunkFaces.IsEmpty())
 	{
 		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
-		FVoxelFace& PrevFace = ChunkFaces->Last();
+		FVoxelFace& PrevFace = ChunkFaces.Last();
 
 		if (FaceMeshingData.RunDirectionFaceMerge(PrevFace, NewFace))
 		{
@@ -290,5 +291,5 @@ void UVoxelMesherBase::AddFace(const FStaticMergeData& FaceMeshingData, const FV
 		}
 	}
 
-	ChunkFaces->Push(NewFace);
+	ChunkFaces.Push(NewFace);
 }
