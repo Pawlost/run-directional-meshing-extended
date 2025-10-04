@@ -70,12 +70,12 @@ double UVoxelGeneratorBase::GetVoxelSize() const
 	return VoxelSize;
 }
 
-uint32 UVoxelGeneratorBase::GetVoxelCountPerChunkDimension() const
+uint32 UVoxelGeneratorBase::GetVoxelCountPerVoxelLine() const
 {
 	return VoxelCountPerChunkDimension;
 }
 
-uint32 UVoxelGeneratorBase::GetVoxelCountPerChunkLayer() const
+uint32 UVoxelGeneratorBase::GetVoxelCountPerVoxelPlane() const
 {
 	return VoxelCountYZ;
 }

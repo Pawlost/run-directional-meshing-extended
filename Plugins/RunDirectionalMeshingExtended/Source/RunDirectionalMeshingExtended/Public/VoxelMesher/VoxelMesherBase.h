@@ -59,7 +59,7 @@ protected:
      
 	FORCEINLINE bool IsMaxBorder(const int X) const
 	{
-		return X == VoxelGenerator->GetVoxelCountPerChunkDimension() - 1;
+		return X == VoxelGenerator->GetVoxelCountPerVoxelLine() - 1;
 	}
      
 	static const FNormalsAndTangents FaceNormalsAndTangents[CHUNK_FACE_COUNT];

@@ -38,15 +38,20 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelFace
 	static FVoxelFace CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 
 	
-	static FIntVector FrontBorderLocation(const int X, const int Y, const int ChunkDimension);
-	static FIntVector BackBorderLocation(const int X, const int Y, const int ChunkDimension);
-	static FIntVector LeftBorderLocation(const int X, const int Y, const int ChunkDimension);
-	static FIntVector RightBorderLocation(const int X, const int Y, const int ChunkDimension);
-	static FIntVector TopBorderLocation(const int X, const int Y, const int ChunkDimension);
-	static FIntVector BottomBorderLocation(const int X, const int Y, const int ChunkDimension);
+	static void FrontBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
+	static void BackBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
+	static void LeftBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
+	static void RightBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
+	static void TopBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
+	static void BottomBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
 
-	static bool FaceRowConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace);
-	static bool FaceRowConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	static bool HeightConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	static bool HeightConditionY(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	static bool HeightConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	
+	static bool MergeFailConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	static bool MergeFailConditionY(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	static bool MergeFailConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace);
 	
 	static bool MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace);
 	static bool MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace);

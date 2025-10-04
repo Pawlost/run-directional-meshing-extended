@@ -36,7 +36,7 @@ void UNoiseVoxelGridGenerator::BeginPlay()
 void UNoiseVoxelGridGenerator::GenerateVoxels(FChunk& Chunk)
 {
 	//NOTICE: This generation is unoptimized because it is not major part of my bachelor's thesis
-	const auto ChunkDimension = GetVoxelCountPerChunkDimension();
+	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
 	const auto VoxelTypeCount = SurfaceGenerators.Num();
 
 	const auto GridPos = Chunk.GridPosition * ChunkDimension;

@@ -51,8 +51,8 @@ public:
 
 	double GetChunkAxisSize() const;
 	double GetVoxelSize() const;
-	uint32 GetVoxelCountPerChunkDimension() const;
-	uint32 GetVoxelCountPerChunkLayer() const;
+	uint32 GetVoxelCountPerVoxelLine() const;
+	uint32 GetVoxelCountPerVoxelPlane() const;
 	uint32 GetVoxelCountPerChunk() const;
 	void GenerateMesh(FMesherVariables& MesherVariables, FVoxelChange* VoxelChange = nullptr) const;
 

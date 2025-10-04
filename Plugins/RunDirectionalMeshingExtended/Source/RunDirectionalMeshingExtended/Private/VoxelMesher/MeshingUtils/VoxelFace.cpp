@@ -55,45 +55,73 @@ FVoxelFace FVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& I
 		InitialPosition +FIntVector(1, RunLenght, 0));
 }
 
-FIntVector FVoxelFace::FrontBorderLocation(const int X, const int Y, const int ChunkDimension)
+void FVoxelFace::FrontBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
-	return FIntVector(ChunkDimension, Y, X);
+	OutBorderLocation = FIntVector(0, Y, X);
+	OutQuadPosition = FIntVector(ChunkDimension, Y, X);
 }
 
-FIntVector FVoxelFace::BackBorderLocation(const int X, const int Y, const int ChunkDimension)
+void FVoxelFace::BackBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
-	return FIntVector(0, Y, X);
+	OutBorderLocation = FIntVector(0, Y, X);
+	OutQuadPosition = FIntVector(0, Y, X);
 }
 
-FIntVector FVoxelFace::LeftBorderLocation(const int X, const int Y, const int ChunkDimension)
+void FVoxelFace::LeftBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
-	return FIntVector(Y, 0, X);
+	OutBorderLocation = FIntVector(0, X, Y);
+	OutQuadPosition = FIntVector(X, 0, Y);
 }
 
-FIntVector FVoxelFace::RightBorderLocation(const int X, const int Y, const int ChunkDimension)
+void FVoxelFace::RightBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
-	return FIntVector(Y, ChunkDimension, X);
+	OutBorderLocation = FIntVector(0, X, Y);
+	OutQuadPosition = FIntVector(X, ChunkDimension, Y);
 }
 
-FIntVector FVoxelFace::TopBorderLocation(const int X, const int Y, const int ChunkDimension)
+void FVoxelFace::TopBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
-	return FIntVector(X, Y, ChunkDimension);
+	OutBorderLocation = FIntVector(0, Y, X);
+	OutQuadPosition =FIntVector(X, Y, ChunkDimension);
 }
 
-FIntVector FVoxelFace::BottomBorderLocation(const int X, const int Y, const int ChunkDimension)
+void FVoxelFace::BottomBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
-	return FIntVector(X, Y, 0);
+	OutBorderLocation = FIntVector(0, Y, X);
+	OutQuadPosition = FIntVector(X, Y, 0);
 }
 
-bool FVoxelFace::FaceRowConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVoxelFace::HeightConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace)
 {
-	return Face.StartVertexUp.Z < NewFace.StartVertexDown.Z;
+	return Face.StartVertexUp.X == NewFace.StartVertexUp.X;
 }
 
-
-bool FVoxelFace::FaceRowConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVoxelFace::HeightConditionY(const FVoxelFace& Face, const FVoxelFace& NewFace)
 {
-	return Face.StartVertexUp.X < NewFace.StartVertexDown.X;
+	return Face.StartVertexUp.Y == NewFace.StartVertexUp.Y;
+}
+
+bool FVoxelFace::HeightConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace)
+{
+	return Face.StartVertexUp.Z == NewFace.StartVertexUp.Z;
+}
+
+bool FVoxelFace::MergeFailConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace)
+{
+	return NewFace.StartVertexUp.Y < Face.StartVertexUp.Y &&
+			   Face.StartVertexUp.Z > NewFace.StartVertexDown.Z;
+}
+
+bool FVoxelFace::MergeFailConditionY(const FVoxelFace& Face, const FVoxelFace& NewFace)
+{
+	return NewFace.StartVertexUp.Z < Face.StartVertexUp.Z &&
+			   Face.StartVertexUp.X > NewFace.StartVertexDown.X;
+}
+
+bool FVoxelFace::MergeFailConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace)
+{
+	return NewFace.StartVertexUp.Y < Face.StartVertexUp.Y &&
+			   Face.StartVertexUp.X > NewFace.StartVertexDown.X;
 }
 
 /**

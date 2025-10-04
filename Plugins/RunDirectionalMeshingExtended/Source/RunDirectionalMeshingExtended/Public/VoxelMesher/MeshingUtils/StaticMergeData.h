@@ -11,9 +11,11 @@ struct FStaticMergeData
 	const TFunctionRef<bool(FVoxelFace& PrevFace, const FVoxelFace& NewFace)> RunDirectionFaceMerge;
 	const TFunctionRef<bool(FVoxelFace& PrevFace, const FVoxelFace& NewFace)> GreedyMerge;
 	const TFunctionRef<FVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;
-	const TFunctionRef<FIntVector(int X, int Y, int ChunkDimension)> BorderLocation;
-	const TFunctionRef<bool(const FVoxelFace& Face, const FVoxelFace& NewFace)> RowBorderCondition;
+	const TFunctionRef<void(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)> BorderLocation;
 	const TFunctionRef<int(FIntVector Location)> GetMainDirection;
+	
+	const TFunctionRef<bool(const FVoxelFace& Face, const FVoxelFace& NewFace)> HeightCondition;
+	const TFunctionRef<bool(const FVoxelFace& Face, const FVoxelFace& NewFace)> MergeFailCondition;
 
 	static FStaticMergeData FrontFaceData;
 	static FStaticMergeData BackFaceData;

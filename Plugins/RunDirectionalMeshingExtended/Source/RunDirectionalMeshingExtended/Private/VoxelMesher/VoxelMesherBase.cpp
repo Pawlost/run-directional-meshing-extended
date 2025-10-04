@@ -50,7 +50,7 @@ const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTang
 
 void UVoxelMesherBase::UpdateAllFacesParams()
 {
-	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
+	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
 	//Axis X
 	UpdateFaceParams(FaceTemplates[EFaceDirection::Front], FIntVector(1, 0, 0),
 					 FIntVector(0, 0, 0),
@@ -113,8 +113,8 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 #endif
 	
 	auto VoxelTypeCount = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.Num();
-	auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
-	auto ChunkLayer = VoxelGenerator->GetVoxelCountPerChunkLayer();
+	auto ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
+	auto ChunkLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
 
 	// TODO: rewrite, keep preallocation
 	MeshVars.QuadMeshSectionArray = nullptr;
@@ -241,38 +241,50 @@ void UVoxelMesherBase::DirectionalGreedyMerge(const FMesherVariables& MeshVars,
 														const FStaticMergeData& MergeData,
 														TArray<FVoxelFace>& FaceContainer) const
 {
-	int FaceIndex = FaceContainer.Num() - 2;
-
+	TQueue<FVoxelFace> FaceQueue;
+	FVoxelFace NextFace;
+	int FaceIndex = FaceContainer.Num() - 1;
+	
 	// Iterate from last face
 	for (int32 i = FaceIndex; i >= 0; i--)
 	{
-		FVoxelFace& NextFace = FaceContainer[i + 1];
-
-		// Elements are removed and it must be updated
-		int BackTrackIndex = i;
-
-		FVoxelFace* Face = &FaceContainer[BackTrackIndex];
-		while (!MergeData.GreedyMerge(*Face, NextFace))
+		
+		NextFace = FaceContainer.Pop(EAllowShrinking::No);
+		
+		FVoxelFace* PrevFacePeek = FaceQueue.Peek();
+		
+		if (PrevFacePeek == nullptr || MergeData.HeightCondition(*PrevFacePeek, NextFace))
 		{
-			BackTrackIndex--;
+			FaceQueue.Enqueue(NextFace);
+			continue;
+		}
+		
+		FVoxelFace PrevFace;
+		FaceQueue.Dequeue(PrevFace);
+		
+		// Mesh faces which are impossible to merge with current face
+		while (MergeData.MergeFailCondition(PrevFace, NextFace))
+		{
+			ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, PrevFace, LocalVoxelTable, MergeData.FaceDirection);
 
-			if (BackTrackIndex == -1 || MergeData.RowBorderCondition(*Face, NextFace))
-			{
-				ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, NextFace, LocalVoxelTable, MergeData.FaceDirection);
+			// Stop if no more faces to merge
+			if (!FaceQueue.Dequeue(PrevFace))
 				break;
-			}
-
-			Face = &FaceContainer[BackTrackIndex];
 		}
 
-		FaceContainer.Pop(EAllowShrinking::No);
+		// Attempt greedy merge
+		if (!MergeData.GreedyMerge(NextFace, PrevFace))
+		{
+			// Mesh face which is failed to merge
+			ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, PrevFace, LocalVoxelTable, MergeData.FaceDirection);
+		}
+
+		FaceQueue.Enqueue(NextFace);
 	}
 
-	FaceIndex = FaceContainer.Num();
-	for (int i = FaceIndex - 1; i >= 0; i--)
+	while (FaceQueue.Dequeue(NextFace))
 	{
-		ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, FaceContainer[i], LocalVoxelTable, MergeData.FaceDirection);
-		FaceContainer.Pop(EAllowShrinking::No);
+		ConvertFaceToProcMesh(*MeshVars.QuadMeshSectionArray, NextFace, LocalVoxelTable, MergeData.FaceDirection);
 	}
 }
 

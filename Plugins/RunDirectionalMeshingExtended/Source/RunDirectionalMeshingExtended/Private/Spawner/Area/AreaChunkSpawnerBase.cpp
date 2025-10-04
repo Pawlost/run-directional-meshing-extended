@@ -8,7 +8,7 @@
 void AAreaChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPosition,
                                                const FName& VoxelName)
 {
-	int ChunkDimensions = VoxelGenerator->GetVoxelCountPerChunkDimension();
+	int ChunkDimensions = VoxelGenerator->GetVoxelCountPerVoxelLine();
 	if (VoxelPosition.VoxelPosition.X < 0 || VoxelPosition.VoxelPosition.Y < 0 || VoxelPosition.VoxelPosition.Z < 0 ||
 		VoxelPosition.VoxelPosition.X >= ChunkDimensions || VoxelPosition.VoxelPosition.Y >= ChunkDimensions || VoxelPosition.VoxelPosition.Z >= ChunkDimensions)
 	{

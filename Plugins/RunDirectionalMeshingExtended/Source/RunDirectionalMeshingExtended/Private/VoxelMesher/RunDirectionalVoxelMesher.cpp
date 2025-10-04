@@ -115,7 +115,7 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 	TRACE_CPUPROFILER_EVENT_SCOPE("Meshing - RunDirectionalMeshing from VoxelGrid generation")
 #endif
 
-	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerChunkDimension();
+	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
 
 	if (!IsValid(VoxelGenerator))
 	{
