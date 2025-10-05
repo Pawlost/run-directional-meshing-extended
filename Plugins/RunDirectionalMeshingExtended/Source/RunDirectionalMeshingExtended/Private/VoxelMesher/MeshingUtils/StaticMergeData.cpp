@@ -36,7 +36,7 @@ FStaticMergeData FStaticMergeData::RightFaceData = FStaticMergeData(
 	FVoxelFace::RightBorderLocation,
 	FVoxelFace::GetYLocation,
 	FVoxelFace::HeightConditionX,
-	FVoxelFace::MergeFailConditionY
+	FVoxelFace::MergeFailConditionRightY
 );
 
 FStaticMergeData FStaticMergeData::LeftFaceData = FStaticMergeData(
@@ -49,7 +49,7 @@ FStaticMergeData FStaticMergeData::LeftFaceData = FStaticMergeData(
 	FVoxelFace::LeftBorderLocation,
 	FVoxelFace::GetYLocation,
 	FVoxelFace::HeightConditionX,
-	FVoxelFace::MergeFailConditionY
+	FVoxelFace::MergeFailConditionLeftY
 );
 
 FStaticMergeData FStaticMergeData::TopFaceData = FStaticMergeData(

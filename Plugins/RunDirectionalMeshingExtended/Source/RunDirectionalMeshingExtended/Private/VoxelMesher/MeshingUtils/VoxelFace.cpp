@@ -108,20 +108,26 @@ bool FVoxelFace::HeightConditionZ(const FVoxelFace& Face, const FVoxelFace& NewF
 
 bool FVoxelFace::MergeFailConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace)
 {
-	return NewFace.StartVertexUp.Y < Face.StartVertexUp.Y &&
-			   Face.StartVertexUp.Z > NewFace.StartVertexDown.Z;
+	return NewFace.StartVertexUp.Y < Face.StartVertexUp.Y ||
+			   Face.StartVertexDown.Z > NewFace.StartVertexUp.Z;
 }
 
-bool FVoxelFace::MergeFailConditionY(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVoxelFace::MergeFailConditionRightY(const FVoxelFace& Face, const FVoxelFace& NewFace)
 {
-	return NewFace.StartVertexUp.Z < Face.StartVertexUp.Z &&
-			   Face.StartVertexUp.X > NewFace.StartVertexDown.X;
+	return NewFace.StartVertexUp.Z < Face.StartVertexUp.Z ||
+			   Face.StartVertexUp.X > NewFace.EndVertexDown.X;
+}
+
+bool FVoxelFace::MergeFailConditionLeftY(const FVoxelFace& Face, const FVoxelFace& NewFace)
+{
+	return NewFace.StartVertexUp.Z < Face.StartVertexUp.Z ||
+			   Face.EndVertexUp.X > NewFace.StartVertexUp.X;
 }
 
 bool FVoxelFace::MergeFailConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace)
 {
-	return NewFace.StartVertexUp.Y < Face.StartVertexUp.Y &&
-			   Face.StartVertexUp.X > NewFace.StartVertexDown.X;
+	return NewFace.StartVertexUp.Y < Face.StartVertexUp.Y ||
+			   Face.StartVertexDown.X > NewFace.StartVertexUp.X;
 }
 
 /**

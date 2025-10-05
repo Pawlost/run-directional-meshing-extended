@@ -50,7 +50,8 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelFace
 	static bool HeightConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace);
 	
 	static bool MergeFailConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace);
-	static bool MergeFailConditionY(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	static bool MergeFailConditionRightY(const FVoxelFace& Face, const FVoxelFace& NewFace);
+	static bool MergeFailConditionLeftY(const FVoxelFace& Face, const FVoxelFace& NewFace);
 	static bool MergeFailConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace);
 	
 	static bool MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace);

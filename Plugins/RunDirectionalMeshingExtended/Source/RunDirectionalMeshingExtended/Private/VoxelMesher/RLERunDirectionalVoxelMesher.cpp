@@ -381,14 +381,12 @@ void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars,
 				}
 			}
 
-			if (!FaceContainer.IsEmpty()){
 				for (int x = 0; x < ChunkDimension; x++)
 				{
 					DirectionalGreedyMerge(MeshVars, LocalVoxelTable, FaceTemplate.StaticMeshingData, FaceContainer);
 					//TODO: remove inverse
-					//DirectionalGreedyMerge(MeshVars, LocalVoxelTable, InverseFaceTemplate.StaticMeshingData, InverseFaceContainer);
+					DirectionalGreedyMerge(MeshVars, LocalVoxelTable, InverseFaceTemplate.StaticMeshingData, InverseFaceContainer);
 				}
-			}
 		}
 	}
 }
