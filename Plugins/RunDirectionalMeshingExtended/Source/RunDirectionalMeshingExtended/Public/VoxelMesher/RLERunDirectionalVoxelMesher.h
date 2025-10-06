@@ -82,7 +82,6 @@ private:
 	*/
 	struct FIndexParams
 	{
-
 		TSharedPtr<TArray<FRLEVoxel>> SampledBorderChunks[CHUNK_FACE_COUNT];
 		
 		TSharedPtr<TArray<FRLEVoxel>> NewVoxelGrid;
@@ -114,21 +113,21 @@ private:
 	static void FirstRunEditIndex(FIndexParams& IndexParams);
 	static void CalculateMidRun(const int MidRunLenght, const int EndRunLength, FIndexParams& IndexParams);
 	
-	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable);
+	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars);
 
 	// return true when interval advanced
 	static bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, bool BorderCondition, bool LeadingValue);
 	
-	static void CreateSideFace(const FMesherVariables& MeshVars,
+	static void CreateSideFace( TArray<TArray<FVoxelFace>>& SideFaceData,
 											   const FStaticMergeData& StaticData,
 											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-											   const int YEnd, TArray<TArray<FVoxelFace>>& SideFaceData);
+											   const int YEnd);
 	
-	void AddBorderSample(const FIndexParams& IndexParams, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
+	void AddBorderSample(FIndexParams& IndexParams, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
-	void BorderGeneration(FMesherVariables& MeshVars, TMap<uint32, uint32>& LocalVoxelTable, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks);
+	void BorderGeneration(FMesherVariables& MeshVars, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks);
 	
 	void GenerateBorder(TArray<FVoxelFace>& FaceContainer, TArray<FVoxelFace>& InverseFaceContainer,
 		TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
-		const FMeshingDirections& FaceTemplate, const FMeshingDirections& InverseFaceTemplate, int X, int Y);
+		const FMeshingDirections& FaceTemplate, const FMeshingDirections& InverseFaceTemplate, int X, int Y) const;
 };

@@ -32,6 +32,8 @@ public:
 	
 
 protected:
+	void RemoveActor(TWeakObjectPtr<AChunkActor> ChunkActor);
+	
 	virtual void BeginPlay() override;
 
 	virtual void SpawnChunk(const FIntVector& ChunkGridPosition, TSharedFuture<void>* OutAsyncExecution = nullptr) override;

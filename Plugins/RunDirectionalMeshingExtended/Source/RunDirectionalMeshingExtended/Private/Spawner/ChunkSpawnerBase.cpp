@@ -154,7 +154,7 @@ void AChunkSpawnerBase::WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks)
 }
 
 
-void AChunkSpawnerBase::GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const
+void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams, TWeakObjectPtr<AChunkActor>& OutActorPtr) const
 {
 	const auto World = GetWorld();
 	if (!IsValid(World))
@@ -164,7 +164,6 @@ void AChunkSpawnerBase::GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkP
 
 	//Spawn actor
 	const auto Chunk = ChunkParams->OriginalChunk;
-	TWeakObjectPtr<AChunkActor> ActorPtr = Chunk->ChunkMeshActor;
 	const auto SpawnLocation = FVector(Chunk->GridPosition) * VoxelGenerator->GetChunkAxisSize();
 
 	FAttachmentTransformRules ActorAttachmentRules = FAttachmentTransformRules::KeepWorldTransform;
@@ -173,22 +172,22 @@ void AChunkSpawnerBase::GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkP
 		ActorAttachmentRules = FAttachmentTransformRules::KeepRelativeTransform;
 	}
 
-	if (ActorPtr == nullptr)
+	if (OutActorPtr == nullptr)
 	{
 		// If there is no actor spawn new one.
-		ActorPtr = World->SpawnActor<AChunkActor>(AChunkActor::StaticClass(), SpawnLocation,
+		OutActorPtr = World->SpawnActor<AChunkActor>(AChunkActor::StaticClass(), SpawnLocation,
 													 FRotator::ZeroRotator);
 
-		if (!ActorPtr.IsValid() || !ChunkParams->SpawnerPtr.IsValid())
+		if (!OutActorPtr.IsValid() || !ChunkParams->SpawnerPtr.IsValid())
 		{
 			return;
 		}
 
-		ActorPtr->AttachToActor(ChunkParams->SpawnerPtr.Get(), ActorAttachmentRules);
+		OutActorPtr->AttachToActor(ChunkParams->SpawnerPtr.Get(), ActorAttachmentRules);
 	}
 	else
 	{
-		if (!ActorPtr.IsValid())
+		if (!OutActorPtr.IsValid())
 		{
 			return;
 		}
@@ -196,14 +195,12 @@ void AChunkSpawnerBase::GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkP
 		// If actor exists, ensure correct location
 		if (!ChunkParams->WorldTransform)
 		{
-			ActorPtr->SetActorRelativeLocation(SpawnLocation);
+			OutActorPtr->SetActorRelativeLocation(SpawnLocation);
 		}
 		else
 		{
-			ActorPtr->SetActorLocation(SpawnLocation);
+			OutActorPtr->SetActorLocation(SpawnLocation);
 		}
 	}
-	
-	Chunk->ChunkMeshActor = ActorPtr;
 }
 

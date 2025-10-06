@@ -123,24 +123,24 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	AddChunkFromGrid(MesherVars, FFaceToDirection::FrontDirection);
 	AddChunkFromGrid(MesherVars, FFaceToDirection::BackDirection);
 
-	if (Chunk->ChunkMeshActor == nullptr)
-	{
-		UnusedActorsPool.Dequeue(Chunk->ChunkMeshActor);
-	}
-
+	DequeueChunkActor(Chunk->ChunkMeshActor);
+	DequeueChunkActor(Chunk->BorderChunkMeshActor);
+	
 	auto Spawner = MakeShared<FChunkParams>(MesherVars.ChunkParams);
 	
 	if (IsInGameThread())
 	{
 		//Creating AsyncTask from main thread will cause deadlock
-		GenerateActorMesh(Spawner);
+		SpawnAndMoveChunkActor(Spawner, Chunk->ChunkMeshActor);
+		SpawnAndMoveChunkActor(Spawner, Chunk->BorderChunkMeshActor);
 	}
 	else
 	{
 		// Synchronize Mesh generation with game thread.
 		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
 		{
-			GenerateActorMesh(Spawner);
+			SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->ChunkMeshActor);
+			SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->BorderChunkMeshActor);
 		}).Wait();
 	}
 
@@ -196,6 +196,14 @@ void AAreaChunkSpawnerBase::AddChunkFromGrid(FMesherVariables& MesherVars, const
 	else
 	{
 		AddSideChunk(MesherVars, FaceDirection.FaceSide, *Chunk);
+	}
+}
+
+void AAreaChunkSpawnerBase::DequeueChunkActor(TWeakObjectPtr<AChunkActor> ChunkActor)
+{
+	if (ChunkActor == nullptr)
+	{
+		UnusedActorsPool.Dequeue(ChunkActor);
 	}
 }
 

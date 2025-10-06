@@ -196,7 +196,7 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 		}
 	}*/
 
-	GenerateProcMesh(MeshVars, LocalVoxelTable);
+	//GenerateProcMesh(MeshVars, LocalVoxelTable);
 
 	if (!MeshVars.ChunkParams.OriginalChunk.IsValid() || LocalVoxelTable.IsEmpty())
 	{

@@ -27,8 +27,11 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FMesherVariables
 {
 	GENERATED_BODY()
 	
-	TSharedPtr<TArray<TArray<FVoxelFace>>> Faces[CHUNK_FACE_COUNT];
+	TSharedPtr<TArray<TArray<FVoxelFace>>> VirtualFaces[CHUNK_FACE_COUNT];
+	TMap<uint32, uint32> LocalVoxelTable;
+	TMap<uint32, uint32> BorderLocalVoxelTable;
 
 	FChunkParams ChunkParams;
-	TSharedPtr<TArray<FProcMeshSectionVars>> QuadMeshSectionArray;
+	TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData;
+	TSharedPtr<TArray<FProcMeshSectionVars>> BorderChunkMeshData;
 };

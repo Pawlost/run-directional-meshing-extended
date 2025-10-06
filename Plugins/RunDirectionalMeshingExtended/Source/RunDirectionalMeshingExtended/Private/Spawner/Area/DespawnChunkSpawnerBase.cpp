@@ -45,12 +45,8 @@ void ADespawnChunkSpawnerBase::DespawnChunks()
 
 				auto Chunk = *ChunkGrid.Find(ChunkKey);
 
-				if (Chunk->ChunkMeshActor != nullptr)
-				{
-					Chunk->ChunkMeshActor->ClearMesh();
-					UnusedActorsPool.Enqueue(Chunk->ChunkMeshActor);
-					Chunk->ChunkMeshActor = nullptr;
-				}
+				RemoveActor(Chunk->ChunkMeshActor);
+				RemoveActor(Chunk->BorderChunkMeshActor);
 
 				Chunk->bIsActive = false;
 				Chunk->ChunkVoxelIdTable.Reset();
@@ -67,6 +63,16 @@ void ADespawnChunkSpawnerBase::DespawnChunks()
 			}
 		}
 	});
+}
+
+void ADespawnChunkSpawnerBase::RemoveActor(TWeakObjectPtr<AChunkActor> ChunkActor)
+{
+	if (ChunkActor != nullptr)
+	{
+		ChunkActor->ClearMesh();
+		UnusedActorsPool.Enqueue(ChunkActor);
+		ChunkActor = nullptr;
+	}
 }
 
 void ADespawnChunkSpawnerBase::SpawnChunk(const FIntVector& ChunkGridPosition, TSharedFuture<void>* AsyncExecution)

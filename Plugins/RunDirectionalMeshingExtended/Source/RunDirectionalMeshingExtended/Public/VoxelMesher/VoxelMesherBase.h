@@ -72,17 +72,20 @@ protected:
 	
 	void PreallocateArrays(FMesherVariables& MeshVars) const;
 	
-	void GenerateProcMesh(const FMesherVariables& MeshVars, TMap<uint32, uint32> LocalVoxelTable) const;
+	void GenerateProcMesh(const FMesherVariables& MeshVars) const;
 	
-	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, const FVoxelFace& Face,
-								  TMap<uint32, uint32>& LocalVoxelTable, int FaceIndex) const;
+	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, TMap<uint32, uint32>& LocalVoxelTable, const FVoxelFace& Face,
+											  int FaceIndex) const;
+
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 
-	void DirectionalGreedyMerge(const FMesherVariables& MeshVars,
-														TMap<uint32, uint32>& LocalVoxelTable,
+	void DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, TMap<uint32, uint32>& LocalVoxelTable,
 														const FStaticMergeData& MergeData,
 														TArray<FVoxelFace>& FaceContainer) const;
 
 	static void AddFace(const FStaticMergeData& FaceMeshingData, const FVoxelFace& NewFace, TArray<FVoxelFace>& ChunkFaces);
+
+	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
+		const TMap<uint32, uint32>& LocalVoxelTable) const;
 };

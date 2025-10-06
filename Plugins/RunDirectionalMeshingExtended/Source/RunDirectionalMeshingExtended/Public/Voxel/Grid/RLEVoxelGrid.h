@@ -34,5 +34,4 @@ class RUNDIRECTIONALMESHINGEXTENDED_API URLEVoxelGrid : public UVoxelModel
 
 public:
 	TSharedPtr<TArray<FRLEVoxel>> RLEVoxelGrid;
-	TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT> BorderChunks;// = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 };

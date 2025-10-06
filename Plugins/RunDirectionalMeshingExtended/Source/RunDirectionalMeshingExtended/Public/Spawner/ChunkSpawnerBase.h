@@ -65,7 +65,8 @@ protected:
 	// Wait for all futures
 	static void WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks);
 	
-	void GenerateActorMesh(const TSharedPtr<FChunkParams>& ChunkParams) const;
+	void SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams, TWeakObjectPtr<AChunkActor>& OutActorPtr) const;
+
 
 	bool bIsInitialized = false;
 };
