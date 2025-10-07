@@ -20,32 +20,23 @@ public:
 	URLERunDirectionalVoxelMesher();
 
 private:
-	struct FVoxelIndexParams
-	{
-		bool IsBorder;
-		int32 ForwardVoxelIndex;
-		int32 PreviousVoxelIndex;
-		int32 CurrentVoxelIndex;
-		FRLEVoxel CurrentVoxel;
-		EFaceDirection FaceDirection;
-	};
 	
-	struct FIntervalEnd
+	struct FMeshingEventInterval
 	{
 		// Voxel sequence (run) to be traversed
 		// If null the end is a chunk dimension, not end of sequence
-		const FRLEVoxel* CurrentRun = nullptr;
+		const FRLEVoxel* CurrentVoxelRun = nullptr;
 		
-		// Traversed Run + current run sequence
-		int RunEnd = 0;
+		// Index where event ends
+		int EventIndex = 0;
 		
 		// Index of an run in a voxel array
-		uint32 RunIndex = 0;
+		uint32 VoxelRunIndex = 0;
 	};
 
 	// Type of faces the meshing interval should generate
 	// Index to IntervalFaces array
-	enum EIntervalType {
+	enum EMeshingTypeIndex {
 		FullCulledFaceInterval = 0,
 		FrontTopFaceInterval = 1,
 		BackFaceInterval = 2,
@@ -56,21 +47,23 @@ private:
 		EmptyFaceInterval = 7,
 	};
 
-	enum EIntervalEndIndex
+	constexpr static int EventIndexCount = 4;
+	enum EMeshingEventIndex
 	{
-		Leading = 0,
-		FollowingX = 1,
-		FollowingZ = 2
+		LeadingInterval = 0,
+		FollowingXInterval = 1,
+		FollowingZInterval = 2,
+		EditEvent = 3
 	};
 
-	struct FIntervalFace
+	struct FRLEMeshingData
 	{
 		const FStaticMergeData FaceData;
-		EIntervalEndIndex IntervalEndIndex;
+		EMeshingEventIndex MeshingEventIndex;
 	};
 	
 	// 8 = interval combinations/types
-	TStaticArray<TArray<FIntervalFace>, 8> IntervalFaces;
+	TStaticArray<TArray<FRLEMeshingData>, 8> MeshingData;
 
 	/*
 	Front = 0,
@@ -87,17 +80,16 @@ private:
 		TSharedPtr<TArray<FRLEVoxel>> NewVoxelGrid;
 		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 
-		// Current voxel sequence that was already traversed.
-		int TraversedVoxelSequence = 0;
+		// Current event index made of all meshing events that were already processed/traversed.
+		int CurrentMeshingEventIndex = 0;
 
 		// After reaching closest end, updates it and sets next voxel interval to next
 		// End is equivalent to event in Discrete Event Simulation 
-		FIntervalEnd NextIntervalEnds[3];
-		uint8 IntervalFlag = 0;
-		int MinValue = 0;
+		FMeshingEventInterval MeshingEvents[EventIndexCount];
+		EMeshingTypeIndex CurrentMeshingType;
+		int NextMeshingEventIndex = 0;
 		
 		FVoxel EditVoxel;
-		FVoxel ReplacedVoxel = FVoxel();
 		int32 EditAreaIndex = 0;
 
 		FVoxelChange* VoxelChange = nullptr; 
@@ -107,25 +99,20 @@ private:
 	                       const FStaticMergeData& StaticData,
 	                       const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 	                       const int YEnd);
-
-	static bool CalculateStartRunEditIndex(FIndexParams& IndexParams, int RunEnd);
-	static bool CalculateBorderRunEditIndex(FIndexParams& IndexParams);
-	static void FirstRunEditIndex(FIndexParams& IndexParams);
-	static void CalculateMidRun(const int MidRunLenght, const int EndRunLength, FIndexParams& IndexParams);
 	
 	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars);
 
 	// return true when interval advanced
-	static bool AdvanceInterval(FIndexParams& IndexParams, const EIntervalEndIndex IntervalFlagIndex, bool BorderCondition, bool LeadingValue);
+	static bool AdvanceMeshingEventInterval(FIndexParams& IndexParams, const EMeshingEventIndex IntervalFlagIndex, bool BorderCondition = false, bool LeadingValue = false);
 	
 	static void CreateSideFace( TArray<TArray<FVoxelFace>>& SideFaceData,
 											   const FStaticMergeData& StaticData,
 											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 											   const int YEnd);
 	
-	void AddBorderSample(FIndexParams& IndexParams, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
+	void AddBorderSample(const FIndexParams& IndexParams, const FIntVector IndexCoords, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
-	void BorderGeneration(FMesherVariables& MeshVars, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks);
+	void BorderGeneration(FMesherVariables& MeshVars, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks) const;
 	
 	void GenerateBorder(TArray<FVoxelFace>& FaceContainer, TArray<FVoxelFace>& InverseFaceContainer,
 		TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
