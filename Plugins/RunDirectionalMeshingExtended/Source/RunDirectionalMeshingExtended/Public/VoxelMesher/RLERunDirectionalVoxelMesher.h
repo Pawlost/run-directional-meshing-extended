@@ -14,7 +14,7 @@ class RUNDIRECTIONALMESHINGEXTENDED_API URLERunDirectionalVoxelMesher : public U
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange) override;
+	virtual void GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChange) override;
 	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid) override;
 
 	URLERunDirectionalVoxelMesher();
@@ -28,7 +28,7 @@ private:
 		const FRLEVoxel* CurrentVoxelRun = nullptr;
 		
 		// Index where event ends
-		int EventIndex = 0;
+		uint32 EventIndex = 0;
 		
 		// Index of an run in a voxel array
 		uint32 VoxelRunIndex = 0;
@@ -87,12 +87,10 @@ private:
 		// End is equivalent to event in Discrete Event Simulation 
 		FMeshingEventInterval MeshingEvents[EventIndexCount];
 		EMeshingTypeIndex CurrentMeshingType;
-		int NextMeshingEventIndex = 0;
-		
-		FVoxel EditVoxel;
-		int32 EditAreaIndex = 0;
+		uint32 NextMeshingEventIndex = 0;
 
-		FVoxelChange* VoxelChange = nullptr; 
+		TArray<FVoxelChange>* VoxelChanges = nullptr;
+		bool EditEnabled = false;
 	};
 
 	static void CreateFace(const FMesherVariables& MeshVars,

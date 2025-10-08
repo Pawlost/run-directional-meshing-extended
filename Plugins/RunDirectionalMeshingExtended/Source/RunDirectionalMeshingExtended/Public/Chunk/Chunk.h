@@ -25,10 +25,6 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FChunk
 	UPROPERTY()
 	TObjectPtr<UVoxelModel> VoxelModel;
 
-	//Key: voxel ID; Value: voxel count
-	UPROPERTY()
-	TMap<int32, uint32> ChunkVoxelIdTable;
-
 	UPROPERTY()
 	FIntVector GridPosition = FIntVector(0, 0, 0);
 

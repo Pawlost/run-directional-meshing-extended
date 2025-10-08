@@ -1,10 +1,9 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "SingleChunkSpawnerBase.h"
+#include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "SingleBorderlessChunkSpawner.generated.h"
-
-struct FVoxelChange;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class RUNDIRECTIONALMESHINGEXTENDED_API ASingleBorderlessChunkSpawner : public ASingleChunkSpawnerBase
@@ -12,7 +11,7 @@ class RUNDIRECTIONALMESHINGEXTENDED_API ASingleBorderlessChunkSpawner : public A
 	GENERATED_BODY()
 	
 protected:
-	virtual void StartMeshing(FVoxelChange* VoxelChange) override;
+	virtual void StartMeshing(TArray<FVoxelChange>& VoxelChanges) override;
 	
 private:
 	TSharedPtr<FChunk> SideChunk[CHUNK_FACE_COUNT];

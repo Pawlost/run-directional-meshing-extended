@@ -36,7 +36,7 @@ public:
 	UPROPERTY(EditAnywhere, Category ="Voxels")
 	bool bEnableVoxelMeshing = true;
 	
-	void ChangeKnownVoxelAtIndex(TArray<FVoxel>& VoxelGrid, TMap<int32, uint32>& VoxelTable, const uint32& Index,
+	void ChangeKnownVoxelAtIndex(TArray<FVoxel>& VoxelGrid, const uint32& Index,
 												  const FVoxel& Voxel);
 	
 	/**
@@ -54,7 +54,7 @@ public:
 	uint32 GetVoxelCountPerVoxelLine() const;
 	uint32 GetVoxelCountPerVoxelPlane() const;
 	uint32 GetVoxelCountPerChunk() const;
-	void GenerateMesh(FMesherVariables& MesherVariables, FVoxelChange* VoxelChange = nullptr) const;
+	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelChange>& VoxelChanges) const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual double GetHighestElevationAtLocation(const FVector& Location);
@@ -71,7 +71,6 @@ public:
 		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)
 
 	virtual void GenerateVoxels(FChunk& Chunk) PURE_VIRTUAL(UVoxelGeneratorBase::GenerateVoxels)
-	static void RemoveVoxelFromChunkTable(TMap<int32, uint32>& VoxelTable, const FVoxel& Voxel);
 	
 protected:
 	UPROPERTY()

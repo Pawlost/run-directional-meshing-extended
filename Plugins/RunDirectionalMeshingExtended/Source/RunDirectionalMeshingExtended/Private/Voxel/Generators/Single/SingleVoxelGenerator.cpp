@@ -10,7 +10,6 @@ void USingleVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 
 	TArray<FVoxel> VoxelGrid;
 	VoxelGrid.Init(VoxelFillIndex, VoxelGridDensity);
-	Chunk.ChunkVoxelIdTable.Add(VoxelFillIndex.VoxelId, VoxelGridDensity);
 
 	VoxelMesher->CompressVoxelGrid(Chunk, VoxelGrid);
 }

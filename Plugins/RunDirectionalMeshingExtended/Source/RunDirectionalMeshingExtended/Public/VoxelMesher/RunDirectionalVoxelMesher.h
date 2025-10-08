@@ -15,7 +15,7 @@ class RUNDIRECTIONALMESHINGEXTENDED_API URunDirectionalVoxelMesher : public UVox
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange) override;
+	virtual void GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChanges) override;
 
 private:
 	

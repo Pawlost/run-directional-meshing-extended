@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "Spawner/ChunkSpawnerBase.h"
+#include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "AreaChunkSpawnerBase.generated.h"
 
 struct FVoxelPosition;
-struct FVoxelChange;
 struct FFaceToDirection;
 class AChunkActor;
 
@@ -38,7 +38,7 @@ protected:
 	TQueue<TWeakObjectPtr<AChunkActor>, EQueueMode::Mpsc> UnusedActorsPool;
 
 	virtual void GenerateArea() PURE_VIRTUAL(AAreaChunkSpawnerBase::GenerateArea)
-	void GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, FVoxelChange* VoxelChange = nullptr);
+	void GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, TArray<FVoxelChange>& VoxelChanges);
 	virtual void SpawnChunk(const FIntVector& ChunkGridPosition, TSharedFuture<void>* OutAsyncExecution = nullptr);
 
 private:

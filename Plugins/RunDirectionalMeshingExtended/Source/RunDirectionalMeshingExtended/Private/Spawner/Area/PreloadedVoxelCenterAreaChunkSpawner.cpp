@@ -77,7 +77,8 @@ void APreloadedVoxelCenterAreaChunkSpawner::GenerateArea()
 	FMesherVariables MeshVars;
 	for (auto VisitedSpawnPosition : VisitedSpawnPositions)
 	{
-		GenerateChunkMesh(MeshVars, VisitedSpawnPosition);
+		TArray<FVoxelChange> VoxelChanges;
+		GenerateChunkMesh(MeshVars, VisitedSpawnPosition, VoxelChanges);
 	}
 }
 

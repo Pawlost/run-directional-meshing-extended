@@ -20,7 +20,7 @@ void UComplexShapeVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 				if (ShapeSinus(x) + ShapeSinus(y) + ShapeSinus(z) > 0)
 				{
 					const auto Index = CalculateVoxelIndex(x, y, z);
-					ChangeKnownVoxelAtIndex(VoxelGrid, Chunk.ChunkVoxelIdTable, Index, VoxelFillIndex);
+					ChangeKnownVoxelAtIndex(VoxelGrid, Index, VoxelFillIndex);
 				}
 			}
 		}

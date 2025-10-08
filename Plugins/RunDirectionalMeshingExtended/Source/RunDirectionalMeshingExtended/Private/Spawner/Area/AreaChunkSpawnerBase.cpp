@@ -34,9 +34,11 @@ void AAreaChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPositi
 		FMesherVariables MesherVars;
 		Chunk->bIsActive = false;
 		FVoxelChange Modification(VoxelName, VoxelPosition.VoxelPosition);
-		GenerateChunkMesh(MesherVars, Chunk->GridPosition, &Modification);
+		TArray<FVoxelChange> VoxelChanges;
+		VoxelChanges.Add(Modification);
+		GenerateChunkMesh(MesherVars, Chunk->GridPosition, VoxelChanges);
 		
-		EditHandle = Async(EAsyncExecution::ThreadPool, [this, MesherVars]()
+		/*EditHandle = Async(EAsyncExecution::ThreadPool, [this, MesherVars]()
 		{
 			FMesherVariables SideMesherVars;
 			for (int32 s = 0; s < CHUNK_FACE_COUNT; s++)
@@ -45,10 +47,11 @@ void AAreaChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPositi
 				if (SideChunk.IsValid())
 				{
 					SideChunk->bIsActive = false;
-					GenerateChunkMesh(SideMesherVars, SideChunk->GridPosition);
+					TArray<FVoxelChange> VoxelChanges;
+					GenerateChunkMesh(SideMesherVars, SideChunk->GridPosition, VoxelChanges);
 				}
 			}
-		}).Share();
+		}).Share();*/
 	}
 }
 
@@ -85,7 +88,8 @@ void AAreaChunkSpawnerBase::BeginPlay()
 			//Spawn center chunk
 			SpawnChunk(CenterGridPosition);
 			FMesherVariables MesherVars;
-			GenerateChunkMesh(MesherVars, CenterGridPosition);
+			auto VoxelChanges = TArray<FVoxelChange>();
+			GenerateChunkMesh(MesherVars, CenterGridPosition, VoxelChanges);
 		}
 
 		SpawnChunksAsync();
@@ -93,7 +97,7 @@ void AAreaChunkSpawnerBase::BeginPlay()
 }
 
 //Running on main thread may cause deadlock
-void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, FVoxelChange* VoxelChange)
+void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, TArray<FVoxelChange>& VoxelChanges)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Area Mesh generation prepartion")
@@ -145,7 +149,7 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	}
 
 	//Mesh could be spawned on a Async Thread similarly to voxel models but it is not done so to showcase real time speed of mesh generation (requirement for bachelor thesis)
-	VoxelGenerator->GenerateMesh(MesherVars, VoxelChange);
+	VoxelGenerator->GenerateMesh(MesherVars, VoxelChanges);
 
 	if (!Chunk->bHasMesh)
 	{

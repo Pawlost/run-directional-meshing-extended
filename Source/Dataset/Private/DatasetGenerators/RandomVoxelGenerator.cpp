@@ -22,7 +22,7 @@ void URandomVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 				{
 					FIntVector VoxelPosition(x, y, z);
 					const auto Index = CalculateVoxelIndex(VoxelPosition);
-					ChangeKnownVoxelAtIndex(VoxelGrid, Chunk.ChunkVoxelIdTable, Index, VoxelFillIndex);
+					ChangeKnownVoxelAtIndex(VoxelGrid, Index, VoxelFillIndex);
 				}
 			}
 		}

@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Spawner/ChunkSpawnerBase.h"
+#include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "SingleChunkSpawnerBase.generated.h"
 
 struct FVoxelPosition;
-struct FVoxelChange;
 
 UCLASS(ClassGroup=(ChunkSpawners), Abstract)
 class RUNDIRECTIONALMESHINGEXTENDED_API ASingleChunkSpawnerBase : public AChunkSpawnerBase
@@ -28,7 +28,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void StartMeshing(FVoxelChange* VoxelChange = nullptr) PURE_VIRTUAL(ASingleChunkSpawnerBase::StartMeshing)
+	virtual void StartMeshing(TArray<FVoxelChange>& VoxelChange) PURE_VIRTUAL(ASingleChunkSpawnerBase::StartMeshing)
 	
 	TSharedPtr<FChunk> SingleChunk;
 };

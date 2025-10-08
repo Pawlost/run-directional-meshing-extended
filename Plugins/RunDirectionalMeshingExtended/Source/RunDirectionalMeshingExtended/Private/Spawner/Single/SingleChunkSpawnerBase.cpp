@@ -31,8 +31,10 @@ void ASingleChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPosi
 	}
 
 	// Modify voxel at hit position
-	FVoxelChange Modification(VoxelName, VoxelPosition.VoxelPosition);
-	StartMeshing(&Modification);
+	TArray<FVoxelChange> VoxelChanges;
+	const FVoxelChange Modification(VoxelName, VoxelPosition.VoxelPosition);
+	VoxelChanges.Add(Modification);
+	StartMeshing(VoxelChanges);
 }
 
 FName ASingleChunkSpawnerBase::GetVoxelFromChunk(const FVoxelPosition& VoxelPosition)
@@ -52,6 +54,7 @@ TSharedFuture<void> ASingleChunkSpawnerBase::SpawnChunksAsync()
 			SingleChunk->bIsActive = true;
 		}
 		
-		StartMeshing();
+		TArray<FVoxelChange> VoxelChanges;
+		StartMeshing(VoxelChanges);
 	}).Share();
 }

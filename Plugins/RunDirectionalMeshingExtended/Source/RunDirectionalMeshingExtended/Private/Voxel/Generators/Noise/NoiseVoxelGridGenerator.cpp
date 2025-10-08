@@ -118,7 +118,7 @@ void UNoiseVoxelGridGenerator::GenerateVoxels(FChunk& Chunk)
 					if (AddVoxel)
 					{
 						// Rewrite voxel at index from previous value
-						ChangeKnownVoxelAtIndex(VoxelGrid, Chunk.ChunkVoxelIdTable, Index, Voxel);
+						ChangeKnownVoxelAtIndex(VoxelGrid, Index, Voxel);
 					}
 				}
 			}

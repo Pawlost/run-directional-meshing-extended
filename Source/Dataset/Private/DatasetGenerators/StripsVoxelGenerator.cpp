@@ -39,7 +39,7 @@ void UStripsVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 				}
 				
 				const auto Index = CalculateVoxelIndex(VoxelPosition);
-				ChangeKnownVoxelAtIndex(VoxelGrid, Chunk.ChunkVoxelIdTable, Index, VoxelFillIndex);
+				ChangeKnownVoxelAtIndex(VoxelGrid,Index, VoxelFillIndex);
 			}
 		}
 	}

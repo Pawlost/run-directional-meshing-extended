@@ -17,7 +17,7 @@ void UFractionFillVoxelGridGenerator::GenerateVoxels(FChunk& Chunk)
 			for (uint32 z = 0; z < ChunkDimension / ZFraction; z++)
 			{
 				const auto Index = CalculateVoxelIndex(x, y, z);
-				ChangeKnownVoxelAtIndex(VoxelGrid, Chunk.ChunkVoxelIdTable, Index, VoxelFillIndex);
+				ChangeKnownVoxelAtIndex(VoxelGrid, Index, VoxelFillIndex);
 			}
 		}
 	}

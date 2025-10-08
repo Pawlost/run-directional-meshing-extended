@@ -9,7 +9,7 @@ void ASingleChunkSpawner::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ASingleChunkSpawner::StartMeshing(FVoxelChange* VoxelChange)
+void ASingleChunkSpawner::StartMeshing(TArray<FVoxelChange>& VoxelChange)
 {
 	FMesherVariables MeshVar;
 	MeshVar.ChunkParams.SpawnerPtr = this;

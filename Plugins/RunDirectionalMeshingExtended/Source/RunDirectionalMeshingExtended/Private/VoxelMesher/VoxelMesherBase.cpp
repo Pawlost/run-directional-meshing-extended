@@ -30,10 +30,10 @@ void UVoxelMesherBase::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGri
 
 	const uint32 VoxelCount = VoxelGenerator->GetVoxelCountPerChunk();
 	uint32 OpaqueVoxelCount = 0;
-	for (const auto OpaqueVoxels : Chunk.ChunkVoxelIdTable)
+	/*for (const auto OpaqueVoxels : Chunk.ChunkVoxelIdTable)
 	{
 		OpaqueVoxelCount += OpaqueVoxels.Value;
-	}
+	}*/
 	FVoxelMeshingProfilingLogger::LogVoxelSparsity(MapName, OpaqueVoxelCount, VoxelCount - OpaqueVoxelCount);
 #endif
 	
@@ -93,17 +93,12 @@ bool UVoxelMesherBase::EmptyActor(const FMesherVariables& MeshVars)
 {
 	MeshVars.ChunkParams.OriginalChunk->bHasMesh = false;
 
-	if (MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.IsEmpty())
+	if (MeshVars.ChunkParams.OriginalChunk->BorderChunkMeshActor.IsValid())
 	{
-		if (MeshVars.ChunkParams.OriginalChunk->BorderChunkMeshActor.IsValid())
-		{
-			// If chunk is full of empty voxels but actor was pulled from pool, clear its mesh
-			MeshVars.ChunkParams.OriginalChunk->BorderChunkMeshActor->ClearMesh();
-		}
-		return true;
+		// If chunk is full of empty voxels but actor was pulled from pool, clear its mesh
+		MeshVars.ChunkParams.OriginalChunk->BorderChunkMeshActor->ClearMesh();
 	}
-
-	return false;
+	return true;
 }
 
 void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
@@ -112,7 +107,6 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 	TRACE_CPUPROFILER_EVENT_SCOPE("Mesh generation preallocation")
 #endif
 	
-	auto VoxelTypeCount = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable.Num();
 	auto ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
 	auto ChunkLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
 
@@ -153,8 +147,6 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 	
 	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
-		TMap<int32, uint32>& VoxelTable = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable;
-
 		auto FaceArray = MeshVars.VirtualFaces[f];
 		if (FaceArray == nullptr || !FaceArray.IsValid())
 		{

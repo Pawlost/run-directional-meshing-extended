@@ -5,7 +5,7 @@
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "Voxel/Grid/VoxelGrid.h"
 
-void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange)
+void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChanges)
 {
 	if (EmptyActor(MeshVars))
 	{
@@ -25,10 +25,10 @@ void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVoxel
 
 	const auto& VoxelGrid = *VoxelGridPtr;
 
-	if (VoxelChange != nullptr)
+/*	if (VoxelChange != nullptr)
 	{
 		ChangeVoxelId(VoxelGrid, MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable, *VoxelChange);
-	}
+	}*/
 
 	PreallocateArrays(MeshVars);
 	FaceGeneration(VoxelGrid, MeshVars);
@@ -306,16 +306,13 @@ void URunDirectionalVoxelMesher::ChangeVoxelId(const UVoxelGrid& VoxelGridObject
 		// Default unknown voxels are empty
 		if (VoxelId.IsEmptyVoxel())
 		{
-			const FVoxel RemovedVoxel = VoxelGridObject.VoxelGrid->GetData()[Index];
-			VoxelGenerator->RemoveVoxelFromChunkTable(VoxelTable, RemovedVoxel);
-
 			// Make previous voxel position empty.
 			VoxelGridObject.VoxelGrid->GetData()[Index] = VoxelId;
 		}
 		else
 		{
 			// If voxel is known we get specific Id
-			VoxelGenerator->ChangeKnownVoxelAtIndex(*VoxelGridObject.VoxelGrid, VoxelTable, Index, VoxelId);
+			VoxelGenerator->ChangeKnownVoxelAtIndex(*VoxelGridObject.VoxelGrid, Index, VoxelId);
 		}
 	}
 }

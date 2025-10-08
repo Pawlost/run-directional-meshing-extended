@@ -49,7 +49,6 @@ void ADespawnChunkSpawnerBase::DespawnChunks()
 				RemoveActor(Chunk->BorderChunkMeshActor);
 
 				Chunk->bIsActive = false;
-				Chunk->ChunkVoxelIdTable.Reset();
 
 				CriticalSection.Lock();
 				ChunkGrid.Remove(ChunkKey);

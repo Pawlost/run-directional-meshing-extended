@@ -22,7 +22,7 @@ void USphereVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 				if (FVector::Distance(FVector(ChunkDimension)/2, FVector(VoxelPosition)) < SphereRadius)
 				{
 					const auto Index = CalculateVoxelIndex(VoxelPosition);
-					ChangeKnownVoxelAtIndex(VoxelGrid, Chunk.ChunkVoxelIdTable, Index, VoxelFillIndex);
+					ChangeKnownVoxelAtIndex(VoxelGrid, Index, VoxelFillIndex);
 				}
 			}
 		}

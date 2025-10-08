@@ -21,7 +21,7 @@ class RUNDIRECTIONALMESHINGEXTENDED_API UVoxelMesherBase : public UActorComponen
 	
 public:
 	void SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase);
-	virtual void GenerateMesh(FMesherVariables& MesherVariables, FVoxelChange* VoxelChange) PURE_VIRTUAL(UMesherBase::GenerateMesh)
+	virtual void GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelChange>& VoxelChange) PURE_VIRTUAL(UMesherBase::GenerateMesh)
 	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid);
 
 protected:

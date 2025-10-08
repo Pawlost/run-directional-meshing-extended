@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "SingleChunkSpawnerBase.h"
+#include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "SingleChunkSpawner.generated.h"
 
 UCLASS(ClassGroup=(ChunkSpawners), Blueprintable)
@@ -10,5 +11,5 @@ class RUNDIRECTIONALMESHINGEXTENDED_API ASingleChunkSpawner : public ASingleChun
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void StartMeshing(FVoxelChange* VoxelChange) override;
+	virtual void StartMeshing(TArray<FVoxelChange>& VoxelChange) override;
 };

@@ -25,29 +25,14 @@ void UVoxelGeneratorBase::BeginPlay()
 	}
 }
 
-void UVoxelGeneratorBase::ChangeKnownVoxelAtIndex(TArray<FVoxel>& VoxelGrid, TMap<int32, uint32>& VoxelTable,
+void UVoxelGeneratorBase::ChangeKnownVoxelAtIndex(TArray<FVoxel>& VoxelGrid,
                                                   const uint32& Index,
                                                   const FVoxel& Voxel)
 {
 	// NOTICE: Code here is optimized because voxel grid generation is not main topic of this bachelor's thesis 
 	FScopeLock Lock(&Mutex);
-	const auto PrevVoxel = VoxelGrid[Index];
-	RemoveVoxelFromChunkTable(VoxelTable, PrevVoxel);
-
 	// Replace the voxel
 	VoxelGrid[Index] = Voxel;
-
-	const auto VoxelTypeAmountInChunk = VoxelTable.Find(Voxel.VoxelId);
-	if (VoxelTypeAmountInChunk != nullptr)
-	{
-		//Increase amount of added voxel
-		(*VoxelTypeAmountInChunk) += 1;
-	}
-	else
-	{
-		//If voxel is unique, start new count
-		VoxelTable.Add(Voxel.VoxelId, 1);
-	}
 }
 
 uint32 UVoxelGeneratorBase::CalculateVoxelIndex(const int32 X, const int32 Y, const int32 Z) const
@@ -85,33 +70,15 @@ uint32 UVoxelGeneratorBase::GetVoxelCountPerChunk() const
 	return VoxelCountXYZ;
 }
 
-void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MesherVariables, FVoxelChange* VoxelChange) const
+void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelChange>& VoxelChanges) const
 {
 	if (bEnableVoxelMeshing)
 	{
-		VoxelMesher->GenerateMesh(MesherVariables, VoxelChange);
+		VoxelMesher->GenerateMesh(MesherVariables, VoxelChanges);
 	}
 }
 
 double UVoxelGeneratorBase::GetHighestElevationAtLocation(const FVector& Location)
 {
 	return GetChunkAxisSize();
-}
-
-void UVoxelGeneratorBase::RemoveVoxelFromChunkTable(TMap<int32, uint32>& VoxelTable, const FVoxel& Voxel)
-{
-	const auto VoxelTypeAmountInChunk = VoxelTable.Find(Voxel.VoxelId);
-	if (VoxelTypeAmountInChunk != nullptr && !Voxel.IsEmptyVoxel())
-	{
-		auto& VoxelTypeAmountInChunkRef = *VoxelTypeAmountInChunk;
-		// Reduce amount of previous voxel type because it will be replaced.
-		VoxelTypeAmountInChunkRef--;
-
-		// Amount is initialized with 1
-		if (VoxelTypeAmountInChunkRef < 1)
-		{
-			// Remove id from a table if there is no voxel representation
-			VoxelTable.Remove(Voxel.VoxelId);
-		}
-	}
 }

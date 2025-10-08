@@ -8,7 +8,7 @@
 #include "Voxel/RLEVoxel.h"
 #include "Voxel/Grid/RLEVoxelGrid.h"
 
-void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVoxelChange* VoxelChange)
+void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChange)
 {
 
 #if CPUPROFILERTRACE_ENABLED
@@ -23,6 +23,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVo
 	}
 
 	FIndexParams IndexParams;
+	IndexParams.VoxelChanges = &VoxelChange;
 	
 	const int VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
 
@@ -58,23 +59,29 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVo
 		}
 
 		TSharedPtr<TArray<FRLEVoxel>> BorderChunkSamples = nullptr;
-		bool* IsSampled = nullptr;
+		bool* IsSampled;
 		
 		if (FaceTemplate.StaticMeshingData.IsInverseDirection)
 		{
 			auto BorderChunk = BorderChunks[d];
+			BorderChunkSamples = BorderChunk->InversedBorderVoxelSamples;
+			IsSampled = &BorderChunk->IsInverseSampled;
 			if (!BorderChunk->IsInverseSampled)
 			{
-				BorderChunkSamples = BorderChunk->InversedBorderVoxelSamples;
-				IsSampled = &BorderChunks[d]->IsInverseSampled;
+				BorderChunk->IsInverseSampled = false;
+				BorderChunk->InversedBorderVoxelSamples->Reset();
+				BorderChunk->InversedBorderVoxelSamples->SetNum(VoxelLayer);
 			}
 		}else
 		{
 			auto BorderChunk = BorderChunks[d];
+			BorderChunkSamples = BorderChunk->BorderVoxelSamples;
+			IsSampled = &BorderChunk->IsSampled;
 			if (!BorderChunk->IsSampled)
 			{
-				BorderChunkSamples = BorderChunks[d]->BorderVoxelSamples;
-				IsSampled = &BorderChunks[d]->IsSampled;
+				BorderChunk->IsSampled = false;
+				BorderChunk->BorderVoxelSamples->Reset();
+				BorderChunk->BorderVoxelSamples->SetNum(VoxelLayer);
 			}
 		}
 		
@@ -84,27 +91,6 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVo
 	}
 	
 	IndexParams.VoxelGrid = VoxelGridPtr->RLEVoxelGrid;
-
-	if (VoxelChange != nullptr)
-	{
-		IndexParams.VoxelChange = VoxelChange;
-		IndexParams.NewVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
-		IndexParams.NewVoxelGrid->Reserve(IndexParams.VoxelGrid->Num() + 1);
-		IndexParams.EditVoxel = VoxelGenerator->GetVoxelByName(VoxelChange->VoxelName);
-
-		if (!IndexParams.EditVoxel.IsEmptyVoxel())
-		{
-			auto& VoxelTable = MeshVars.ChunkParams.OriginalChunk->ChunkVoxelIdTable;
-			if (!VoxelTable.Contains(IndexParams.EditVoxel.VoxelId))
-			{
-				VoxelTable.Add(IndexParams.EditVoxel.VoxelId, 0);
-			}
-		}
-	}
-	else
-	{
-		IndexParams.NewVoxelGrid = nullptr;
-	}
 
 	PreallocateArrays(MeshVars);
 
@@ -123,9 +109,10 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, FVo
 
 	GenerateProcMesh(MeshVars);
 
-	if (IndexParams.VoxelChange != nullptr)
+	if (IndexParams.EditEnabled)
 	{
-		VoxelGridPtr->RLEVoxelGrid = IndexParams.NewVoxelGrid;
+		// TODO: uncomment
+		//VoxelGridPtr->RLEVoxelGrid = IndexParams.NewVoxelGrid;
 	}
 }
 
@@ -139,7 +126,6 @@ void URLERunDirectionalVoxelMesher::CompressVoxelGrid(FChunk& Chunk, TArray<FVox
 
 	const auto RLEVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
 
-	RLEVoxelGrid->Reserve(Chunk.ChunkVoxelIdTable.Num());
 	RLEVoxelGrid->Emplace(1, VoxelGrid[0]);
 
 	for (int32 x = 1; x < VoxelGrid.Num(); x++)
@@ -219,6 +205,22 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	const auto FirstRun = &GridData[0];
 	// Set first run to trigger first condition in while loop
 	
+	if (!IndexParams.VoxelChanges->IsEmpty())
+	{
+		IndexParams.NewVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
+		IndexParams.NewVoxelGrid->Reserve(IndexParams.VoxelGrid->Num() + 1);
+		IndexParams.EditEnabled = true;
+		
+		auto VoxelChange = IndexParams.VoxelChanges->Pop();
+		FRLEVoxel RLEVoxel = {1,  VoxelGenerator->GetVoxelByName(VoxelChange.VoxelName)};
+		// TODO: index == 0
+		IndexParams.MeshingEvents[EMeshingEventIndex::EditEvent] = {&RLEVoxel, VoxelGenerator->CalculateVoxelIndex(VoxelChange.VoxelPosition) - 1, 0};
+	}
+	else
+	{
+		IndexParams.NewVoxelGrid = nullptr;
+	}
+	
 	IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval] = {FirstRun, FirstRun->RunLenght, 0};
 	IndexParams.MeshingEvents[EMeshingEventIndex::FollowingXInterval] = {FirstRun,  FirstRun->RunLenght + VoxelLayer, 0};
 	IndexParams.MeshingEvents[EMeshingEventIndex::FollowingZInterval] = {FirstRun, FirstRun->RunLenght + ChunkDimension, 0 };
@@ -239,6 +241,26 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 		{
 			// Reset interval flag
 			IndexParams.CurrentMeshingType = EMeshingTypeIndex::FullCulledFaceInterval;
+
+			// Edit Interval
+			if (IndexParams.EditEnabled)
+			{
+				auto& Interval = IndexParams.MeshingEvents[EditEvent];
+				if (Interval.EventIndex == IndexParams.CurrentMeshingEventIndex)
+				{
+					// Advance interval in chunk voxel sequence
+					if (!IndexParams.VoxelChanges->IsEmpty())
+					{
+						auto VoxelChange = IndexParams.VoxelChanges->Pop();
+						Interval.EventIndex = VoxelGenerator->CalculateVoxelIndex(VoxelChange.VoxelPosition);
+					}else
+					{
+						Interval.EventIndex = VoxelGenerator->GetVoxelCountPerChunk() + 1;
+					}
+				}
+			
+				IndexParams.NextMeshingEventIndex = Interval.EventIndex;
+			}
 			
 			if (AdvanceMeshingEventInterval(IndexParams, EMeshingEventIndex::LeadingInterval, false, false))
 			{
@@ -263,7 +285,11 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 			// Smallest interval should always be increase of Y dimension
 			auto& LeadingInterval = IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval];
 			auto BorderVoxel = *LeadingInterval.CurrentVoxelRun;
-
+			
+			if (!IndexParams.EditEnabled){
+				IndexParams.NextMeshingEventIndex = LeadingInterval.EventIndex;
+			}
+			
 			// Left border
 			if (Y == 0)
 			{
@@ -293,8 +319,6 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 			{
 				AddBorderSample(IndexParams, FIntVector(0, Y, X), EFaceDirection::Bottom, BorderVoxel, ChunkDimension - Y);
 			}
-			
-			IndexParams.NextMeshingEventIndex = LeadingInterval.EventIndex;
 
 			AdvanceMeshingEventInterval(IndexParams, EMeshingEventIndex::FollowingXInterval, X == 0, LeadingInterval.CurrentVoxelRun->Voxel.IsEmptyVoxel());
 			AdvanceMeshingEventInterval(IndexParams, EMeshingEventIndex::FollowingZInterval, Z == 0, LeadingInterval.CurrentVoxelRun->Voxel.IsEmptyVoxel());
@@ -302,7 +326,7 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 			// Generate culled faces
 			if (IndexParams.CurrentMeshingType != EMeshingTypeIndex::EmptyFaceInterval)
 			{
-				const int MaxYSequence = (ChunkDimension - Y) + IndexParams.CurrentMeshingEventIndex;
+				const uint32 MaxYSequence = (ChunkDimension - Y) + IndexParams.CurrentMeshingEventIndex;
 				IndexParams.NextMeshingEventIndex = FMath::Min(IndexParams.NextMeshingEventIndex, MaxYSequence);
 
 				IndexSequenceBetweenEvents = IndexParams.NextMeshingEventIndex - IndexParams.CurrentMeshingEventIndex;
@@ -398,7 +422,8 @@ bool URLERunDirectionalVoxelMesher::AdvanceMeshingEventInterval(FIndexParams& In
 	const bool BorderCondition, const bool LeadingIntervalEmpty)
 {
 	bool AdvanceInterval = false;
-	if (auto& Interval = IndexParams.MeshingEvents[IntervalFlagIndex]; Interval.EventIndex == IndexParams.CurrentMeshingEventIndex)
+	auto& Interval = IndexParams.MeshingEvents[IntervalFlagIndex]; 
+	if (Interval.EventIndex == IndexParams.CurrentMeshingEventIndex)
 	{
 		// Advance interval in chunk voxel sequence
 		Interval.VoxelRunIndex++;
@@ -406,11 +431,11 @@ bool URLERunDirectionalVoxelMesher::AdvanceMeshingEventInterval(FIndexParams& In
 		Interval.EventIndex = Interval.CurrentVoxelRun->RunLenght + IndexParams.CurrentMeshingEventIndex;
 		AdvanceInterval = true;
 	}
+	
+	IndexParams.NextMeshingEventIndex = FMath::Min(Interval.EventIndex, IndexParams.NextMeshingEventIndex);
 
 	// Sample interval
-	
 	// Move interval one step ahead if at the run end
-	const auto& Interval = IndexParams.MeshingEvents[IntervalFlagIndex];
 	const bool IntervalEmptyVoxel = Interval.CurrentVoxelRun->IsVoxelEmpty();
 
 	// Create mask based on interval combination, the mask is used as an index to array to prevent branching
@@ -418,7 +443,6 @@ bool URLERunDirectionalVoxelMesher::AdvanceMeshingEventInterval(FIndexParams& In
 	// Set interval flag
 	// Using xor at the chunk border prevents generating quads facing inside
 	IndexParams.CurrentMeshingType = static_cast<EMeshingTypeIndex>(IndexParams.CurrentMeshingType | ((BorderCondition && (LeadingIntervalEmpty != IntervalEmptyVoxel)) ^ IntervalEmptyVoxel) << IntervalFlagIndex);
-	IndexParams.NextMeshingEventIndex = FMath::Min(Interval.EventIndex, IndexParams.NextMeshingEventIndex);
 
 	return AdvanceInterval;
 }
@@ -441,16 +465,14 @@ void URLERunDirectionalVoxelMesher::GenerateBorder(TArray<FVoxelFace>& FaceConta
 	
 	auto& BorderChunk = BorderChunks[FaceDirection];
 
-	auto& SampledVoxel = (*BorderChunk->BorderVoxelSamples)[Index];
-	auto& InverseSampledVoxel = (*BorderChunk->InversedBorderVoxelSamples)[Index];
+	auto SampledVoxel = (*BorderChunk->BorderVoxelSamples)[Index];
+	auto InverseSampledVoxel = (*BorderChunk->InversedBorderVoxelSamples)[Index];
 
 	SmearVoxelBorder(SampledVoxel,*BorderChunk->BorderVoxelSamples, Index);
 	SmearVoxelBorder(InverseSampledVoxel,*BorderChunk->InversedBorderVoxelSamples, Index);
 	
 	if(FaceTemplate.StaticMeshingData.IsInverseDirection){
-		const auto Temp = SampledVoxel;
-		SampledVoxel = InverseSampledVoxel;
-		InverseSampledVoxel = Temp;
+		Swap(SampledVoxel, InverseSampledVoxel);
 	}
 	
 	if (!SampledVoxel.IsVoxelEmpty() && InverseSampledVoxel.IsVoxelEmpty())
