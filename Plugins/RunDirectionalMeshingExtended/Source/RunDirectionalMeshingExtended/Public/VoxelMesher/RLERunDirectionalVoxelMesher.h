@@ -31,7 +31,7 @@ private:
 		uint32 EventIndex = 0;
 		
 		// Index of an run in a voxel array
-		uint32 VoxelRunIndex = 0;
+		int32 VoxelRunIndex = 0;
 	};
 
 	// Type of faces the meshing interval should generate
@@ -47,13 +47,14 @@ private:
 		EmptyFaceInterval = 7,
 	};
 
-	constexpr static int EventIndexCount = 4;
+	constexpr static int EventIndexCount = 5;
 	enum EMeshingEventIndex
 	{
 		LeadingInterval = 0,
 		FollowingXInterval = 1,
 		FollowingZInterval = 2,
-		EditEvent = 3
+		EditEvent = 3,
+		CopyEvent = 4
 	};
 
 	struct FRLEMeshingData
@@ -76,8 +77,6 @@ private:
 	struct FIndexParams
 	{
 		TSharedPtr<TArray<FRLEVoxel>> SampledBorderChunks[CHUNK_FACE_COUNT];
-		
-		TSharedPtr<TArray<FRLEVoxel>> NewVoxelGrid;
 		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 
 		// Current event index made of all meshing events that were already processed/traversed.
@@ -91,6 +90,11 @@ private:
 
 		TArray<FVoxelChange>* VoxelChanges = nullptr;
 		bool EditEnabled = false;
+
+		void TryUpdateNextMeshingEvent(const uint32 EventIndex)
+		{
+			NextMeshingEventIndex = FMath::Min(EventIndex, NextMeshingEventIndex);
+		}
 	};
 
 	static void CreateFace(const FMesherVariables& MeshVars,
