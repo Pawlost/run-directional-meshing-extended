@@ -25,13 +25,15 @@ private:
 	{
 		// Voxel sequence (run) to be traversed
 		// If null the end is a chunk dimension, not end of sequence
-		const FRLEVoxel* CurrentVoxelRun = nullptr;
+		FRLEVoxel* CurrentVoxelRun = nullptr;
 		
 		// Index where event ends
 		uint32 EventIndex = 0;
 		
 		// Index of an run in a voxel array
 		int32 VoxelRunIndex = 0;
+
+		uint32 VoxelGridIndex = 0;
 	};
 
 	// Type of faces the meshing interval should generate
@@ -88,6 +90,8 @@ private:
 		EMeshingTypeIndex CurrentMeshingType;
 		uint32 NextMeshingEventIndex = 0;
 
+		uint32 ContinueEditIndex = 0;
+
 		TArray<FVoxelChange>* VoxelChanges = nullptr;
 		bool EditEnabled = false;
 
@@ -97,7 +101,7 @@ private:
 		}
 	};
 
-	static void CreateFace(const FMesherVariables& MeshVars,
+	void CreateFace(FMesherVariables& MeshVars,
 	                       const FStaticMergeData& StaticData,
 	                       const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 	                       const int YEnd);

@@ -105,43 +105,14 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TAr
 		}
 	}
 
-	//BorderGeneration(MeshVars, BorderChunks);
+	BorderGeneration(MeshVars, BorderChunks);
 
 	GenerateProcMesh(MeshVars);
-}
 
-void URLERunDirectionalVoxelMesher::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid)
-{
-#if CPUPROFILERTRACE_ENABLED
-	TRACE_CPUPROFILER_EVENT_SCOPE("RLE compression generation")
-#endif
-
-	auto VoxelGridObject = NewObject<URLEVoxelGrid>();
-
-	const auto RLEVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
-
-	RLEVoxelGrid->Emplace(1, VoxelGrid[0]);
-
-	for (int32 x = 1; x < VoxelGrid.Num(); x++)
+	if (IndexParams.EditEnabled)
 	{
-		const FVoxel Voxel = VoxelGrid[x];
-		if (RLEVoxelGrid->Last().Voxel == Voxel)
-		{
-			RLEVoxelGrid->Last().RunLenght++;
-		}
-		else
-		{
-			RLEVoxelGrid->Emplace(1, Voxel);
-		}
+		 VoxelGridPtr->RLEVoxelGrid = IndexParams.VoxelGrid;
 	}
-
-	VoxelGridObject->RLEVoxelGrid = RLEVoxelGrid;
-	Chunk.VoxelModel = VoxelGridObject;
-
-#if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT)
-	const FString MapName = GetWorld()->GetMapName();
-	FVoxelMeshingProfilingLogger::LogAllocatedMemory(MapName, VoxelGridObject->RLEVoxelGrid->GetAllocatedSize());
-#endif
 }
 
 URLERunDirectionalVoxelMesher::URLERunDirectionalVoxelMesher()
@@ -185,6 +156,40 @@ URLERunDirectionalVoxelMesher::URLERunDirectionalVoxelMesher()
 	MeshingData[EMeshingTypeIndex::EmptyFaceInterval] = {};
 }
 
+void URLERunDirectionalVoxelMesher::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid)
+{
+#if CPUPROFILERTRACE_ENABLED
+	TRACE_CPUPROFILER_EVENT_SCOPE("RLE compression generation")
+#endif
+
+	auto VoxelGridObject = NewObject<URLEVoxelGrid>();
+
+	const auto RLEVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
+
+	RLEVoxelGrid->Emplace(1, VoxelGrid[0]);
+
+	for (int32 x = 1; x < VoxelGrid.Num(); x++)
+	{
+		const FVoxel Voxel = VoxelGrid[x];
+		if (RLEVoxelGrid->Last().Voxel == Voxel)
+		{
+			RLEVoxelGrid->Last().RunLenght++;
+		}
+		else
+		{
+			RLEVoxelGrid->Emplace(1, Voxel);
+		}
+	}
+
+	VoxelGridObject->RLEVoxelGrid = RLEVoxelGrid;
+	Chunk.VoxelModel = VoxelGridObject;
+
+#if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT)
+	const FString MapName = GetWorld()->GetMapName();
+	FVoxelMeshingProfilingLogger::LogAllocatedMemory(MapName, VoxelGridObject->RLEVoxelGrid->GetAllocatedSize());
+#endif
+}
+
 void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars)
 {
 #if CPUPROFILERTRACE_ENABLED
@@ -195,8 +200,8 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	const int MaxChunkVoxelSequence = VoxelGenerator->GetVoxelCountPerChunk();
 	const int VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
 	
-	const auto& GridData = *IndexParams.VoxelGrid;
-	const auto FirstRun = &GridData[0];
+	auto& GridData = *IndexParams.VoxelGrid;
+	auto FirstRun = &GridData[0];
 
 	TSharedPtr<TArray<FRLEVoxel>> OldVoxelGrid = nullptr;
 	// Set first run to trigger first condition in while loop
@@ -225,6 +230,8 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	int IndexSequenceBetweenEvents = 0;
 	auto InitialPosition = FIntVector(0, 0, 0);
 	const FRLEVoxel* PreviousVoxelRun = nullptr;
+
+	auto VoxelChunk = VoxelGenerator->GetVoxelCountPerChunk();
 	
 	// Traverse through voxel grid
 	while (IndexParams.CurrentMeshingEventIndex < MaxChunkVoxelSequence)
@@ -238,11 +245,11 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 		{
 			// Reset interval flag
 			IndexParams.CurrentMeshingType = EMeshingTypeIndex::FullCulledFaceInterval;
+			IndexParams.NextMeshingEventIndex = VoxelChunk;
 
 			// Edit Interval
 			if (IndexParams.EditEnabled)
 			{
-				
 				auto& CopyInterval = IndexParams.MeshingEvents[CopyEvent];
 				if (CopyInterval.EventIndex == IndexParams.CurrentMeshingEventIndex)
 				{
@@ -251,29 +258,102 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 					IndexParams.VoxelGrid->Add(*CopyInterval.CurrentVoxelRun);
 					CopyInterval.EventIndex = CopyInterval.CurrentVoxelRun->RunLenght + IndexParams.CurrentMeshingEventIndex;
 				}
-				IndexParams.NextMeshingEventIndex = CopyInterval.EventIndex;
 					
-				auto& EditInterval = IndexParams.MeshingEvents[EditEvent];
-				if (EditInterval.EventIndex == IndexParams.CurrentMeshingEventIndex)
+				auto& EditEvent = IndexParams.MeshingEvents[EMeshingEventIndex::EditEvent];
+				if (EditEvent.EventIndex == IndexParams.CurrentMeshingEventIndex)
 				{
+					IndexParams.ContinueEditIndex = 0;
 					auto& LeadingEvent = IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval];
+					auto& FollowingXEvent = IndexParams.MeshingEvents[EMeshingEventIndex::FollowingXInterval];
+					auto& FollowingZEvent = IndexParams.MeshingEvents[EMeshingEventIndex::FollowingZInterval];
+					uint32 SubstractIndex = 0;
+					if (EditEvent.EventIndex == LeadingEvent.EventIndex)
+					{
+						auto& NextRLERun = (*IndexParams.VoxelGrid)[LeadingEvent.VoxelRunIndex + 1];
+						auto& LastRLERun = *LeadingEvent.CurrentVoxelRun;
+						NextRLERun.RunLenght--;
+						if (LastRLERun.Voxel == EditEvent.CurrentVoxelRun->Voxel)
+						{
+							LeadingEvent.EventIndex += 1;
+							SubstractIndex = -1;
+							LastRLERun.RunLenght++;
+						}else
+						{
+							IndexParams.VoxelGrid->Add(*EditEvent.CurrentVoxelRun);
+						}
+						
+						if (NextRLERun.IsRunEmpty())
+						{
+							IndexParams.VoxelGrid->RemoveAt(LeadingEvent.VoxelRunIndex + 1);
+							auto& CopyEvent = IndexParams.MeshingEvents[EMeshingEventIndex::CopyEvent];
+							auto& NewCopyVoxel = (*OldVoxelGrid)[CopyEvent.VoxelRunIndex + 1];
+							if (IndexParams.VoxelGrid->Last().Voxel == NewCopyVoxel.Voxel)
+							{
+								CopyEvent.VoxelRunIndex++;
+								LastRLERun.RunLenght += NewCopyVoxel.RunLenght;
+								IndexParams.ContinueEditIndex = NewCopyVoxel.RunLenght + 1;
+								CopyEvent.EventIndex += NewCopyVoxel.RunLenght;
+							}else
+							{
+								IndexParams.ContinueEditIndex = 1;
+							}
+						}
+					}else if (LeadingEvent.CurrentVoxelRun->Voxel != EditEvent.CurrentVoxelRun->Voxel)
+					{
+						uint32 RemainingIndex = LeadingEvent.EventIndex - EditEvent.EventIndex;
+						if (RemainingIndex == 1){
+							auto& CopyEvent = IndexParams.MeshingEvents[EMeshingEventIndex::CopyEvent];
+							if (OldVoxelGrid->IsValidIndex(CopyEvent.VoxelRunIndex + 1))
+							{
+								auto& NextVoxel = (*OldVoxelGrid)[CopyEvent.VoxelRunIndex + 1];
+								if (NextVoxel.Voxel == EditEvent.CurrentVoxelRun->Voxel)
+								{
+									NextVoxel.RunLenght++;
+									CopyInterval.VoxelRunIndex++;
+									CopyInterval.CurrentVoxelRun = &NextVoxel;
+									IndexParams.VoxelGrid->Add(NextVoxel);
+									CopyInterval.EventIndex = CopyInterval.CurrentVoxelRun->RunLenght + IndexParams.CurrentMeshingEventIndex;
+								}else
+								{
+									IndexParams.VoxelGrid->Add(*EditEvent.CurrentVoxelRun);
+								}
+								
+								LeadingEvent.EventIndex--;
+								(*IndexParams.VoxelGrid)[LeadingEvent.VoxelRunIndex].RunLenght -= 1;
+								SubstractIndex = 1;
+							}
+						}
+						else
+						{
+							uint32 OldRunLenght = LeadingEvent.CurrentVoxelRun->RunLenght;
+							(*IndexParams.VoxelGrid)[LeadingEvent.VoxelRunIndex].RunLenght = OldRunLenght - RemainingIndex;
+							IndexParams.VoxelGrid->Add(*EditEvent.CurrentVoxelRun);
+							IndexParams.VoxelGrid->Add({RemainingIndex - 1, LeadingEvent.CurrentVoxelRun->Voxel});
+							LeadingEvent.EventIndex = IndexParams.CurrentMeshingEventIndex;
+							SubstractIndex = RemainingIndex;
+						}
+					} 
+
+					if (LeadingEvent.CurrentVoxelRun == FollowingXEvent.CurrentVoxelRun)
+					{
+						FollowingXEvent.EventIndex -= SubstractIndex;	
+					}
+
+					if (LeadingEvent.CurrentVoxelRun == FollowingZEvent.CurrentVoxelRun)
+					{
+						FollowingZEvent.EventIndex -= SubstractIndex;
+					}
 					
-					uint32 RemainingIndex = LeadingEvent.EventIndex - EditInterval.EventIndex;
-					uint32 OldRunLenght = LeadingEvent.CurrentVoxelRun->RunLenght;
-					(*IndexParams.VoxelGrid)[LeadingEvent.VoxelRunIndex].RunLenght = OldRunLenght - RemainingIndex;
-					IndexParams.VoxelGrid->Add(*EditInterval.CurrentVoxelRun);
-					IndexParams.VoxelGrid->Add({RemainingIndex - 1, LeadingEvent.CurrentVoxelRun->Voxel});
-					LeadingEvent.EventIndex =  IndexParams.CurrentMeshingEventIndex;
-					EditInterval.EventIndex = VoxelGenerator->GetVoxelCountPerChunk() + 1;
-				//	MeshingEvents.EventIndex = EventIndex;
-					
-					// Advance interval in chunk voxel sequence
+					// TODO: rewrite
 					if (!IndexParams.VoxelChanges->IsEmpty())
 					{
 					}
+				
+					EditEvent.EventIndex = VoxelChunk + 1;
 				}
 
-				IndexParams.TryUpdateNextMeshingEvent(EditInterval.EventIndex);
+				IndexParams.NextMeshingEventIndex = CopyInterval.EventIndex;
+				IndexParams.TryUpdateNextMeshingEvent(EditEvent.EventIndex);
 			}
 			
 			if (AdvanceMeshingEventInterval(IndexParams, EMeshingEventIndex::LeadingInterval, false, false))
@@ -299,10 +379,6 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 			// Smallest interval should always be increase of Y dimension
 			auto& LeadingInterval = IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval];
 			auto BorderVoxel = *LeadingInterval.CurrentVoxelRun;
-			
-			if (!IndexParams.EditEnabled){
-				IndexParams.NextMeshingEventIndex = LeadingInterval.EventIndex;
-			}
 			
 			// Left border
 			if (Y == 0)
@@ -440,10 +516,15 @@ bool URLERunDirectionalVoxelMesher::AdvanceMeshingEventInterval(FIndexParams& In
 	if (Interval.EventIndex == IndexParams.CurrentMeshingEventIndex)
 	{
 		// Advance interval in chunk voxel sequence
-		Interval.VoxelRunIndex++;
-		Interval.CurrentVoxelRun = &(*IndexParams.VoxelGrid)[Interval.VoxelRunIndex];
-		Interval.EventIndex = Interval.CurrentVoxelRun->RunLenght + IndexParams.CurrentMeshingEventIndex;
-		AdvanceInterval = true;
+		if (IndexParams.VoxelGrid->IsValidIndex(Interval.VoxelRunIndex + 1)){
+			Interval.VoxelRunIndex++;
+			Interval.CurrentVoxelRun = &(*IndexParams.VoxelGrid)[Interval.VoxelRunIndex];
+			Interval.EventIndex = Interval.CurrentVoxelRun->RunLenght + IndexParams.CurrentMeshingEventIndex;
+			AdvanceInterval = true;
+		}else
+		{
+			Interval.EventIndex = IndexParams.ContinueEditIndex + IndexParams.CurrentMeshingEventIndex;
+		}
 	}
 	
 	IndexParams.TryUpdateNextMeshingEvent(Interval.EventIndex);
@@ -517,7 +598,7 @@ void URLERunDirectionalVoxelMesher::SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TA
 	}
 }
 
-void URLERunDirectionalVoxelMesher::CreateFace(const FMesherVariables& MeshVars,
+void URLERunDirectionalVoxelMesher::CreateFace(FMesherVariables& MeshVars,
                                                const FStaticMergeData& StaticData,
                                                const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
                                                const int YEnd)

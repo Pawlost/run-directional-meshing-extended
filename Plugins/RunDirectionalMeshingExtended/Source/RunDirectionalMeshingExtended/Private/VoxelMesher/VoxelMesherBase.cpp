@@ -30,6 +30,7 @@ void UVoxelMesherBase::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGri
 
 	const uint32 VoxelCount = VoxelGenerator->GetVoxelCountPerChunk();
 	uint32 OpaqueVoxelCount = 0;
+	// TODO: fix measuring
 	/*for (const auto OpaqueVoxels : Chunk.ChunkVoxelIdTable)
 	{
 		OpaqueVoxelCount += OpaqueVoxels.Value;
@@ -210,6 +211,8 @@ void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadM
 	const double VoxelSize = VoxelGenerator->GetVoxelSize();
 	
 	const auto VoxelId = Face.Voxel.VoxelId;
+	// TODO: remove
+	check(VoxelId == 0 || VoxelId== 1);
 	const int32 SectionId = LocalVoxelTable.FindOrAdd(VoxelId, LocalVoxelTable.Num());
 
 	auto& QuadSection = QuadMeshSectionArray[SectionId];
@@ -299,6 +302,9 @@ void UVoxelMesherBase::DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& Chun
 
 void UVoxelMesherBase::AddFace(const FStaticMergeData& FaceMeshingData, const FVoxelFace& NewFace, TArray<FVoxelFace>& ChunkFaces)
 {
+	//TODO: remove
+	check(NewFace.Voxel.VoxelId == 0 || NewFace.Voxel.VoxelId == 1);
+	
 	// Generate new face with coordinates
 	if (!ChunkFaces.IsEmpty())
 	{
