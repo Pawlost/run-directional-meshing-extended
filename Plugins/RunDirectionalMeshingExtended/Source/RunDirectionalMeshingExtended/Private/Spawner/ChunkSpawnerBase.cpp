@@ -201,6 +201,7 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& C
 		{
 			OutActorPtr->SetActorLocation(SpawnLocation);
 		}
+		OutActorPtr->ProceduralMeshComponent->ClearAllMeshSections();
 	}
 }
 

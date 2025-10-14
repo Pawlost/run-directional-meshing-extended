@@ -143,6 +143,7 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 		// Synchronize Mesh generation with game thread.
 		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
 		{
+			// TODO: rewrite
 			SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->ChunkMeshActor);
 			SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->BorderChunkMeshActor);
 		}).Wait();
