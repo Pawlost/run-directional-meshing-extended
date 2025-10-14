@@ -66,23 +66,21 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TAr
 			auto BorderChunk = BorderChunks[d];
 			BorderChunkSamples = BorderChunk->InversedBorderVoxelSamples;
 			IsSampled = &BorderChunk->IsInverseSampled;
-			if (!BorderChunk->IsInverseSampled)
-			{
-				BorderChunk->IsInverseSampled = false;
-				BorderChunk->InversedBorderVoxelSamples->Reset();
-				BorderChunk->InversedBorderVoxelSamples->SetNum(VoxelLayer);
-			}
+
+			//TODO: try better preallocation
+			BorderChunk->IsInverseSampled = false;
+			BorderChunk->InversedBorderVoxelSamples->Reset();
+			BorderChunk->InversedBorderVoxelSamples->SetNum(VoxelLayer);
+			
 		}else
 		{
 			auto BorderChunk = BorderChunks[d];
 			BorderChunkSamples = BorderChunk->BorderVoxelSamples;
 			IsSampled = &BorderChunk->IsSampled;
-			if (!BorderChunk->IsSampled)
-			{
-				BorderChunk->IsSampled = false;
-				BorderChunk->BorderVoxelSamples->Reset();
-				BorderChunk->BorderVoxelSamples->SetNum(VoxelLayer);
-			}
+			
+			BorderChunk->IsSampled = false;
+			BorderChunk->BorderVoxelSamples->Reset();
+			BorderChunk->BorderVoxelSamples->SetNum(VoxelLayer);
 		}
 		
 		BorderChunks[d]->IsGenerated = false;
@@ -207,7 +205,7 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 	{
 		OldVoxelGrid = IndexParams.VoxelGrid;
 		IndexParams.VoxelGrid =	MakeShared<TArray<FRLEVoxel>>();
-		IndexParams.VoxelGrid->Reserve(OldVoxelGrid->Num() + 1);
+		IndexParams.VoxelGrid->Reserve(OldVoxelGrid->Num() + 2);
 		IndexParams.EditEnabled = true;
 		
 		auto VoxelChange = IndexParams.VoxelChanges->Pop();
@@ -366,6 +364,12 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 									IndexParams.VoxelGrid->Add(*EditEvent.CurrentVoxelRun);
 								}
 								
+								LeadingEvent.EventIndex--;
+								(*IndexParams.VoxelGrid)[LeadingEvent.VoxelRunIndex].RunLenght -= 1;
+								SubstractIndex = 1;
+							}else
+							{
+								IndexParams.VoxelGrid->Add(*EditEvent.CurrentVoxelRun);
 								LeadingEvent.EventIndex--;
 								(*IndexParams.VoxelGrid)[LeadingEvent.VoxelRunIndex].RunLenght -= 1;
 								SubstractIndex = 1;
@@ -546,11 +550,8 @@ void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars,
 
 			if (!FaceContainer.IsEmpty() || !InverseFaceContainer.IsEmpty())
 			{
-				for (int x = 0; x < ChunkDimension; x++)
-				{
-					DirectionalGreedyMerge(*MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable,  FaceTemplate.StaticMeshingData, FaceContainer);
-					DirectionalGreedyMerge(*MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable,  InverseFaceTemplate.StaticMeshingData, InverseFaceContainer);
-				}
+				DirectionalGreedyMerge(*MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable,  FaceTemplate.StaticMeshingData, FaceContainer);
+				DirectionalGreedyMerge(*MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable,  InverseFaceTemplate.StaticMeshingData, InverseFaceContainer);
 			}
 		}
 	}
