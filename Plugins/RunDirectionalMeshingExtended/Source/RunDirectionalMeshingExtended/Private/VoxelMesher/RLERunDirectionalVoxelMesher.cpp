@@ -550,6 +550,7 @@ void URLERunDirectionalVoxelMesher::BorderGeneration(FMesherVariables& MeshVars,
 
 			if (!FaceContainer.IsEmpty() || !InverseFaceContainer.IsEmpty())
 			{
+				// TODO: run with only empty samples
 				DirectionalGreedyMerge(*MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable,  FaceTemplate.StaticMeshingData, FaceContainer);
 				DirectionalGreedyMerge(*MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable,  InverseFaceTemplate.StaticMeshingData, InverseFaceContainer);
 			}

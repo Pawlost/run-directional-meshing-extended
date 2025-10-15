@@ -188,6 +188,11 @@ void UVoxelMesherBase::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSh
 	for (const auto LocalVoxelType :LocalVoxelTable)
 	{
 		auto SectionId = LocalVoxelType.Value;
+
+		if (!IsValid(VoxelGenerator))
+		{
+			return;
+		}
 		const auto VoxelType = VoxelGenerator->GetVoxelTypeById(LocalVoxelType.Key);
 
 		AsyncTask(ENamedThreads::GameThread, [MeshActor, ChunkMeshData, SectionId, VoxelType]()
@@ -253,8 +258,12 @@ void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadM
 void UVoxelMesherBase::DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& ChunkMeshData, TMap<uint32, uint32>& LocalVoxelTable,
 														const FStaticMergeData& MergeData,
 														TArray<FVoxelFace>& FaceContainer) const
-{
-	TQueue<FVoxelFace> FaceQueue;
+{ 
+	auto FirstQueue = TQueue<FVoxelFace>();
+	TQueue<FVoxelFace> SecondQueue;
+	TQueue<FVoxelFace>* ActiveQueue = &FirstQueue;
+	TQueue<FVoxelFace>* PassiveQueue = &SecondQueue;
+	
 	FVoxelFace NextFace;
 	int FaceIndex = FaceContainer.Num() - 1;
 	
@@ -263,38 +272,42 @@ void UVoxelMesherBase::DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& Chun
 	{
 		NextFace = FaceContainer.Pop(EAllowShrinking::No);
 		
-		FVoxelFace* PrevFacePeek = FaceQueue.Peek();
+		FVoxelFace* PrevFacePeek = ActiveQueue->Peek();
 		
 		if (PrevFacePeek == nullptr || MergeData.HeightCondition(*PrevFacePeek, NextFace))
 		{
-			FaceQueue.Enqueue(NextFace);
+			ActiveQueue->Enqueue(NextFace);
 			continue;
 		}
 		
 		FVoxelFace PrevFace;
-		FaceQueue.Dequeue(PrevFace);
+
+		while (ActiveQueue->Dequeue(PrevFace))
+		{
+			if (MergeData.MergeFailCondition(PrevFace, NextFace))
+			{
+				ConvertFaceToProcMesh(ChunkMeshData, LocalVoxelTable, PrevFace, MergeData.FaceDirection);
+				continue;
+			}
+			
+			// Attempt greedy merge
+			if(!MergeData.GreedyMerge(NextFace, PrevFace))
+			{
+				PassiveQueue->Enqueue(PrevFace);
+			}
+		}
+
+		PassiveQueue->Enqueue(NextFace);
 		
-		// Mesh faces which are impossible to merge with current face
-		while (MergeData.MergeFailCondition(PrevFace, NextFace))
-		{
-			ConvertFaceToProcMesh(ChunkMeshData, LocalVoxelTable, PrevFace, MergeData.FaceDirection);
-
-			// Stop if no more faces to merge
-			if (!FaceQueue.Dequeue(PrevFace))
-				break;
-		}
-
-		// Attempt greedy merge
-		if (!MergeData.GreedyMerge(NextFace, PrevFace))
-		{
-			// Mesh face which is failed to merge
-			ConvertFaceToProcMesh(ChunkMeshData, LocalVoxelTable, PrevFace, MergeData.FaceDirection);
-		}
-
-		FaceQueue.Enqueue(NextFace);
+		Swap(PassiveQueue, ActiveQueue);
 	}
 
-	while (FaceQueue.Dequeue(NextFace))
+	while (ActiveQueue->Dequeue(NextFace))
+	{
+		ConvertFaceToProcMesh(ChunkMeshData,LocalVoxelTable, NextFace, MergeData.FaceDirection);
+	}
+
+	while (PassiveQueue->Dequeue(NextFace))
 	{
 		ConvertFaceToProcMesh(ChunkMeshData,LocalVoxelTable, NextFace, MergeData.FaceDirection);
 	}
