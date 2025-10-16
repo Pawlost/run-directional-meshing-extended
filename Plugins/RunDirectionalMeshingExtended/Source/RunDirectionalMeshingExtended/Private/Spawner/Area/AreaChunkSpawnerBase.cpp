@@ -37,6 +37,8 @@ void AAreaChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPositi
 		TArray<FVoxelChange> VoxelChanges;
 		VoxelChanges.Add(Modification);
 		GenerateChunkMesh(MesherVars, Chunk->GridPosition, VoxelChanges);
+
+		// TODO:rewrite
 		
 		/*EditHandle = Async(EAsyncExecution::ThreadPool, [this, MesherVars]()
 		{
@@ -64,7 +66,7 @@ FName AAreaChunkSpawnerBase::GetVoxelFromChunk(const FVoxelPosition& VoxelPositi
 		const auto VoxelIndex = VoxelGenerator->CalculateVoxelIndex(VoxelPosition.VoxelPosition);
 		const auto Voxel = Chunk->VoxelModel->GetVoxelAtIndex(VoxelIndex);
 		if (!Voxel.IsEmptyVoxel()){
-			const auto VoxelType = VoxelGenerator->GetVoxelTypeById(Voxel);
+			const auto VoxelType = VoxelGenerator->GetVoxelTableRow(Voxel);
 			return VoxelType.Key;
 		}
 	}
@@ -151,12 +153,9 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 
 	//Mesh could be spawned on a Async Thread similarly to voxel models but it is not done so to showcase real time speed of mesh generation (requirement for bachelor thesis)
 	VoxelGenerator->GenerateMesh(MesherVars, VoxelChanges);
-
-	if (!Chunk->bHasMesh)
-	{
-		UnusedActorsPool.Enqueue(Chunk->ChunkMeshActor);
-		Chunk->ChunkMeshActor = nullptr;
-	}
+	
+	EnqueueChunkActor(Chunk->ChunkMeshActor);
+	EnqueueChunkActor(Chunk->BorderChunkMeshActor);
 
 	for (auto SideChunk : MesherVars.ChunkParams.SideChunks)
 	{
@@ -209,6 +208,15 @@ void AAreaChunkSpawnerBase::DequeueChunkActor(TWeakObjectPtr<AChunkActor> ChunkA
 	if (ChunkActor == nullptr)
 	{
 		UnusedActorsPool.Dequeue(ChunkActor);
+	}
+}
+
+void AAreaChunkSpawnerBase::EnqueueChunkActor(TWeakObjectPtr<AChunkActor> ChunkActor)
+{
+	if (!ChunkActor->HasMesh())
+	{
+		UnusedActorsPool.Enqueue(ChunkActor);
+		ChunkActor = nullptr;
 	}
 }
 

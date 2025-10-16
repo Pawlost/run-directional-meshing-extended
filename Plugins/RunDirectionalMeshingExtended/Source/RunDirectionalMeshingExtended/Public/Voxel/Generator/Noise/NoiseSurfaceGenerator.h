@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "FastNoiseWrapper.h"
-#include "Voxel/VoxelType.h"
+#include "Voxel/VoxelTableRow.h"
 #include "NoiseSurfaceGenerator.generated.h"
 
 USTRUCT()
@@ -17,5 +17,5 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FNoiseSurfaceGenerator
 	TObjectPtr<UFastNoiseWrapper> ReverseSurfaceGenerator;
 
 	FName VoxelName;
-	FVoxelType VoxelType;
+	FVoxelTableRow VoxelType;
 };

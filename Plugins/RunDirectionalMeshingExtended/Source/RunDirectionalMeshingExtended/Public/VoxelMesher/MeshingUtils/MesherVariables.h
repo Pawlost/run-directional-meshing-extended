@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "FaceDirection.h"
 #include "Chunk/Chunk.h"
-#include "VoxelMesher/MeshingUtils/VoxelFace.h"
+#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 #include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
 #include "MesherVariables.generated.h"
 
@@ -27,9 +27,9 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FMesherVariables
 {
 	GENERATED_BODY()
 	
-	TSharedPtr<TArray<TArray<FVoxelFace>>> VirtualFaces[CHUNK_FACE_COUNT];
-	TMap<uint32, uint32> LocalVoxelTable;
-	TMap<uint32, uint32> BorderLocalVoxelTable;
+	TSharedPtr<TArray<TArray<FVirtualVoxelFace>>> VirtualFaces[CHUNK_FACE_COUNT];
+	TMap<int32, uint32> LocalVoxelTable;
+	TMap<int32, uint32> BorderLocalVoxelTable;
 
 	FChunkParams ChunkParams;
 	TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData;

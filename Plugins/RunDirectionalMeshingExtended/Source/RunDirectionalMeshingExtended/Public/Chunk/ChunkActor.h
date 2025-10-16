@@ -15,6 +15,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="RealtimeMesh")
 	TObjectPtr<UProceduralMeshComponent> ProceduralMeshComponent;
 
+	FORCEINLINE bool HasMesh() const;
+	
 	void ClearMesh() const;
 
 protected:

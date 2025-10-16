@@ -41,7 +41,7 @@ FName ASingleChunkSpawnerBase::GetVoxelFromChunk(const FVoxelPosition& VoxelPosi
 {
 	const auto VoxelIndex = VoxelGenerator->CalculateVoxelIndex(VoxelPosition.VoxelPosition);
 	const auto Voxel = SingleChunk->VoxelModel->GetVoxelAtIndex(VoxelIndex);
-	const auto VoxelType = VoxelGenerator->GetVoxelTypeById(Voxel);
+	const auto VoxelType = VoxelGenerator->GetVoxelTableRow(Voxel);
 	return VoxelType.Key;
 }
 

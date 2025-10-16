@@ -11,5 +11,5 @@ struct FVoxelChange
 	FName VoxelName;
 
 	UPROPERTY(EditAnywhere)
-	FIntVector VoxelPosition;
+	FIntVector VoxelPosition = FIntVector(0);
 };

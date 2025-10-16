@@ -11,16 +11,17 @@ FVoxel USingleVoxelGeneratorBase::GetSingleVoxel() const
 	return GetVoxelByName(VoxelTypeHandle.RowName);
 }
 
-TTuple<FName, FVoxelType> USingleVoxelGeneratorBase::GetVoxelTypeById(const int32& VoxelId) const
+TTuple<FName, FVoxelTableRow> USingleVoxelGeneratorBase::GetVoxelTableRow(const FVoxel& Voxel) const
 {
 	// Explore voxel table attached to row handle
 	const auto VoxelTable = VoxelTypeHandle.DataTable;
 	auto RowNames = VoxelTable->GetRowNames();
-	checkf(RowNames.IsValidIndex(VoxelId), TEXT("Voxel Id out of bounds"));
+	auto RowIndex = Voxel.GetRowIndex();
+	checkf(RowNames.IsValidIndex(RowIndex), TEXT("Voxel Id out of bounds"));
 	// Voxel index should be created from the same table
-	auto RowName = RowNames[VoxelId];
-	return TTuple<FName, FVoxelType>(
-		RowName, *VoxelTable->FindRow<FVoxelType>(RowName, "Could not find voxel id in row handle"));
+	auto RowName = RowNames[RowIndex];
+	return TTuple<FName, FVoxelTableRow>(
+		RowName, *VoxelTable->FindRow<FVoxelTableRow>(RowName, "Could not find voxel id in row handle"));
 }
 
 FVoxel USingleVoxelGeneratorBase::GetVoxelByName(const FName& VoxelName) const
@@ -32,10 +33,10 @@ FVoxel USingleVoxelGeneratorBase::GetVoxelByName(const FName& VoxelName) const
 		// Search row name
 		if (RowNames[Index] == VoxelName)
 		{
-			const auto VoxelType = VoxelTypeHandle.DataTable->FindRow<FVoxelType>(
+			const auto VoxelType = VoxelTypeHandle.DataTable->FindRow<FVoxelTableRow>(
 				VoxelTypeHandle.RowName, "Could not find voxel name in row handle");
-			//TODO: VoxelType should not be null (somehow set default)
-			return FVoxel(Index, VoxelType->bIsTransparent);
+			
+			return FVoxel(Index, VoxelType != nullptr && VoxelType->bIsTransparent);
 		}
 	}
 	return FVoxel();

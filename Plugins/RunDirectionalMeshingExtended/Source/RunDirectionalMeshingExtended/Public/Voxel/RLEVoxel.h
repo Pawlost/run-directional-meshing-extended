@@ -28,6 +28,6 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FRLEVoxel
 
 	FORCEINLINE bool IsRunEmpty() const
 	{
-		return RunLenght <= 0;
+		return RunLenght == 0;
 	}
 };

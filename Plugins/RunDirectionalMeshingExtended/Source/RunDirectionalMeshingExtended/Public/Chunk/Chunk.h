@@ -29,8 +29,5 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FChunk
 	FIntVector GridPosition = FIntVector(0, 0, 0);
 
 	UPROPERTY(VisibleInstanceOnly)
-	bool bHasMesh = false;
-
-	UPROPERTY(VisibleInstanceOnly)
 	bool bIsActive = false;
 };

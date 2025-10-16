@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "FastNoiseWrapper.h"
-#include "VoxelType.generated.h"
+#include "VoxelTableRow.generated.h"
 
 USTRUCT(BlueprintType)
-struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelType : public FTableRowBase
+struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelTableRow : public FTableRowBase
 {
 	GENERATED_BODY()
 

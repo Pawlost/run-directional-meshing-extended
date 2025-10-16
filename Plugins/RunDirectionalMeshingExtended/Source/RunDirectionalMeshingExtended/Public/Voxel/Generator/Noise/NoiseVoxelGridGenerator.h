@@ -17,7 +17,7 @@ public:
 	virtual void GenerateVoxels(FChunk& Chunk) override;
 
 	virtual double GetHighestElevationAtLocation(const FVector& Location) override;
-	virtual TTuple<FName, FVoxelType> GetVoxelTypeById(const int32& VoxelId) const override;
+	virtual TTuple<FName, FVoxelTableRow> GetVoxelTableRow(const FVoxel& Voxel) const override;
 	virtual FVoxel GetVoxelByName(const FName& VoxelName) const override;
 
 protected:

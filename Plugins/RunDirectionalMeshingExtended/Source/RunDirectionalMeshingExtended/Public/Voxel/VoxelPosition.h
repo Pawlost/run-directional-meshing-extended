@@ -8,8 +8,8 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelPosition
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntVector ChunkGridPosition;
+	FIntVector ChunkGridPosition = FIntVector(0);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FIntVector VoxelPosition;
+	FIntVector VoxelPosition = FIntVector(0);
 };

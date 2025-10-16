@@ -7,14 +7,19 @@ AChunkActor::AChunkActor()
 	SetRootComponent(ProceduralMeshComponent);
 }
 
+bool AChunkActor::HasMesh() const
+{
+	return ProceduralMeshComponent->GetNumSections() != 0;
+}
+
 void AChunkActor::ClearMesh() const
 {
-/*	if (!IsValid(this))
+	if (!IsValid(this))
 	{
 		return;
 	}
 	
-	ProceduralMeshComponent->ClearAllMeshSections();*/
+	ProceduralMeshComponent->ClearAllMeshSections();
 }
 
 

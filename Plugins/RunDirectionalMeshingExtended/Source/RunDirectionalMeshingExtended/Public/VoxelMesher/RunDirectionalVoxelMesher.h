@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
-#include "MeshingUtils/ProcMeshSectionVars.h"
 #include "MeshingUtils/MeshingDirections.h"
 #include "RunDirectionalVoxelMesher.generated.h"
 
@@ -42,7 +41,7 @@ private:
 
 	static void CheckVoxelNeighborhood(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate,
 						const int32& Index, const FVoxelParams& VoxelParams,
-	                    const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces);
+	                    const TSharedPtr<TArray<FVirtualVoxelFace>>& ChunkFaces);
 
 	
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars) const;

@@ -1,7 +1,7 @@
-﻿#include "VoxelMesher/MeshingUtils/VoxelFace.h"
+﻿#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 
-FVoxelFace FVoxelFace::CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght){
-	return FVoxelFace(Voxel,
+FVirtualVoxelFace FVirtualVoxelFace::CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght){
+	return FVirtualVoxelFace(Voxel,
 		InitialPosition + FIntVector(0, RunLenght, 0),
 		 InitialPosition + FIntVector(0, 0, 0),
 		InitialPosition + FIntVector(0, 0, 1),
@@ -9,9 +9,9 @@ FVoxelFace FVoxelFace::CreateFrontFace(const FVoxel& Voxel, const FIntVector& In
 }
 
 
-FVoxelFace FVoxelFace::CreateBackFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateBackFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
 {
-	return FVoxelFace(Voxel,
+	return FVirtualVoxelFace(Voxel,
 		InitialPosition,
 		 InitialPosition + FIntVector(0, RunLenght, 0),
 		InitialPosition + FIntVector(0, RunLenght, 1),
@@ -19,109 +19,109 @@ FVoxelFace FVoxelFace::CreateBackFace(const FVoxel& Voxel, const FIntVector& Ini
 }
 
 
-FVoxelFace FVoxelFace::CreateLeftFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateLeftFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
 {
-	return FVoxelFace(Voxel,
+	return FVirtualVoxelFace(Voxel,
 		InitialPosition + FIntVector(1, 0, 0),
 		 InitialPosition,
 		InitialPosition + FIntVector(0, 0, 1),
 		InitialPosition + FIntVector(1, 0, 1));
 }
 
-FVoxelFace FVoxelFace::CreateRightFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateRightFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
 {
-	return FVoxelFace(Voxel,
+	return FVirtualVoxelFace(Voxel,
 		InitialPosition + FIntVector(0, RunLenght - 1, 0),
 		 InitialPosition + FIntVector(1, RunLenght - 1, 0),
 		InitialPosition + FIntVector(1, RunLenght - 1, 1),
 		InitialPosition + FIntVector(0, RunLenght - 1, 1));
 }
 
-FVoxelFace FVoxelFace::CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
 {
-	return FVoxelFace(Voxel,
+	return FVirtualVoxelFace(Voxel,
 		InitialPosition + FIntVector(0, 0, 0),
 		 InitialPosition + FIntVector(0, RunLenght, 0),
 		InitialPosition + FIntVector(1, RunLenght, 0),
 		InitialPosition + FIntVector(1, 0, 0));
 }
 
-FVoxelFace FVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
 {
-	return FVoxelFace(Voxel,
+	return FVirtualVoxelFace(Voxel,
 		InitialPosition + FIntVector(0, RunLenght, 0),
 		 InitialPosition,
 		InitialPosition + FIntVector(1, 0, 0),
 		InitialPosition +FIntVector(1, RunLenght, 0));
 }
 
-void FVoxelFace::FrontBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
+void FVirtualVoxelFace::FrontBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
 	OutBorderLocation = FIntVector(0, Y, X);
 	OutQuadPosition = FIntVector(ChunkDimension, Y, X);
 }
 
-void FVoxelFace::BackBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
+void FVirtualVoxelFace::BackBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
 	OutBorderLocation = FIntVector(0, Y, X);
 	OutQuadPosition = FIntVector(0, Y, X);
 }
 
-void FVoxelFace::LeftBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
+void FVirtualVoxelFace::LeftBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
 	OutBorderLocation = FIntVector(0, X, Y);
 	OutQuadPosition = FIntVector(X, 0, Y);
 }
 
-void FVoxelFace::RightBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
+void FVirtualVoxelFace::RightBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
 	OutBorderLocation = FIntVector(0, X, Y);
 	OutQuadPosition = FIntVector(X, ChunkDimension, Y);
 }
 
-void FVoxelFace::TopBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
+void FVirtualVoxelFace::TopBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
 	OutBorderLocation = FIntVector(0, Y, X);
 	OutQuadPosition =FIntVector(X, Y, ChunkDimension);
 }
 
-void FVoxelFace::BottomBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
+void FVirtualVoxelFace::BottomBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
 {
 	OutBorderLocation = FIntVector(0, Y, X);
 	OutQuadPosition = FIntVector(X, Y, 0);
 }
 
-bool FVoxelFace::HeightConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::HeightConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
 	return Face.StartVertexUp.X == NewFace.StartVertexUp.X;
 }
 
-bool FVoxelFace::HeightConditionY(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::HeightConditionY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
 	return Face.StartVertexUp.Y == NewFace.StartVertexUp.Y;
 }
 
-bool FVoxelFace::HeightConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::HeightConditionZ(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
 	return Face.StartVertexUp.Z == NewFace.StartVertexUp.Z;
 }
 
-bool FVoxelFace::MergeFailConditionX(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::MergeFailConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
 	return  Face.StartVertexDown.Z > NewFace.StartVertexUp.Z;
 }
 
-bool FVoxelFace::MergeFailConditionRightY(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::MergeFailConditionRightY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
 	return Face.StartVertexUp.X > NewFace.EndVertexDown.X;
 }
 
-bool FVoxelFace::MergeFailConditionLeftY(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::MergeFailConditionLeftY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
 	return Face.EndVertexUp.X > NewFace.StartVertexUp.X;
 }
 
-bool FVoxelFace::MergeFailConditionZ(const FVoxelFace& Face, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::MergeFailConditionZ(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
 	return Face.StartVertexDown.X > NewFace.StartVertexUp.X;
 }
@@ -130,7 +130,7 @@ bool FVoxelFace::MergeFailConditionZ(const FVoxelFace& Face, const FVoxelFace& N
  * Compare vertices and merge quads
  * @return true if previous face was merged
  */
-bool FVoxelFace::MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::MergeFaceEnd(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace)
 {
 	if (PrevFace.Voxel == NewFace.Voxel &&
 		PrevFace.EndVertexDown == NewFace.StartVertexDown &&
@@ -147,7 +147,7 @@ bool FVoxelFace::MergeFaceEnd(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
  * Compare vertices and merge quads
  * @return true if previous face was merged
  */
-bool FVoxelFace::MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::MergeFaceStart(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace)
 {
 	if (PrevFace.Voxel == NewFace.Voxel &&
 		PrevFace.StartVertexUp == NewFace.EndVertexUp &&
@@ -164,7 +164,7 @@ bool FVoxelFace::MergeFaceStart(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
  * Compare vertices and merge quads
  * @return true if previous face was merged into new
  */
-bool FVoxelFace::MergeFaceUp(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
+bool FVirtualVoxelFace::MergeFaceUp(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace)
 {
 	if (PrevFace.Voxel == NewFace.Voxel &&
 		PrevFace.StartVertexUp == NewFace.StartVertexDown &&
@@ -177,37 +177,37 @@ bool FVoxelFace::MergeFaceUp(FVoxelFace& PrevFace, const FVoxelFace& NewFace)
 	return false;
 }
 
-int FVoxelFace::GetXLocation(const FIntVector& Location)
+int FVirtualVoxelFace::GetXLocation(const FIntVector& Location)
 {
 	return Location.X;
 }
 
-int FVoxelFace::GetYLocation(const FIntVector& Location)
+int FVirtualVoxelFace::GetYLocation(const FIntVector& Location)
 {
 	return Location.Y;
 }
 
-int FVoxelFace::GetZLocation(const FIntVector& Location)
+int FVirtualVoxelFace::GetZLocation(const FIntVector& Location)
 {
 	return Location.Z;
 }
 
-FVector FVoxelFace::GetFinalStartVertexDown(const double& VoxelSize) const
+FVector FVirtualVoxelFace::GetFinalStartVertexDown(const double& VoxelSize) const
 {
 	return static_cast<FVector>(StartVertexDown) * VoxelSize;
 }
 
-FVector FVoxelFace::GetFinalStartVertexUp(const double& VoxelSize) const
+FVector FVirtualVoxelFace::GetFinalStartVertexUp(const double& VoxelSize) const
 {
 	return static_cast<FVector>(StartVertexUp) * VoxelSize;
 }
 
-FVector FVoxelFace::GetFinalEndVertexDown(const double& VoxelSize) const
+FVector FVirtualVoxelFace::GetFinalEndVertexDown(const double& VoxelSize) const
 {
 	return static_cast<FVector>(EndVertexDown) * VoxelSize;
 }
 
-FVector FVoxelFace::GetFinalEndVertexUp(const double& VoxelSize) const
+FVector FVirtualVoxelFace::GetFinalEndVertexUp(const double& VoxelSize) const
 {
 	return static_cast<FVector>(EndVertexUp) * VoxelSize;
 }

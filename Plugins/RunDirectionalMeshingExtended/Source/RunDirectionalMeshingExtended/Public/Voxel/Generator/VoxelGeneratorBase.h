@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "Chunk/Chunk.h"
 #include "Voxel/Voxel.h"
-#include "Voxel/VoxelType.h"
+#include "Voxel/VoxelTableRow.h"
 #include "VoxelGeneratorBase.generated.h"
 
 struct FVoxelChange;
@@ -60,12 +60,8 @@ public:
 	virtual double GetHighestElevationAtLocation(const FVector& Location);
 
 	// Abstract functions
-	virtual TTuple<FName, FVoxelType> GetVoxelTypeById(const int32& VoxelId) const PURE_VIRTUAL(
-		UVoxelGeneratorBase::GetVoxelType, return TTuple<FName, FVoxelType>();)
-
-	FORCEINLINE virtual TTuple<FName, FVoxelType> GetVoxelTypeById(const FVoxel& Voxel){
-		return GetVoxelTypeById(Voxel.VoxelId);
-	}
+	virtual TTuple<FName, FVoxelTableRow> GetVoxelTableRow(const FVoxel& Voxel) const PURE_VIRTUAL(
+		UVoxelGeneratorBase::GetVoxelTypeById, return TTuple<FName, FVoxelTableRow>();)
 	
 	virtual FVoxel GetVoxelByName(const FName& VoxelName) const PURE_VIRTUAL(
 		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)

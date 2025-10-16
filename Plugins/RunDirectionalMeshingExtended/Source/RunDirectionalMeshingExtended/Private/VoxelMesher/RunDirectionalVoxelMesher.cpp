@@ -7,11 +7,6 @@
 
 void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChanges)
 {
-	if (EmptyActor(MeshVars))
-	{
-		return;
-	}
-
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RunDirectionalMeshing generation")
 #endif
@@ -207,8 +202,6 @@ void URunDirectionalVoxelMesher::FaceGeneration(const UVoxelGrid& VoxelGridObjec
 	const FString MapName = GetWorld()->GetMapName();
 	FVoxelMeshingProfilingLogger::LogGeneratedVertices(MapName, GlobalVertexCount);
 #endif
-
-	MeshVars.ChunkParams.OriginalChunk->bHasMesh = true;
 }
 
 void URunDirectionalVoxelMesher::IncrementRun(const int X, const int Y, const int Z,
@@ -251,7 +244,7 @@ void URunDirectionalVoxelMesher::IncrementRun(const int X, const int Y, const in
 
 void URunDirectionalVoxelMesher::CheckVoxelNeighborhood(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate,
                                          const int32& Index, const FVoxelParams& VoxelParams,
-                                         const TSharedPtr<TArray<FVoxelFace>>& ChunkFaces)
+                                         const TSharedPtr<TArray<FVirtualVoxelFace>>& ChunkFaces)
 {
 	// Calculate indices need to check if face should be generated
 	const FInnerVoxelIndexParams VoxelIndexParams =

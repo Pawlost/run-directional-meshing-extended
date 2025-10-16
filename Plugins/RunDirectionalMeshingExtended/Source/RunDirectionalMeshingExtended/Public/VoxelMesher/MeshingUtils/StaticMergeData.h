@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "FaceDirection.h"
-#include "VoxelFace.h"
+#include "VirtualVoxelFace.h"
 
 struct FStaticMergeData
 {
@@ -8,14 +8,14 @@ struct FStaticMergeData
 	const EFaceDirection InverseFaceDirection;
 	bool IsInverseDirection;
 	
-	const TFunctionRef<bool(FVoxelFace& PrevFace, const FVoxelFace& NewFace)> RunDirectionFaceMerge;
-	const TFunctionRef<bool(FVoxelFace& PrevFace, const FVoxelFace& NewFace)> GreedyMerge;
-	const TFunctionRef<FVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;
+	const TFunctionRef<bool(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace)> RunDirectionFaceMerge;
+	const TFunctionRef<bool(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace)> GreedyMerge;
+	const TFunctionRef<FVirtualVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;
 	const TFunctionRef<void(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)> BorderLocation;
 	const TFunctionRef<int(FIntVector Location)> GetMainDirection;
 	
-	const TFunctionRef<bool(const FVoxelFace& Face, const FVoxelFace& NewFace)> HeightCondition;
-	const TFunctionRef<bool(const FVoxelFace& Face, const FVoxelFace& NewFace)> MergeFailCondition;
+	const TFunctionRef<bool(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)> HeightCondition;
+	const TFunctionRef<bool(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)> MergeFailCondition;
 
 	static FStaticMergeData FrontFaceData;
 	static FStaticMergeData BackFaceData;

@@ -13,7 +13,7 @@ void UNoiseVoxelGridGenerator::BeginPlay()
 	for (const FName VoxelName : VoxelTypeTable->GetRowNames())
 	{
 		// Voxel type is copied from table for consistency
-		const auto VoxelType = *VoxelTypeTable->FindRow<FVoxelType>(VoxelName, "");
+		const auto VoxelType = *VoxelTypeTable->FindRow<FVoxelTableRow>(VoxelName, "");
 
 		// Initialize all values for surface noise
 		auto SurfaceNoise = NewObject<UFastNoiseWrapper>(this);
@@ -147,10 +147,11 @@ double UNoiseVoxelGridGenerator::GetHighestElevationAtLocation(const FVector& Lo
 	return MaxElevation * VoxelSize;
 }
 
-TTuple<FName, FVoxelType> UNoiseVoxelGridGenerator::GetVoxelTypeById(const int32& VoxelId) const
+TTuple<FName, FVoxelTableRow> UNoiseVoxelGridGenerator::GetVoxelTableRow(const FVoxel& Voxel) const
 {
-	auto SurfaceGenerator = SurfaceGenerators[VoxelId];
-	return TTuple<FName, FVoxelType>(SurfaceGenerator.VoxelName, SurfaceGenerator.VoxelType);
+	const auto RowIndex = Voxel.GetRowIndex();
+	auto SurfaceGenerator = SurfaceGenerators[RowIndex];
+	return TTuple<FName, FVoxelTableRow>(SurfaceGenerator.VoxelName, SurfaceGenerator.VoxelType);
 }
 
 FVoxel UNoiseVoxelGridGenerator::GetVoxelByName(const FName& VoxelName) const

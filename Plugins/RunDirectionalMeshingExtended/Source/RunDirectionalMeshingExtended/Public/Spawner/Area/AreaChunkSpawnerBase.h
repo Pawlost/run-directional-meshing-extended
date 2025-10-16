@@ -44,6 +44,7 @@ protected:
 private:
 	void AddChunkFromGrid(FMesherVariables& MesherVars, const FFaceToDirection& FaceDirection);
 	void DequeueChunkActor(TWeakObjectPtr<AChunkActor> ChunkActor);
+	void EnqueueChunkActor(TWeakObjectPtr<AChunkActor> ChunkActor);
 	
 	TSharedFuture<void> EditHandle;
 	FCriticalSection Mutex;

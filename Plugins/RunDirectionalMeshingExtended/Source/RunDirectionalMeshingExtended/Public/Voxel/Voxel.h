@@ -13,14 +13,30 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxel
 	GENERATED_BODY()
 
 	// Tied to FVoxel namespace
-	static constexpr int32 EMPTY_VOXEL = -1; 
+	static constexpr int32 EMPTY_VOXEL = 0; 
+	static constexpr int32 OFFSET_FROM_EMPTY_VOXEL = FVoxel::EMPTY_VOXEL + 1;
 
 	// Saving voxels is not implemented in this demo, but a property specifier for saving has been added.
 	UPROPERTY(SaveGame)
 	int32 VoxelId = EMPTY_VOXEL;
+
+	FVoxel(){}
+
+	explicit FVoxel(const int32 VoxelId)
+	{
+		this->VoxelId = VoxelId;
+	}
 	
-	UPROPERTY(SaveGame)
-	bool bIsTransparent = false;
+	explicit FVoxel(const uint32 RowIndex, const bool IsTransparent = false)
+	{
+		const int32 OffsetId = RowIndex + OFFSET_FROM_EMPTY_VOXEL;
+		VoxelId = IsTransparent ? -OffsetId : OffsetId;
+	}
+
+	FORCEINLINE uint32 GetRowIndex() const
+	{
+		return FMath::Abs(VoxelId) - OFFSET_FROM_EMPTY_VOXEL;
+	}
 	
 	FORCEINLINE bool IsEmptyVoxel() const
 	{
@@ -29,7 +45,7 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxel
 
 	FORCEINLINE bool IsTransparent() const
 	{
-		return bIsTransparent || IsEmptyVoxel();
+		return VoxelId < EMPTY_VOXEL;
 	}
 
 	FORCEINLINE bool operator==(const FVoxel& OtherVoxel) const

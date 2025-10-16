@@ -82,7 +82,7 @@ private:
 		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 
 		// Current event index made of all meshing events that were already processed/traversed.
-		int CurrentMeshingEventIndex = 0;
+		uint32 CurrentMeshingEventIndex = 0;
 
 		// After reaching closest end, updates it and sets next voxel interval to next
 		// End is equivalent to event in Discrete Event Simulation 
@@ -111,7 +111,7 @@ private:
 	// return true when interval advanced
 	static bool AdvanceMeshingEventInterval(FIndexParams& IndexParams, const EMeshingEventIndex IntervalFlagIndex, bool BorderCondition = false, bool LeadingValue = false);
 	
-	static void CreateSideFace( TArray<TArray<FVoxelFace>>& SideFaceData,
+	static void CreateSideFace( TArray<TArray<FVirtualVoxelFace>>& SideFaceData,
 											   const FStaticMergeData& StaticData,
 											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 											   const int YEnd);
@@ -120,7 +120,7 @@ private:
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
 	void BorderGeneration(FMesherVariables& MeshVars, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks) const;
 	
-	void GenerateBorder(TArray<FVoxelFace>& FaceContainer, TArray<FVoxelFace>& InverseFaceContainer,
+	void GenerateBorder(TArray<FVirtualVoxelFace>& FaceContainer, TArray<FVirtualVoxelFace>& InverseFaceContainer,
 		TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
 		const FMeshingDirections& FaceTemplate, const FMeshingDirections& InverseFaceTemplate, int X, int Y) const;
 };

@@ -13,7 +13,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Voxels")
 	FDataTableRowHandle VoxelTypeHandle;
 
-	virtual TTuple<FName, FVoxelType> GetVoxelTypeById(const int32& Voxel) const override;
+	virtual TTuple<FName, FVoxelTableRow> GetVoxelTableRow(const FVoxel& Voxel) const override;
 	virtual FVoxel GetVoxelByName(const FName& VoxelName) const override;
 protected:
 	virtual void BeginPlay() override;
