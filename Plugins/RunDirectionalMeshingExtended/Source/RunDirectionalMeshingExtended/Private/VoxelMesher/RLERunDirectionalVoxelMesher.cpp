@@ -109,7 +109,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TAr
 
 	if (IndexParams.EditEnabled)
 	{
-		 VoxelGridPtr->RLEVoxelGrid = IndexParams.VoxelGrid;
+		VoxelGridPtr->RLEVoxelGrid = IndexParams.VoxelGrid;
 	}
 }
 

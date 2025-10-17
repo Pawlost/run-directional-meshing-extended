@@ -14,6 +14,27 @@ void ASingleChunkSpawner::StartMeshing(TArray<FVoxelChange>& VoxelChange)
 	FMesherVariables MeshVar;
 	MeshVar.ChunkParams.SpawnerPtr = this;
 	MeshVar.ChunkParams.OriginalChunk = SingleChunk;
+	
+	auto Spawner = MakeShared<FChunkParams>(MeshVar.ChunkParams);
+
+	// TODO: rewrite
+	if (IsInGameThread())
+	{
+		//Creating AsyncTask from main thread will cause deadlock
+		SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->ChunkMeshActor);
+		SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->BorderChunkMeshActor);
+	}
+	else
+	{
+		// Synchronize Mesh generation with game thread.
+		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
+		{
+			// TODO: rewrite
+			SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->ChunkMeshActor);
+			SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->BorderChunkMeshActor);
+		}).Wait();
+	}
+	
 	AddSideChunk(MeshVar, EFaceDirection::Top, nullptr);
 	AddSideChunk(MeshVar, EFaceDirection::Bottom, nullptr);
 	AddSideChunk(MeshVar, EFaceDirection::Front, nullptr);
