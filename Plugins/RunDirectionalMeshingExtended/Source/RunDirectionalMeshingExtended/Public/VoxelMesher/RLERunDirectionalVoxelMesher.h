@@ -17,8 +17,6 @@ public:
 	virtual void GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChange) override;
 	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid) override;
 
-	URLERunDirectionalVoxelMesher();
-
 private:
 	
 	struct FMeshingEventInterval
@@ -34,19 +32,6 @@ private:
 		int32 VoxelRunIndex = 0;
 
 		uint32 VoxelGridIndex = 0;
-	};
-
-	// Type of faces the meshing interval should generate
-	// Index to IntervalFaces array
-	enum EMeshingTypeIndex {
-		FullCulledFaceInterval = 0,
-		FrontTopFaceInterval = 1,
-		BackFaceInterval = 2,
-		TopFaceInterval = 3,
-		BottomFaceInterval = 4,
-		FrontFaceInterval = 5,
-		BackBottomFaceInterval = 6,
-		EmptyFaceInterval = 7,
 	};
 
 	constexpr static int EventIndexCount = 5;
@@ -87,7 +72,6 @@ private:
 		// After reaching closest end, updates it and sets next voxel interval to next
 		// End is equivalent to event in Discrete Event Simulation 
 		FMeshingEventInterval MeshingEvents[EventIndexCount];
-		EMeshingTypeIndex CurrentMeshingType;
 		uint32 NextMeshingEventIndex = 0;
 
 		uint32 ContinueEditIndex = 0;
@@ -104,12 +88,12 @@ private:
 	void CreateFace(FMesherVariables& MeshVars,
 	                       const FStaticMergeData& StaticData,
 	                       const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-	                       const int YEnd);
+	                       const int YEnd, bool CanGenerate);
 	
 	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars);
 
 	// return true when interval advanced
-	static bool AdvanceMeshingEventInterval(FIndexParams& IndexParams, const EMeshingEventIndex IntervalFlagIndex, bool BorderCondition = false, bool LeadingValue = false);
+	static bool AdvanceMeshingEventInterval(FIndexParams& IndexParams, const EMeshingEventIndex IntervalFlagIndex);
 	
 	static void CreateSideFace( TArray<TArray<FVirtualVoxelFace>>& SideFaceData,
 											   const FStaticMergeData& StaticData,
