@@ -2,7 +2,7 @@
 
 #include "VoxelChange.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FVoxelChange
 {
 	GENERATED_BODY()

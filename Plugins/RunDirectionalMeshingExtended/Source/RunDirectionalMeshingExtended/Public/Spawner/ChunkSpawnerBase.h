@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "Voxel/VoxelPosition.h"
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
+#include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "ChunkSpawnerBase.generated.h"
 
 struct FVoxelPosition;
@@ -37,16 +38,19 @@ public:
 	FName GetVoxelNameAtHit(const FVector& HitPosition, const FVector& HitNormal);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void ChangeVoxelInChunk(const FVoxelPosition& VoxelPosition,
-	                                const FName& VoxelName) PURE_VIRTUAL(AChunkSpawnerBase::ChangeVoxelInChunk)
+	virtual void ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition) PURE_VIRTUAL(AChunkSpawnerBase::ChangeVoxelInChunk)
 	
 	UFUNCTION(BlueprintCallable)
 	virtual FName GetVoxelFromChunk(const FVoxelPosition& VoxelPosition) PURE_VIRTUAL(AChunkSpawnerBase::GetVoxelFromChunk, return "";)
 	
-	virtual TSharedFuture<void> SpawnChunksAsync() PURE_VIRTUAL(AChunkSpawnerBase::SpawnChunks, return TSharedFuture<void>();) 
+	virtual TSharedFuture<void> SpawnChunksAsync() PURE_VIRTUAL(AChunkSpawnerBase::SpawnChunks, return TSharedFuture<void>();)
+	
+	UFUNCTION(BlueprintCallable)
+	FVoxelPosition CalculateVoxelPositionFromHit(const FVector& HitPosition,const FVector& HitNormal, const bool bInnerVoxelPosition) const;
 
 	bool IsInitialized() const;
 protected:
+	
 	virtual void BeginPlay() override;
 
 	static void AddSideChunk(FMesherVariables& MeshVar, EFaceDirection Direction,
@@ -59,14 +63,14 @@ protected:
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 
 	FIntVector WorldPositionToChunkGridPosition(const FVector& WorldPosition) const;
-
-	FVoxelPosition CalculateVoxelPosition(const FVector& HitPosition, const FVector& AdjustedNormal) const;
 	
 	// Wait for all futures
 	static void WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks);
 	
 	void SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams, TWeakObjectPtr<AChunkActor>& OutActorPtr) const;
-
-
+	
 	bool bIsInitialized = false;
+
+private:
+	bool CheckVoxelBoundary(const FIntVector& VoxelPosition) const;
 };

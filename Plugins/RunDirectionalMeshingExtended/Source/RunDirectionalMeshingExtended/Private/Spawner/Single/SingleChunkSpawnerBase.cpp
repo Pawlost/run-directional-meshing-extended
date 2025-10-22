@@ -21,20 +21,16 @@ void ASingleChunkSpawnerBase::BeginPlay()
 	SpawnChunksAsync();
 }
 
-void ASingleChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPosition,
-                                                 const FName& VoxelName)
+void ASingleChunkSpawnerBase::ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition)
 {
-	if (VoxelPosition.ChunkGridPosition != SingleChunkGridPosition)
+	if (ChunkPosition != SingleChunkGridPosition)
 	{
 		// Return if adding to single chunk border
 		return;
 	}
 
 	// Modify voxel at hit position
-	TArray<FVoxelChange> VoxelChanges;
-	const FVoxelChange Modification(VoxelName, VoxelPosition.VoxelPosition);
-	VoxelChanges.Add(Modification);
-	StartMeshing(VoxelChanges);
+	StartMeshing(VoxelChangesInChunk);
 }
 
 FName ASingleChunkSpawnerBase::GetVoxelFromChunk(const FVoxelPosition& VoxelPosition)

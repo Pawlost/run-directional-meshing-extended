@@ -5,38 +5,27 @@
 #include "Voxel/Generator/VoxelGeneratorBase.h"
 #include "Voxel/Grid/VoxelModel.h"
 
-void AAreaChunkSpawnerBase::ChangeVoxelInChunk(const FVoxelPosition& VoxelPosition,
-                                               const FName& VoxelName)
+void AAreaChunkSpawnerBase::ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition)
 {
-	int ChunkDimensions = VoxelGenerator->GetVoxelCountPerVoxelLine();
-	if (VoxelPosition.VoxelPosition.X < 0 || VoxelPosition.VoxelPosition.Y < 0 || VoxelPosition.VoxelPosition.Z < 0 ||
-		VoxelPosition.VoxelPosition.X >= ChunkDimensions || VoxelPosition.VoxelPosition.Y >= ChunkDimensions || VoxelPosition.VoxelPosition.Z >= ChunkDimensions)
-	{
-		return;
-	}
-	
 	if (EditHandle.IsValid() && !EditHandle.IsReady())
 	{
 		return;
 	}
 
-	if (ChunkGrid.Contains(VoxelPosition.ChunkGridPosition))
+	if (ChunkGrid.Contains(ChunkPosition))
 	{
-		const auto FoundChunk = ChunkGrid.Find(VoxelPosition.ChunkGridPosition);
+		const auto FoundChunk = ChunkGrid.Find(ChunkPosition);
 
 		if (FoundChunk == nullptr || !FoundChunk->IsValid())
 		{
 			return;
 		}
 
-		auto Chunk = *FoundChunk;
+		const auto Chunk = *FoundChunk;
 		
 		FMesherVariables MesherVars;
 		Chunk->bIsActive = false;
-		FVoxelChange Modification(VoxelName, VoxelPosition.VoxelPosition);
-		TArray<FVoxelChange> VoxelChanges;
-		VoxelChanges.Add(Modification);
-		GenerateChunkMesh(MesherVars, Chunk->GridPosition, VoxelChanges);
+		GenerateChunkMesh(MesherVars, Chunk->GridPosition, VoxelChangesInChunk);
 
 		// TODO:rewrite
 		

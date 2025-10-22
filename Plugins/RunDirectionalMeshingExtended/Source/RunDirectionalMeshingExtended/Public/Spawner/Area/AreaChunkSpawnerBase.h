@@ -23,8 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chunk")
 	bool bEnableInitialChunkSpawn = true;
 
-	virtual void ChangeVoxelInChunk(const FVoxelPosition& VoxelPosition,
-	                                const FName& VoxelName) override;
+	virtual void ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition) override;
 
 	virtual FName GetVoxelFromChunk(const FVoxelPosition& VoxelPosition) override;
 	
