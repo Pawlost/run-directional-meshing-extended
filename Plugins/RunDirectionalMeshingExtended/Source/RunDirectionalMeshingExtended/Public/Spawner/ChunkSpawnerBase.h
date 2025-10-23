@@ -33,6 +33,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeVoxelAtHit(const FVector& HitPosition, const FVector& HitNormal,
 	                      const FName& VoxelName, bool bPick);
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeVoxelSphereAtHit(const FVector& HitPosition, const FVector& HitNormal,
+						  const FName& VoxelName, bool bPick, int Radius);
+
+	void ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName, bool bPick);
 	
 	UFUNCTION(BlueprintCallable)
 	FName GetVoxelNameAtHit(const FVector& HitPosition, const FVector& HitNormal);

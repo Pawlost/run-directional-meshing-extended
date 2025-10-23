@@ -52,8 +52,27 @@ void AChunkSpawnerBase::ChangeVoxelAtHit(const FVector& HitPosition, const FVect
 	ChangeVoxelsInChunk(VoxelChanges, VoxelPosition.ChunkGridPosition);
 }
 
+void AChunkSpawnerBase::ChangeVoxelSphereAtHit(const FVector& HitPosition, const FVector& HitNormal,
+	const FName& VoxelName, bool bPick, int Radius)
+{
+	const auto VoxelPosition = CalculateVoxelPositionFromHit(HitPosition, HitNormal, bPick);
+
+	// TODO: finish
+	for (int r = 0; r < Radius; r++)
+	{
+		
+	}
+}
+
+
+void AChunkSpawnerBase::ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName, bool bPick)
+{
+	const auto VoxelPosition = CalculateVoxelPositionFromHit(HitPosition, HitNormal, bPick);
+	
+}
+
 FVoxelPosition AChunkSpawnerBase::CalculateVoxelPositionFromHit(const FVector& HitPosition,
-                                                         const FVector& HitNormal, const bool bInnerVoxelPosition) const
+                                                                const FVector& HitNormal, const bool bInnerVoxelPosition) const
 {
 	FVector AdjustedNormal;
 	

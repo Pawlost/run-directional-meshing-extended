@@ -204,6 +204,7 @@ void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadM
 	const auto VoxelId = Face.Voxel.VoxelId;
 	// TODO: remove
 	check(VoxelId != 0);
+	// TODO: replace hashmap with array
 	const int32 SectionId = LocalVoxelTable.FindOrAdd(VoxelId, LocalVoxelTable.Num());
 
 	auto& QuadSection = QuadMeshSectionArray[SectionId];
