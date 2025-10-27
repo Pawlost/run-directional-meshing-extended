@@ -11,7 +11,7 @@ class RUNDIRECTIONALMESHINGEXTENDED_API ASingleBorderlessChunkSpawner : public A
 	GENERATED_BODY()
 	
 protected:
-	virtual void StartMeshing(TArray<FVoxelChange>& VoxelChanges) override;
+	virtual void StartMeshing(TArray<FVoxelEdit>& VoxelChanges) override;
 	
 private:
 	TSharedPtr<FChunk> SideChunk[CHUNK_FACE_COUNT];

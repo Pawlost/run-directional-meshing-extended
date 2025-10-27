@@ -45,16 +45,15 @@ void AChunkSpawnerBase::ChangeVoxelAtHit(const FVector& HitPosition, const FVect
 		return;
 	}
 
-	const FVoxelChange Modification(VoxelName, VoxelPosition.VoxelPosition);
-	TArray<FVoxelChange> VoxelChanges;
-	VoxelChanges.Add(Modification);
-	
-	ChangeVoxelsInChunk(VoxelChanges, VoxelPosition.ChunkGridPosition);
+	FCrossChunkEdit ChunkEdit;
+	ChunkEdit.AddVoxelEdit(VoxelPosition, VoxelName);
+	ChangeVoxelsInChunk(ChunkEdit);
 }
 
 void AChunkSpawnerBase::ChangeVoxelSphereAtHit(const FVector& HitPosition, const FVector& HitNormal,
 	const FName& VoxelName, bool bPick, int Radius)
 {
+	TMap<FIntVector, TArray<FVoxelEdit>> Sphere;
 	const auto VoxelPosition = CalculateVoxelPositionFromHit(HitPosition, HitNormal, bPick);
 
 	// TODO: finish

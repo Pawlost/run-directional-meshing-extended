@@ -11,5 +11,5 @@ class RUNDIRECTIONALMESHINGEXTENDED_API ASingleChunkSpawner : public ASingleChun
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void StartMeshing(TArray<FVoxelChange>& VoxelChange) override;
+	virtual void StartMeshing(TArray<FVoxelEdit>& VoxelChange) override;
 };

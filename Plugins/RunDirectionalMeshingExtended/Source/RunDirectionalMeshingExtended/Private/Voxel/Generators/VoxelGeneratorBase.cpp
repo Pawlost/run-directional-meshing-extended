@@ -70,7 +70,7 @@ uint32 UVoxelGeneratorBase::GetVoxelCountPerChunk() const
 	return VoxelCountXYZ;
 }
 
-void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelChange>& VoxelChanges) const
+void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelEdit>& VoxelChanges) const
 {
 	if (bEnableVoxelMeshing)
 	{

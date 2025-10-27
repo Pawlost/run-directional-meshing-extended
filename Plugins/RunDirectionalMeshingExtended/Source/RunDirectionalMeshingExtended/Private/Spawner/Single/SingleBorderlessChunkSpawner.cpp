@@ -3,7 +3,7 @@
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "Voxel/Generator/VoxelGeneratorBase.h"
 
-void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FVoxelChange>& VoxelChanges)
+void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FVoxelEdit>& VoxelChanges)
 {
 	FMesherVariables ChunkParams;
 	ChunkParams.ChunkParams.SpawnerPtr = this;

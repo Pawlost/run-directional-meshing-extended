@@ -23,7 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chunk")
 	bool bEnableInitialChunkSpawn = true;
 
-	virtual void ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition) override;
+	virtual void ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits) override;
 
 	virtual FName GetVoxelFromChunk(const FVoxelPosition& VoxelPosition) override;
 	
@@ -37,7 +37,7 @@ protected:
 	TQueue<TWeakObjectPtr<AChunkActor>, EQueueMode::Mpsc> UnusedActorsPool;
 
 	virtual void GenerateArea() PURE_VIRTUAL(AAreaChunkSpawnerBase::GenerateArea)
-	void GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, TArray<FVoxelChange>& VoxelChanges);
+	void GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, TArray<FVoxelEdit>& VoxelChanges);
 	virtual void SpawnChunk(const FIntVector& ChunkGridPosition, TSharedFuture<void>* OutAsyncExecution = nullptr);
 
 private:

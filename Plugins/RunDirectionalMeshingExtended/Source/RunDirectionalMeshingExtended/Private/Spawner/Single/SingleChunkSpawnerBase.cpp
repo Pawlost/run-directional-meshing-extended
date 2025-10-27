@@ -21,16 +21,16 @@ void ASingleChunkSpawnerBase::BeginPlay()
 	SpawnChunksAsync();
 }
 
-void ASingleChunkSpawnerBase::ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition)
+void ASingleChunkSpawnerBase::ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits)
 {
-	if (ChunkPosition != SingleChunkGridPosition)
+	for (auto ChunkEdit : ChunkEdits.VoxelEdits)
 	{
-		// Return if adding to single chunk border
-		return;
+		if (ChunkEdit.Key == SingleChunkGridPosition)
+		{
+			// Modify voxel at hit position
+			StartMeshing(ChunkEdit.Value);
+		}
 	}
-
-	// Modify voxel at hit position
-	StartMeshing(VoxelChangesInChunk);
 }
 
 FName ASingleChunkSpawnerBase::GetVoxelFromChunk(const FVoxelPosition& VoxelPosition)
@@ -50,7 +50,7 @@ TSharedFuture<void> ASingleChunkSpawnerBase::SpawnChunksAsync()
 			SingleChunk->bIsActive = true;
 		}
 		
-		TArray<FVoxelChange> VoxelChanges;
+		TArray<FVoxelEdit> VoxelChanges;
 		StartMeshing(VoxelChanges);
 	}).Share();
 }

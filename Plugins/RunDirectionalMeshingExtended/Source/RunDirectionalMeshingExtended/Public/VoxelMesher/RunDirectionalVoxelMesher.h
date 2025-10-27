@@ -14,7 +14,7 @@ class RUNDIRECTIONALMESHINGEXTENDED_API URunDirectionalVoxelMesher : public UVox
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChanges) override;
+	virtual void GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelEdit>& VoxelChanges) override;
 
 private:
 	
@@ -47,7 +47,7 @@ private:
 	void FaceGeneration(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars) const;
 
 	void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable,
-	                   const FVoxelChange& VoxelChange) const;
+	                   const FVoxelEdit& VoxelChange) const;
 	
 	void IncrementBorderRun(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars,
 	                        const FMeshingDirections& FaceTemplate, const FIntVector& Position, int BorderIndex) const;

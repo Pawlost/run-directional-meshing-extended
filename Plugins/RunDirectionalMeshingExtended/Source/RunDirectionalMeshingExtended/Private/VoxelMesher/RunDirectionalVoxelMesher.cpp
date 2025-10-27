@@ -5,7 +5,7 @@
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "Voxel/Grid/VoxelGrid.h"
 
-void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChanges)
+void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelEdit>& VoxelChanges)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RunDirectionalMeshing generation")
@@ -288,7 +288,7 @@ bool URunDirectionalVoxelMesher::IsVoxelVisible(const UVoxelGrid& VoxelGridObjec
 }
 
 void URunDirectionalVoxelMesher::ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable,
-                                               const FVoxelChange& VoxelChange) const
+                                               const FVoxelEdit& VoxelChange) const
 {
 	const auto Index = VoxelGenerator->CalculateVoxelIndex(VoxelChange.VoxelPosition);
 	const FVoxel VoxelId = VoxelGenerator->GetVoxelByName(VoxelChange.VoxelName);

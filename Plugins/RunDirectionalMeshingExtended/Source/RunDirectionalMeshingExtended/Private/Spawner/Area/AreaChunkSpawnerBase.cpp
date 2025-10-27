@@ -5,44 +5,47 @@
 #include "Voxel/Generator/VoxelGeneratorBase.h"
 #include "Voxel/Grid/VoxelModel.h"
 
-void AAreaChunkSpawnerBase::ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition)
+void AAreaChunkSpawnerBase::ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits)
 {
 	if (EditHandle.IsValid() && !EditHandle.IsReady())
 	{
 		return;
 	}
 
-	if (ChunkGrid.Contains(ChunkPosition))
+	for (auto ChunkEdit : ChunkEdits.VoxelEdits)
 	{
-		const auto FoundChunk = ChunkGrid.Find(ChunkPosition);
-
-		if (FoundChunk == nullptr || !FoundChunk->IsValid())
+		if (ChunkGrid.Contains(ChunkEdit.Key))
 		{
-			return;
-		}
+			const auto FoundChunk = ChunkGrid.Find(ChunkEdit.Key);
 
-		const auto Chunk = *FoundChunk;
-		
-		FMesherVariables MesherVars;
-		Chunk->bIsActive = false;
-		GenerateChunkMesh(MesherVars, Chunk->GridPosition, VoxelChangesInChunk);
-
-		// TODO:rewrite
-		
-		/*EditHandle = Async(EAsyncExecution::ThreadPool, [this, MesherVars]()
-		{
-			FMesherVariables SideMesherVars;
-			for (int32 s = 0; s < CHUNK_FACE_COUNT; s++)
+			if (FoundChunk == nullptr || !FoundChunk->IsValid())
 			{
-				auto SideChunk = MesherVars.ChunkParams.SideChunks[s];
-				if (SideChunk.IsValid())
-				{
-					SideChunk->bIsActive = false;
-					TArray<FVoxelChange> VoxelChanges;
-					GenerateChunkMesh(SideMesherVars, SideChunk->GridPosition, VoxelChanges);
-				}
+				return;
 			}
-		}).Share();*/
+
+			const auto Chunk = *FoundChunk;
+			
+			FMesherVariables MesherVars;
+			Chunk->bIsActive = false;
+			GenerateChunkMesh(MesherVars, Chunk->GridPosition, ChunkEdit.Value);
+
+			// TODO:rewrite
+			
+			/*EditHandle = Async(EAsyncExecution::ThreadPool, [this, MesherVars]()
+			{
+				FMesherVariables SideMesherVars;
+				for (int32 s = 0; s < CHUNK_FACE_COUNT; s++)
+				{
+					auto SideChunk = MesherVars.ChunkParams.SideChunks[s];
+					if (SideChunk.IsValid())
+					{
+						SideChunk->bIsActive = false;
+						TArray<FVoxelChange> VoxelChanges;
+						GenerateChunkMesh(SideMesherVars, SideChunk->GridPosition, VoxelChanges);
+					}
+				}
+			}).Share();*/
+		}
 	}
 }
 
@@ -79,7 +82,7 @@ void AAreaChunkSpawnerBase::BeginPlay()
 			//Spawn center chunk
 			SpawnChunk(CenterGridPosition);
 			FMesherVariables MesherVars;
-			auto VoxelChanges = TArray<FVoxelChange>();
+			auto VoxelChanges = TArray<FVoxelEdit>();
 			GenerateChunkMesh(MesherVars, CenterGridPosition, VoxelChanges);
 		}
 
@@ -88,7 +91,7 @@ void AAreaChunkSpawnerBase::BeginPlay()
 }
 
 //Running on main thread may cause deadlock
-void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, TArray<FVoxelChange>& VoxelChanges)
+void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, TArray<FVoxelEdit>& VoxelChanges)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Area Mesh generation prepartion")

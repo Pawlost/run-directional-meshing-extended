@@ -19,7 +19,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Chunk")
 	bool AlignGridPositionWithSpawner = true;
 
-	virtual void ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition) override;
+	virtual void ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits) override;
 	
 	virtual FName GetVoxelFromChunk(const FVoxelPosition& VoxelPosition) override;
 	
@@ -27,7 +27,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void StartMeshing(TArray<FVoxelChange>& VoxelChange) PURE_VIRTUAL(ASingleChunkSpawnerBase::StartMeshing)
+	virtual void StartMeshing(TArray<FVoxelEdit>& VoxelChange) PURE_VIRTUAL(ASingleChunkSpawnerBase::StartMeshing)
 	
 	TSharedPtr<FChunk> SingleChunk;
 };

@@ -44,7 +44,7 @@ public:
 	FName GetVoxelNameAtHit(const FVector& HitPosition, const FVector& HitNormal);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void ChangeVoxelsInChunk(TArray<FVoxelChange>& VoxelChangesInChunk, const FIntVector& ChunkPosition) PURE_VIRTUAL(AChunkSpawnerBase::ChangeVoxelInChunk)
+	virtual void ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits) PURE_VIRTUAL(AChunkSpawnerBase::ChangeVoxelInChunk)
 	
 	UFUNCTION(BlueprintCallable)
 	virtual FName GetVoxelFromChunk(const FVoxelPosition& VoxelPosition) PURE_VIRTUAL(AChunkSpawnerBase::GetVoxelFromChunk, return "";)

@@ -5,7 +5,7 @@
 #include "Voxel/VoxelTableRow.h"
 #include "VoxelGeneratorBase.generated.h"
 
-struct FVoxelChange;
+struct FVoxelEdit;
 struct FMesherVariables;
 class UVoxelMesherBase;
 
@@ -54,7 +54,7 @@ public:
 	uint32 GetVoxelCountPerVoxelLine() const;
 	uint32 GetVoxelCountPerVoxelPlane() const;
 	uint32 GetVoxelCountPerChunk() const;
-	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelChange>& VoxelChanges) const;
+	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelEdit>& VoxelChanges) const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual double GetHighestElevationAtLocation(const FVector& Location);

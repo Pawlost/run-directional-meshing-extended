@@ -14,7 +14,7 @@ class RUNDIRECTIONALMESHINGEXTENDED_API URLERunDirectionalVoxelMesher : public U
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelChange>& VoxelChange) override;
+	virtual void GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelEdit>& VoxelChange) override;
 	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid) override;
 
 private:
@@ -76,7 +76,7 @@ private:
 
 		uint32 ContinueEditIndex = 0;
 
-		TArray<FVoxelChange>* VoxelChanges = nullptr;
+		TArray<FVoxelEdit>* VoxelChanges = nullptr;
 		bool EditEnabled = false;
 
 		void TryUpdateNextMeshingEvent(const uint32 EventIndex)
