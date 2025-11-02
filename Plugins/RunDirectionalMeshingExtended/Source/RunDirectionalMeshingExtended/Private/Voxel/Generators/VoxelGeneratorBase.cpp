@@ -5,7 +5,7 @@ void UVoxelGeneratorBase::BeginPlay()
 {
 	// Calculate the total number of voxels in a chunk along each axis
 	VoxelCountY = VoxelCountPerChunkDimension;
-	ChunkSize = VoxelCountY * VoxelSize;
+	ChunkSpacing = VoxelCountY * VoxelSize;
 	VoxelCountYZ = VoxelCountY * VoxelCountY;
 	VoxelCountXYZ = VoxelCountYZ * VoxelCountY;
 
@@ -45,9 +45,9 @@ uint32 UVoxelGeneratorBase::CalculateVoxelIndex(const FIntVector& VoxelPosition)
 	return CalculateVoxelIndex(VoxelPosition.X, VoxelPosition.Y, VoxelPosition.Z);
 }
 
-double UVoxelGeneratorBase::GetChunkAxisSize() const
+double UVoxelGeneratorBase::GetChunkSpacing() const
 {
-	return ChunkSize;
+	return ChunkSpacing;
 }
 
 double UVoxelGeneratorBase::GetVoxelSize() const
@@ -80,5 +80,5 @@ void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MesherVariables, TArray
 
 double UVoxelGeneratorBase::GetHighestElevationAtLocation(const FVector& Location)
 {
-	return GetChunkAxisSize();
+	return GetChunkSpacing();
 }

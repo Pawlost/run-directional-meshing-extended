@@ -4,7 +4,7 @@
 
 void ADespawnChunkSpawnerBase::ChangeGridCenterToPosition(const FVector& NewPosition)
 {
-	const auto NewGridPosition = WorldPositionToChunkGridPosition(NewPosition);
+	const auto NewGridPosition = GetChunkGridPositionFromGlobalPosition(NewPosition);
 
 	// Restart spawning if center moved
 	if (CenterGridPosition != NewGridPosition)

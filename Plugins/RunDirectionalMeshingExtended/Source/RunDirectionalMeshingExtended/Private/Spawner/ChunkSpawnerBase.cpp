@@ -38,15 +38,9 @@ double AChunkSpawnerBase::GetHighestElevationAtLocation(const FVector& Location)
 void AChunkSpawnerBase::ChangeVoxelAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName,
                                          const bool bPick)
 {
-	const auto VoxelPosition = CalculateVoxelPositionFromHit(HitPosition, HitNormal, bPick);
-	
-	if (CheckVoxelBoundary(VoxelPosition.VoxelPosition))
-	{
-		return;
-	}
-
+	const auto GlobalVoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
 	FCrossChunkEdit ChunkEdit;
-	ChunkEdit.AddVoxelEdit(VoxelPosition, VoxelName);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition, VoxelName);
 	ChangeVoxelsInChunk(ChunkEdit);
 }
 
@@ -54,7 +48,7 @@ void AChunkSpawnerBase::ChangeVoxelSphereAtHit(const FVector& HitPosition, const
 	const FName& VoxelName, bool bPick, int Radius)
 {
 	TMap<FIntVector, TArray<FVoxelEdit>> Sphere;
-	const auto VoxelPosition = CalculateVoxelPositionFromHit(HitPosition, HitNormal, bPick);
+	const auto VoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
 
 	// TODO: finish
 	for (int r = 0; r < Radius; r++)
@@ -66,15 +60,15 @@ void AChunkSpawnerBase::ChangeVoxelSphereAtHit(const FVector& HitPosition, const
 
 void AChunkSpawnerBase::ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName, bool bPick)
 {
-	const auto VoxelPosition = CalculateVoxelPositionFromHit(HitPosition, HitNormal, bPick);
+	const auto VoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
 	
 }
 
-FVoxelPosition AChunkSpawnerBase::CalculateVoxelPositionFromHit(const FVector& HitPosition,
-                                                                const FVector& HitNormal, const bool bInnerVoxelPosition) const
+FIntVector AChunkSpawnerBase::CalculateGlobalVoxelPositionFromHit(const FVector& HitPosition, const FVector& HitNormal,
+	const bool bInnerVoxelPosition) const
 {
-	FVector AdjustedNormal;
-	
+	FIntVector AdjustedNormal;
+
 	if (bInnerVoxelPosition)
 	{
 		// Inner Voxel position
@@ -90,33 +84,19 @@ FVoxelPosition AChunkSpawnerBase::CalculateVoxelPositionFromHit(const FVector& H
 		AdjustedNormal.Z = -FMath::Clamp(HitNormal.Z, -1, 0);
 	}
 	
-	// Adjust position based on normal
-	FVector Position = HitPosition - AdjustedNormal * VoxelGenerator->GetVoxelSize();
+	FMatrix ActorLocationMatrix = FTranslationMatrix(FVector(0));
 
 	if (!UseWorldCenter)
 	{
 		// Transform hit position to local coordinates, if they are enabled
-		Position -= GetActorLocation();
+		ActorLocationMatrix = FTranslationMatrix(GetActorLocation()).Inverse();
 	}
 
-	FVoxelPosition FinalPosition;
+	ActorLocationMatrix = ActorLocationMatrix * FScaleMatrix(FVector(VoxelGenerator->GetVoxelSize())).Inverse();
+	const FVector VoxelPosition = ActorLocationMatrix.TransformPosition(HitPosition);
 
-	FinalPosition.ChunkGridPosition = WorldPositionToChunkGridPosition(Position);
-
-	// Precise voxel position in chunk
-	FinalPosition.VoxelPosition = FIntVector(
-		(Position - FVector(FinalPosition.ChunkGridPosition * VoxelGenerator->GetChunkAxisSize())) / VoxelGenerator
-		->GetVoxelSize());
-
-	return FinalPosition;
-}
-
-FName AChunkSpawnerBase::GetVoxelNameAtHit(const FVector& HitPosition, const FVector& HitNormal)
-{
-	const auto VoxelPosition = CalculateVoxelPositionFromHit(HitPosition, HitNormal, true);
-
-	const auto VoxelName = GetVoxelFromChunk(VoxelPosition);
-	return VoxelName;
+	// Flooring instead of rounding improves precision, subtracted normal from global voxel coordinates
+	return FIntVector(FMath::Floor(VoxelPosition.X), FMath::Floor(VoxelPosition.Y), FMath::Floor(VoxelPosition.Z)) - AdjustedNormal;
 }
 
 void AChunkSpawnerBase::AddSideChunk(FMesherVariables& MeshVar, EFaceDirection Direction,
@@ -154,13 +134,6 @@ void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
 	}
 }
 
-FIntVector AChunkSpawnerBase::WorldPositionToChunkGridPosition(const FVector& WorldPosition) const
-{
-	const auto Location = WorldPosition / VoxelGenerator->GetChunkAxisSize();
-	return FIntVector(FMath::FloorToInt32(Location.X), FMath::FloorToInt32(Location.Y),
-	                  FMath::FloorToInt32(Location.Z));
-}
-
 void AChunkSpawnerBase::WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks)
 {
 	for (auto Task : Tasks)
@@ -185,7 +158,7 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& C
 
 	//Spawn actor
 	const auto Chunk = ChunkParams->OriginalChunk;
-	const auto SpawnLocation = FVector(Chunk->GridPosition) * VoxelGenerator->GetChunkAxisSize();
+	const auto SpawnLocation = FVector(Chunk->GridPosition) * VoxelGenerator->GetChunkSpacing();
 
 	FAttachmentTransformRules ActorAttachmentRules = FAttachmentTransformRules::KeepWorldTransform;
 	if (!ChunkParams->WorldTransform)
@@ -226,10 +199,24 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& C
 	}
 }
 
+void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(FCrossChunkEdit& OutChunkEdit,
+	const FIntVector& GlobalVoxelPosition, const FName& VoxelType) const
+{
+	const auto ChunkPosition =GetChunkGridPositionFromGlobalPosition(FVector(GlobalVoxelPosition));
+	const FIntVector VoxelPosition = FIntVector(GlobalVoxelPosition - (ChunkPosition * VoxelGenerator->GetVoxelCountPerVoxelLine()));
+	OutChunkEdit.AddVoxelEdit(VoxelPosition, ChunkPosition, VoxelType);
+}
+
+FIntVector AChunkSpawnerBase::GetChunkGridPositionFromGlobalPosition(const FVector& GlobalPosition) const
+{
+	const auto ImpreciseChunkPosition =  GlobalPosition / VoxelGenerator->GetVoxelCountPerVoxelLine();
+	// Floor is used to adjust negative numbers
+	return FIntVector(FMath::Floor(ImpreciseChunkPosition.X),FMath::Floor(ImpreciseChunkPosition.Y), FMath::Floor(ImpreciseChunkPosition.Z));
+}
+
 bool AChunkSpawnerBase::CheckVoxelBoundary(const FIntVector& VoxelPosition) const
 {
 	const int ChunkDimensions = VoxelGenerator->GetVoxelCountPerVoxelLine();
 	return VoxelPosition.X < 0 || VoxelPosition.Y < 0 || VoxelPosition.Z < 0 ||
 		VoxelPosition.X >= ChunkDimensions || VoxelPosition.Y >= ChunkDimensions || VoxelPosition.Z >= ChunkDimensions;
 }
-

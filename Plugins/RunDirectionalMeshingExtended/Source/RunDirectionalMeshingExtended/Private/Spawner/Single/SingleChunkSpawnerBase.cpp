@@ -1,9 +1,7 @@
 ﻿#include "Spawner/Single/SingleChunkSpawnerBase.h"
 
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
-#include "Voxel/VoxelPosition.h"
 #include "Voxel/Generator/VoxelGeneratorBase.h"
-#include "Voxel/Grid/VoxelModel.h"
 
 void ASingleChunkSpawnerBase::BeginPlay()
 {
@@ -11,7 +9,7 @@ void ASingleChunkSpawnerBase::BeginPlay()
 
 	if (AlignGridPositionWithSpawner)
 	{
-		SingleChunkGridPosition = WorldPositionToChunkGridPosition(GetActorLocation());;
+		SingleChunkGridPosition = GetChunkGridPositionFromGlobalPosition(GetActorLocation());;
 	}
 
 	// Initialize single chunk
@@ -31,14 +29,6 @@ void ASingleChunkSpawnerBase::ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits)
 			StartMeshing(ChunkEdit.Value);
 		}
 	}
-}
-
-FName ASingleChunkSpawnerBase::GetVoxelFromChunk(const FVoxelPosition& VoxelPosition)
-{
-	const auto VoxelIndex = VoxelGenerator->CalculateVoxelIndex(VoxelPosition.VoxelPosition);
-	const auto Voxel = SingleChunk->VoxelModel->GetVoxelAtIndex(VoxelIndex);
-	const auto VoxelType = VoxelGenerator->GetVoxelTableRow(Voxel);
-	return VoxelType.Key;
 }
 
 TSharedFuture<void> ASingleChunkSpawnerBase::SpawnChunksAsync()

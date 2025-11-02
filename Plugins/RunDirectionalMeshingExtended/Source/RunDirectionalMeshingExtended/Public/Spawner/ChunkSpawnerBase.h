@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "Voxel/VoxelPosition.h"
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "ChunkSpawnerBase.generated.h"
@@ -41,18 +40,12 @@ public:
 	void ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName, bool bPick);
 	
 	UFUNCTION(BlueprintCallable)
-	FName GetVoxelNameAtHit(const FVector& HitPosition, const FVector& HitNormal);
-	
-	UFUNCTION(BlueprintCallable)
 	virtual void ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits) PURE_VIRTUAL(AChunkSpawnerBase::ChangeVoxelInChunk)
-	
-	UFUNCTION(BlueprintCallable)
-	virtual FName GetVoxelFromChunk(const FVoxelPosition& VoxelPosition) PURE_VIRTUAL(AChunkSpawnerBase::GetVoxelFromChunk, return "";)
 	
 	virtual TSharedFuture<void> SpawnChunksAsync() PURE_VIRTUAL(AChunkSpawnerBase::SpawnChunks, return TSharedFuture<void>();)
 	
 	UFUNCTION(BlueprintCallable)
-	FVoxelPosition CalculateVoxelPositionFromHit(const FVector& HitPosition,const FVector& HitNormal, const bool bInnerVoxelPosition) const;
+	FIntVector CalculateGlobalVoxelPositionFromHit(const FVector& HitPosition,const FVector& HitNormal, const bool bInnerVoxelPosition) const;
 
 	bool IsInitialized() const;
 protected:
@@ -67,13 +60,15 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
-
-	FIntVector WorldPositionToChunkGridPosition(const FVector& WorldPosition) const;
 	
 	// Wait for all futures
 	static void WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks);
 	
 	void SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams, TWeakObjectPtr<AChunkActor>& OutActorPtr) const;
+
+	void AddGlobalVoxelPositionToEdit(FCrossChunkEdit& OutChunkEdit, const FIntVector& GlobalVoxelPosition, const FName& VoxelType) const;
+
+	FIntVector GetChunkGridPositionFromGlobalPosition(const FVector& GlobalPosition) const;
 	
 	bool bIsInitialized = false;
 

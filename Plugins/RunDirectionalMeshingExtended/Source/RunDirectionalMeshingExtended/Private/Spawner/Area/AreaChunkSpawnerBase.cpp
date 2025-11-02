@@ -1,7 +1,6 @@
 ﻿#include "Spawner/Area/AreaChunkSpawnerBase.h"
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
-#include "Voxel/VoxelPosition.h"
 #include "Voxel/Generator/VoxelGeneratorBase.h"
 #include "Voxel/Grid/VoxelModel.h"
 
@@ -49,23 +48,6 @@ void AAreaChunkSpawnerBase::ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits)
 	}
 }
 
-FName AAreaChunkSpawnerBase::GetVoxelFromChunk(const FVoxelPosition& VoxelPosition)
-{
-	const auto ChunkPtr = ChunkGrid.Find(VoxelPosition.ChunkGridPosition);
-
-	if (ChunkPtr != nullptr){
-		const auto Chunk = *ChunkPtr;
-		const auto VoxelIndex = VoxelGenerator->CalculateVoxelIndex(VoxelPosition.VoxelPosition);
-		const auto Voxel = Chunk->VoxelModel->GetVoxelAtIndex(VoxelIndex);
-		if (!Voxel.IsEmptyVoxel()){
-			const auto VoxelType = VoxelGenerator->GetVoxelTableRow(Voxel);
-			return VoxelType.Key;
-		}
-	}
-	
-	return FName();
-}
-
 void AAreaChunkSpawnerBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -73,7 +55,7 @@ void AAreaChunkSpawnerBase::BeginPlay()
 
 	if (UseWorldCenter)
 	{
-		CenterGridPosition = WorldPositionToChunkGridPosition(GetTransform().GetLocation());
+		CenterGridPosition = GetChunkGridPositionFromGlobalPosition(GetTransform().GetLocation());
 	}
 
 	if (bEnableInitialChunkSpawn){

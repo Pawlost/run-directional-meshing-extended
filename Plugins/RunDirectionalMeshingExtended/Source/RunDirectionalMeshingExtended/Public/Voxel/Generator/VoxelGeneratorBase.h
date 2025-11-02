@@ -49,7 +49,7 @@ public:
 	 */
 	uint32 CalculateVoxelIndex(const FIntVector& VoxelPosition) const;
 
-	double GetChunkAxisSize() const;
+	double GetChunkSpacing() const;
 	double GetVoxelSize() const;
 	uint32 GetVoxelCountPerVoxelLine() const;
 	uint32 GetVoxelCountPerVoxelPlane() const;
@@ -74,7 +74,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	double ChunkSize = 0.0, InternalVoxelSize = 0.0;
+	double ChunkSpacing = 0.0, InternalVoxelSize = 0.0;
 	int32 VoxelCountY = 0, VoxelCountYZ = 0, VoxelCountXYZ = 0;
 	FCriticalSection Mutex;
 };

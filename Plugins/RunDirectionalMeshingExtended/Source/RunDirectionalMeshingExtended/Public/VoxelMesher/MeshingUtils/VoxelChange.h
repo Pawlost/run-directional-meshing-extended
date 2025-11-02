@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Voxel/VoxelPosition.h"
 #include "VoxelChange.generated.h"
 
 USTRUCT(BlueprintType)
@@ -23,9 +22,9 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FCrossChunkEdit
 	
 	TMap<FIntVector, TArray<FVoxelEdit>> VoxelEdits;
 
-	void AddVoxelEdit(const FVoxelPosition& VoxelPosition, const FName& VoxelName)
+	void AddVoxelEdit(const FIntVector& VoxelPosition, const FIntVector& ChunkPosition, const FName& VoxelName)
 	{
-		const FVoxelEdit Modification(VoxelName, VoxelPosition.VoxelPosition);
-		VoxelEdits.FindOrAdd(VoxelPosition.ChunkGridPosition).Add(Modification);
+		const FVoxelEdit Modification(VoxelName, VoxelPosition);
+		VoxelEdits.FindOrAdd(ChunkPosition).Add(Modification);
 	}
 };

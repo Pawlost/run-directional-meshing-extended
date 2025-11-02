@@ -21,8 +21,6 @@ public:
 
 	virtual void ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits) override;
 	
-	virtual FName GetVoxelFromChunk(const FVoxelPosition& VoxelPosition) override;
-	
 	virtual TSharedFuture<void> SpawnChunksAsync() override;
 	
 protected:
