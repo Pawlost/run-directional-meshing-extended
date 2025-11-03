@@ -37,6 +37,7 @@ public:
 	void ChangeVoxelSphereAtHit(const FVector& HitPosition, const FVector& HitNormal,
 						  const FName& VoxelName, bool bPick, int Radius);
 
+	UFUNCTION(BlueprintCallable)
 	void ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName, bool bPick);
 	
 	UFUNCTION(BlueprintCallable)

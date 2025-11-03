@@ -9,7 +9,7 @@ void ASingleChunkSpawnerBase::BeginPlay()
 
 	if (AlignGridPositionWithSpawner)
 	{
-		SingleChunkGridPosition = GetChunkGridPositionFromGlobalPosition(GetActorLocation());;
+		SingleChunkGridPosition = GetChunkGridPositionFromGlobalPosition(GetActorLocation());
 	}
 
 	// Initialize single chunk
@@ -35,11 +35,12 @@ TSharedFuture<void> ASingleChunkSpawnerBase::SpawnChunksAsync()
 {
 	return Async(EAsyncExecution::Thread, [this]()
 	{
-		if (!SingleChunk->bIsActive){
+		if (!SingleChunk->bIsActive)
+		{
 			AddChunkToGrid(SingleChunk, SingleChunkGridPosition);
 			SingleChunk->bIsActive = true;
 		}
-		
+
 		TArray<FVoxelEdit> VoxelChanges;
 		StartMeshing(VoxelChanges);
 	}).Share();

@@ -25,7 +25,7 @@ void AChunkSpawnerBase::BeginPlay()
 
 	checkf(VoxelGenerator, TEXT("Voxel generator must be valid"));
 
-	bIsInitialized = true;	
+	bIsInitialized = true;
 	
 	Super::BeginPlay();
 }
@@ -45,7 +45,7 @@ void AChunkSpawnerBase::ChangeVoxelAtHit(const FVector& HitPosition, const FVect
 }
 
 void AChunkSpawnerBase::ChangeVoxelSphereAtHit(const FVector& HitPosition, const FVector& HitNormal,
-	const FName& VoxelName, bool bPick, int Radius)
+                                               const FName& VoxelName, bool bPick, int Radius)
 {
 	TMap<FIntVector, TArray<FVoxelEdit>> Sphere;
 	const auto VoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
@@ -53,19 +53,43 @@ void AChunkSpawnerBase::ChangeVoxelSphereAtHit(const FVector& HitPosition, const
 	// TODO: finish
 	for (int r = 0; r < Radius; r++)
 	{
-		
 	}
 }
 
 
-void AChunkSpawnerBase::ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName, bool bPick)
+void AChunkSpawnerBase::ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal,
+                                                          const FName& VoxelName, bool bPick)
 {
-	const auto VoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
-	
+	auto GlobalVoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
+
+	FCrossChunkEdit ChunkEdit;
+
+	// Middle
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, 0), VoxelName);
+
+	// Left
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, -1, 0), VoxelName);
+
+	// Right
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 1, 0), VoxelName);
+
+	// Bottom
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, -1), VoxelName);
+
+	// Top
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, 1), VoxelName);
+
+	// Back
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(-1, 0, 0), VoxelName);
+
+	// Front
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(1, 0, 0), VoxelName);
+
+	ChangeVoxelsInChunk(ChunkEdit);
 }
 
 FIntVector AChunkSpawnerBase::CalculateGlobalVoxelPositionFromHit(const FVector& HitPosition, const FVector& HitNormal,
-	const bool bInnerVoxelPosition) const
+                                                                  const bool bInnerVoxelPosition) const
 {
 	FIntVector AdjustedNormal;
 
@@ -83,7 +107,7 @@ FIntVector AChunkSpawnerBase::CalculateGlobalVoxelPositionFromHit(const FVector&
 		AdjustedNormal.Y = -FMath::Clamp(HitNormal.Y, -1, 0);
 		AdjustedNormal.Z = -FMath::Clamp(HitNormal.Z, -1, 0);
 	}
-	
+
 	FMatrix ActorLocationMatrix = FTranslationMatrix(FVector(0));
 
 	if (!UseWorldCenter)
@@ -116,20 +140,19 @@ void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
 		// Generate voxels on async thread if promise is expected
 		*AsyncExecution = Async(EAsyncExecution::ThreadPool, [this, Chunk]()
 		{
-			#if CPUPROFILERTRACE_ENABLED
-				TRACE_CPUPROFILER_EVENT_SCOPE("Voxel generation");
-			#endif
+#if CPUPROFILERTRACE_ENABLED
+			TRACE_CPUPROFILER_EVENT_SCOPE("Voxel generation");
+#endif
 
 			VoxelGenerator->GenerateVoxels(*Chunk.Get());
 		}).Share();
 	}
 	else
 	{
-		
-	#if CPUPROFILERTRACE_ENABLED
-			TRACE_CPUPROFILER_EVENT_SCOPE("Voxel generation");
-	#endif
-		
+#if CPUPROFILERTRACE_ENABLED
+		TRACE_CPUPROFILER_EVENT_SCOPE("Voxel generation");
+#endif
+
 		VoxelGenerator->GenerateVoxels(*Chunk);
 	}
 }
@@ -148,7 +171,8 @@ void AChunkSpawnerBase::WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks)
 }
 
 
-void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams, TWeakObjectPtr<AChunkActor>& OutActorPtr) const
+void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams,
+                                               TWeakObjectPtr<AChunkActor>& OutActorPtr) const
 {
 	const auto World = GetWorld();
 	if (!IsValid(World))
@@ -170,7 +194,7 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& C
 	{
 		// If there is no actor spawn new one.
 		OutActorPtr = World->SpawnActor<AChunkActor>(AChunkActor::StaticClass(), SpawnLocation,
-													 FRotator::ZeroRotator);
+		                                             FRotator::ZeroRotator);
 
 		if (!OutActorPtr.IsValid() || !ChunkParams->SpawnerPtr.IsValid())
 		{
@@ -185,7 +209,7 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& C
 		{
 			return;
 		}
-		
+
 		// If actor exists, ensure correct location
 		if (!ChunkParams->WorldTransform)
 		{
@@ -200,18 +224,21 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& C
 }
 
 void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(FCrossChunkEdit& OutChunkEdit,
-	const FIntVector& GlobalVoxelPosition, const FName& VoxelType) const
+                                                     const FIntVector& GlobalVoxelPosition,
+                                                     const FName& VoxelType) const
 {
-	const auto ChunkPosition =GetChunkGridPositionFromGlobalPosition(FVector(GlobalVoxelPosition));
-	const FIntVector VoxelPosition = FIntVector(GlobalVoxelPosition - (ChunkPosition * VoxelGenerator->GetVoxelCountPerVoxelLine()));
+	const auto ChunkPosition = GetChunkGridPositionFromGlobalPosition(FVector(GlobalVoxelPosition));
+	const FIntVector VoxelPosition = FIntVector(
+		GlobalVoxelPosition - (ChunkPosition * VoxelGenerator->GetVoxelCountPerVoxelLine()));
 	OutChunkEdit.AddVoxelEdit(VoxelPosition, ChunkPosition, VoxelType);
 }
 
 FIntVector AChunkSpawnerBase::GetChunkGridPositionFromGlobalPosition(const FVector& GlobalPosition) const
 {
-	const auto ImpreciseChunkPosition =  GlobalPosition / VoxelGenerator->GetVoxelCountPerVoxelLine();
+	const auto ImpreciseChunkPosition = GlobalPosition / VoxelGenerator->GetVoxelCountPerVoxelLine();
 	// Floor is used to adjust negative numbers
-	return FIntVector(FMath::Floor(ImpreciseChunkPosition.X),FMath::Floor(ImpreciseChunkPosition.Y), FMath::Floor(ImpreciseChunkPosition.Z));
+	return FIntVector(FMath::Floor(ImpreciseChunkPosition.X), FMath::Floor(ImpreciseChunkPosition.Y),
+	                  FMath::Floor(ImpreciseChunkPosition.Z));
 }
 
 bool AChunkSpawnerBase::CheckVoxelBoundary(const FIntVector& VoxelPosition) const
