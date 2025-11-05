@@ -26,12 +26,15 @@ private:
 		FRLEVoxel* CurrentVoxelRun = nullptr;
 		
 		// Index where event ends
-		uint32 EventIndex = 0;
+		uint32 LastEventIndex = 0;
 		
 		// Index of an run in a voxel array
 		int32 VoxelRunIndex = 0;
 
-		uint32 VoxelGridIndex = 0;
+		int GetEventIndex() const
+		{
+			return LastEventIndex + CurrentVoxelRun->RunLenght;
+		}
 	};
 
 	constexpr static int EventIndexCount = 5;
