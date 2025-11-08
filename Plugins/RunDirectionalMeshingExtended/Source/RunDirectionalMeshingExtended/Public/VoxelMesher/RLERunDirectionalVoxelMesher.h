@@ -23,7 +23,7 @@ private:
 	{
 		// Voxel sequence (run) to be traversed
 		// If null the end is a chunk dimension, not end of sequence
-		FRLEVoxel* CurrentVoxelRun = nullptr;
+		TSharedPtr<TArray<FRLEVoxel>> VoxelGridPtr;
 		
 		// Index where event ends
 		uint32 LastEventIndex = 0;
@@ -31,9 +31,14 @@ private:
 		// Index of an run in a voxel array
 		int32 VoxelRunIndex = 0;
 
-		int GetEventIndex() const
+		FORCEINLINE int GetEventIndex() const
 		{
-			return LastEventIndex + CurrentVoxelRun->RunLenght;
+			return LastEventIndex + (*VoxelGridPtr)[VoxelRunIndex].RunLenght;
+		}
+
+		FORCEINLINE FRLEVoxel& GetCurrentVoxel() const
+		{
+			return (*VoxelGridPtr)[VoxelRunIndex];	
 		}
 	};
 
