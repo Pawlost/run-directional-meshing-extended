@@ -4,14 +4,14 @@
 #include "Voxel/Generator/VoxelGeneratorBase.h"
 #include "Voxel/Grid/VoxelModel.h"
 
-void AAreaChunkSpawnerBase::ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits)
+void AAreaChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits)
 {
 	if (EditHandle.IsValid() && !EditHandle.IsReady())
 	{
 		return;
 	}
 
-	for (auto ChunkEdit : ChunkEdits.VoxelEdits)
+	for (auto ChunkEdit : ChunkEdits)
 	{
 		if (ChunkGrid.Contains(ChunkEdit.Key))
 		{
@@ -26,7 +26,7 @@ void AAreaChunkSpawnerBase::ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits)
 			
 			FMesherVariables MesherVars;
 			Chunk->bIsActive = false;
-			GenerateChunkMesh(MesherVars, Chunk->GridPosition, ChunkEdit.Value);
+			GenerateChunkMesh(MesherVars, Chunk->GridPosition, ChunkEdit.Value.VoxelEdits);
 
 			// TODO:rewrite
 			

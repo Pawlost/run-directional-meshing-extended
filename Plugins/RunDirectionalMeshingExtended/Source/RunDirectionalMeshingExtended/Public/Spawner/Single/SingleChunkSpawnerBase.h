@@ -19,7 +19,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Chunk")
 	bool AlignGridPositionWithSpawner = true;
 
-	virtual void ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits) override;
+	virtual void ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits) override;
 	
 	virtual TSharedFuture<void> SpawnChunksAsync() override;
 	

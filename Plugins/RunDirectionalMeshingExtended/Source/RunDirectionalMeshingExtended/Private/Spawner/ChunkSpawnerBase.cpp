@@ -39,7 +39,7 @@ void AChunkSpawnerBase::ChangeVoxelAtHit(const FVector& HitPosition, const FVect
                                          const bool bPick)
 {
 	const auto GlobalVoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
-	FCrossChunkEdit ChunkEdit;
+	TMap<FIntVector, FChunkEdit> ChunkEdit;
 	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition, VoxelName);
 	ChangeVoxelsInChunk(ChunkEdit);
 }
@@ -56,37 +56,61 @@ void AChunkSpawnerBase::ChangeVoxelSphereAtHit(const FVector& HitPosition, const
 	}
 }
 
-
 void AChunkSpawnerBase::ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal,
                                                           const FName& VoxelName, bool bPick)
 {
 	auto GlobalVoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
 
-	FCrossChunkEdit ChunkEdit;
+	TMap<FIntVector, FChunkEdit> ChunkEdit;
 
+	AddVoxelCrossNeighborhoodToChunkEdit(ChunkEdit, GlobalVoxelPosition, VoxelName);
+
+	ChangeVoxelsInChunk(ChunkEdit);
+}
+
+void AChunkSpawnerBase::AddVoxelCrossNeighborhoodToChunkEdit(TMap<FIntVector, FChunkEdit>& ChunkEdit,
+	const FIntVector& GlobalVoxelPosition, const FName& VoxelType)
+{
 	// Middle
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, 0), VoxelName);
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 1, 0), VoxelName);
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 2, 0), VoxelName);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, 0), VoxelType);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 1, 0), VoxelType);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 2, 0), VoxelType);
 
 	// Left
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, -1, 0), VoxelName);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, -1, 0), VoxelType);
 
 	// Right
 
 	// Bottom
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, -1), VoxelName);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, -1), VoxelType);
 
 	// Top
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, 1), VoxelName);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, 1), VoxelType);
 
 	// Back
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(-1, 0, 0), VoxelName);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(-1, 0, 0), VoxelType);
 
 	// Front
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(1, 0, 0), VoxelName);
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(1, 0, 0), VoxelType);	
+}
 
-	ChangeVoxelsInChunk(ChunkEdit);
+void AChunkSpawnerBase::ChangeVoxelsInChunk(TMap<FIntVector, FChunkEdit>& ChunkEdits)
+{
+
+	// Voxel modifications must always be sorted using this coordinate logic
+	for (auto& VoxelEdit : ChunkEdits)
+	{
+		VoxelEdit.Value.VoxelEdits.Sort([](const FVoxelEdit& A, const FVoxelEdit& B)
+		{
+			if (A.VoxelPosition.X != B.VoxelPosition.X)
+				return A.VoxelPosition.X > B.VoxelPosition.X;
+			if (A.VoxelPosition.Z != B.VoxelPosition.Z)
+				return A.VoxelPosition.Z > B.VoxelPosition.Z;
+			return A.VoxelPosition.Y > B.VoxelPosition.Y;
+		});
+	}
+	
+	ApplyVoxelChanges(ChunkEdits);
 }
 
 FIntVector AChunkSpawnerBase::CalculateGlobalVoxelPositionFromHit(const FVector& HitPosition, const FVector& HitNormal,
@@ -224,14 +248,17 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& C
 	}
 }
 
-void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(FCrossChunkEdit& OutChunkEdit,
+void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit>& OutChunkEdit,
                                                      const FIntVector& GlobalVoxelPosition,
                                                      const FName& VoxelType) const
 {
 	const auto ChunkPosition = GetChunkGridPositionFromGlobalPosition(FVector(GlobalVoxelPosition));
 	const FIntVector VoxelPosition = FIntVector(
 		GlobalVoxelPosition - (ChunkPosition * VoxelGenerator->GetVoxelCountPerVoxelLine()));
-	OutChunkEdit.AddVoxelEdit(VoxelPosition, ChunkPosition, VoxelType);
+
+	const FVoxelEdit Modification(VoxelType, VoxelPosition);
+	auto& VoxelModifications = OutChunkEdit.FindOrAdd(ChunkPosition);
+	VoxelModifications.Add(Modification);
 }
 
 FIntVector AChunkSpawnerBase::GetChunkGridPositionFromGlobalPosition(const FVector& GlobalPosition) const

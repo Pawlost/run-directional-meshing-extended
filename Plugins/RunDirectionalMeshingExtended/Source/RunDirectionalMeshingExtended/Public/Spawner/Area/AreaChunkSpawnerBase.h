@@ -23,7 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chunk")
 	bool bEnableInitialChunkSpawn = true;
 
-	virtual void ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits) override;
+	virtual void ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits) override;
 	
 	virtual TSharedFuture<void> SpawnChunksAsync() override;
 	

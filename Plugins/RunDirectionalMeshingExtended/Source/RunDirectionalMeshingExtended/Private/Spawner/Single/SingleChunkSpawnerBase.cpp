@@ -5,28 +5,28 @@
 
 void ASingleChunkSpawnerBase::BeginPlay()
 {
+	// Initialize single chunk
+	SingleChunk = MakeShared<FChunk>();
+	
 	Super::BeginPlay();
 
 	if (AlignGridPositionWithSpawner)
 	{
 		SingleChunkGridPosition = GetChunkGridPositionFromGlobalPosition(GetActorLocation());
 	}
-
-	// Initialize single chunk
-	SingleChunk = MakeShared<FChunk>();
-
+	
 	bIsInitialized = true;
 	SpawnChunksAsync();
 }
 
-void ASingleChunkSpawnerBase::ChangeVoxelsInChunk(FCrossChunkEdit& ChunkEdits)
+void ASingleChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits)
 {
-	for (auto ChunkEdit : ChunkEdits.VoxelEdits)
+	for (auto ChunkEdit : ChunkEdits)
 	{
 		if (ChunkEdit.Key == SingleChunkGridPosition)
 		{
 			// Modify voxel at hit position
-			StartMeshing(ChunkEdit.Value);
+			StartMeshing(ChunkEdit.Value.VoxelEdits);
 		}
 	}
 }

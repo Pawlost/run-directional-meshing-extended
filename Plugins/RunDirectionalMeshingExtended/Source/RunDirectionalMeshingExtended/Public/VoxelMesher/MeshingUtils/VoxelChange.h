@@ -4,7 +4,7 @@
 #include "VoxelChange.generated.h"
 
 USTRUCT(BlueprintType)
-struct FVoxelEdit
+struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelEdit
 {
 	GENERATED_BODY()
 
@@ -16,26 +16,32 @@ struct FVoxelEdit
 };
 
 USTRUCT(BlueprintType)
+struct RUNDIRECTIONALMESHINGEXTENDED_API FChunkEdit
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FVoxelEdit> VoxelEdits;
+
+	void Add(const FVoxelEdit& VoxelEdit)
+	{
+		VoxelEdits.Add(VoxelEdit);
+	}
+};
+
+
+USTRUCT(BlueprintType)
 struct RUNDIRECTIONALMESHINGEXTENDED_API FCrossChunkEdit
 {
 	GENERATED_BODY()
 
-	TMap<FIntVector, TArray<FVoxelEdit>> VoxelEdits;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FIntVector, FChunkEdit> ChunkEdits;
 
 	void AddVoxelEdit(const FIntVector& VoxelPosition, const FIntVector& ChunkPosition, const FName& VoxelName)
 	{
 		const FVoxelEdit Modification(VoxelName, VoxelPosition);
-		auto& VoxelModifications = VoxelEdits.FindOrAdd(ChunkPosition);
+		auto& VoxelModifications = ChunkEdits.FindOrAdd(ChunkPosition);
 		VoxelModifications.Add(Modification);
-
-		// Voxel modifications must always be sorted using this coordinate logic
-		VoxelModifications.Sort([](const FVoxelEdit& A, const FVoxelEdit& B)
-		{
-			if (A.VoxelPosition.X != B.VoxelPosition.X)
-				return A.VoxelPosition.X > B.VoxelPosition.X;
-			if (A.VoxelPosition.Z != B.VoxelPosition.Z)
-				return A.VoxelPosition.Z > B.VoxelPosition.Z;
-			return A.VoxelPosition.Y > B.VoxelPosition.Y;
-		});
 	}
 };
