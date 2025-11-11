@@ -16,7 +16,7 @@ void ASingleChunkSpawnerBase::BeginPlay()
 	}
 	
 	bIsInitialized = true;
-	SpawnChunksAsync();
+	SpawnChunks();
 }
 
 void ASingleChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits)
@@ -35,13 +35,18 @@ TSharedFuture<void> ASingleChunkSpawnerBase::SpawnChunksAsync()
 {
 	return Async(EAsyncExecution::Thread, [this]()
 	{
-		if (!SingleChunk->bIsActive)
-		{
-			AddChunkToGrid(SingleChunk, SingleChunkGridPosition);
-			SingleChunk->bIsActive = true;
-		}
-
-		TArray<FVoxelEdit> VoxelChanges;
-		StartMeshing(VoxelChanges);
+		SpawnChunks();
 	}).Share();
+}
+
+void ASingleChunkSpawnerBase::SpawnChunks()
+{
+	if (!SingleChunk->bIsActive)
+	{
+		AddChunkToGrid(SingleChunk, SingleChunkGridPosition);
+		SingleChunk->bIsActive = true;
+	}
+
+	TArray<FVoxelEdit> VoxelChanges;
+	StartMeshing(VoxelChanges);
 }

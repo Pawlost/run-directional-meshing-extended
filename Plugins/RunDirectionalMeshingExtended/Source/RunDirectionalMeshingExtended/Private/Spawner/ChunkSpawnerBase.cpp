@@ -26,7 +26,7 @@ void AChunkSpawnerBase::BeginPlay()
 	checkf(VoxelGenerator, TEXT("Voxel generator must be valid"));
 
 	bIsInitialized = true;
-	
+
 	Super::BeginPlay();
 }
 
@@ -69,17 +69,17 @@ void AChunkSpawnerBase::ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosi
 }
 
 void AChunkSpawnerBase::AddVoxelCrossNeighborhoodToChunkEdit(TMap<FIntVector, FChunkEdit>& ChunkEdit,
-	const FIntVector& GlobalVoxelPosition, const FName& VoxelType)
+                                                             const FIntVector& GlobalVoxelPosition,
+                                                             const FName& VoxelType)
 {
 	// Middle
 	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, 0), VoxelType);
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 1, 0), VoxelType);
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 2, 0), VoxelType);
 
 	// Left
 	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, -1, 0), VoxelType);
 
 	// Right
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 1, 0), VoxelType);
 
 	// Bottom
 	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(0, 0, -1), VoxelType);
@@ -91,12 +91,11 @@ void AChunkSpawnerBase::AddVoxelCrossNeighborhoodToChunkEdit(TMap<FIntVector, FC
 	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(-1, 0, 0), VoxelType);
 
 	// Front
-	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(1, 0, 0), VoxelType);	
+	AddGlobalVoxelPositionToEdit(ChunkEdit, GlobalVoxelPosition + FIntVector(1, 0, 0), VoxelType);
 }
 
 void AChunkSpawnerBase::ChangeVoxelsInChunk(TMap<FIntVector, FChunkEdit>& ChunkEdits)
 {
-
 	// Voxel modifications must always be sorted using this coordinate logic
 	for (auto& VoxelEdit : ChunkEdits)
 	{
@@ -109,7 +108,7 @@ void AChunkSpawnerBase::ChangeVoxelsInChunk(TMap<FIntVector, FChunkEdit>& ChunkE
 			return A.VoxelPosition.Y > B.VoxelPosition.Y;
 		});
 	}
-	
+
 	ApplyVoxelChanges(ChunkEdits);
 }
 
@@ -145,7 +144,8 @@ FIntVector AChunkSpawnerBase::CalculateGlobalVoxelPositionFromHit(const FVector&
 	const FVector VoxelPosition = ActorLocationMatrix.TransformPosition(HitPosition);
 
 	// Flooring instead of rounding improves precision, subtracted normal from global voxel coordinates
-	return FIntVector(FMath::Floor(VoxelPosition.X), FMath::Floor(VoxelPosition.Y), FMath::Floor(VoxelPosition.Z)) - AdjustedNormal;
+	return FIntVector(FMath::Floor(VoxelPosition.X), FMath::Floor(VoxelPosition.Y), FMath::Floor(VoxelPosition.Z)) -
+		AdjustedNormal;
 }
 
 void AChunkSpawnerBase::AddSideChunk(FMesherVariables& MeshVar, EFaceDirection Direction,

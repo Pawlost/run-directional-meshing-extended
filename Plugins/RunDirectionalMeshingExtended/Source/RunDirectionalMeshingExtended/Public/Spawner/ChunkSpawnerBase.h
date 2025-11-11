@@ -22,10 +22,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chunk")
 	bool UseWorldCenter = false;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	FIntVector CenterGridPosition;
-	
+
 	UFUNCTION(BlueprintCallable)
 	double GetHighestElevationAtLocation(const FVector& Location) const;
 
@@ -35,27 +35,32 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ChangeVoxelSphereAtHit(const FVector& HitPosition, const FVector& HitNormal,
-						  const FName& VoxelName, bool bPick, int Radius);
+	                            const FName& VoxelName, bool bPick, int Radius);
 
 	UFUNCTION(BlueprintCallable)
-	void ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName, bool bPick);
+	void ChangeVoxelCrossNeighborhoodAtHit(const FVector& HitPosition, const FVector& HitNormal, const FName& VoxelName,
+	                                       bool bPick);
 
 	UFUNCTION(BlueprintCallable)
-	void AddVoxelCrossNeighborhoodToChunkEdit(UPARAM(ref) TMap<FIntVector, FChunkEdit>& ChunkEdit,
-													 const FIntVector& GlobalVoxelPosition,
-													 const FName& VoxelType);
-	
+	void AddVoxelCrossNeighborhoodToChunkEdit(UPARAM(ref)
+	                                          TMap<FIntVector, FChunkEdit>& ChunkEdit,
+	                                          const FIntVector& GlobalVoxelPosition,
+	                                          const FName& VoxelType);
+
 	UFUNCTION(BlueprintCallable)
-	virtual void ChangeVoxelsInChunk(UPARAM(ref) TMap<FIntVector, FChunkEdit>& ChunkEdits);
-	
-	virtual TSharedFuture<void> SpawnChunksAsync() PURE_VIRTUAL(AChunkSpawnerBase::SpawnChunks, return TSharedFuture<void>();)
-	
+	virtual void ChangeVoxelsInChunk(UPARAM(ref)
+		TMap<FIntVector, FChunkEdit>& ChunkEdits);
+
+	virtual TSharedFuture<void> SpawnChunksAsync() PURE_VIRTUAL(AChunkSpawnerBase::SpawnChunks,
+	                                                            return TSharedFuture<void>();)
+
 	UFUNCTION(BlueprintCallable)
-	FIntVector CalculateGlobalVoxelPositionFromHit(const FVector& HitPosition,const FVector& HitNormal, const bool bInnerVoxelPosition) const;
+	FIntVector CalculateGlobalVoxelPositionFromHit(const FVector& HitPosition, const FVector& HitNormal,
+	                                               const bool bInnerVoxelPosition) const;
 
 	bool IsInitialized() const;
+
 protected:
-	
 	virtual void BeginPlay() override;
 
 	static void AddSideChunk(FMesherVariables& MeshVar, EFaceDirection Direction,
@@ -66,18 +71,21 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
-	
+
 	// Wait for all futures
 	static void WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks);
-	
-	void SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams, TWeakObjectPtr<AChunkActor>& OutActorPtr) const;
 
-	void AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit>& OutChunkEdit, const FIntVector& GlobalVoxelPosition, const FName& VoxelType) const;
+	void SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams,
+	                            TWeakObjectPtr<AChunkActor>& OutActorPtr) const;
+
+	void AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit>& OutChunkEdit, const FIntVector& GlobalVoxelPosition,
+	                                  const FName& VoxelType) const;
 
 	FIntVector GetChunkGridPositionFromGlobalPosition(const FVector& GlobalPosition) const;
-	
-	virtual void ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& EditChunk) PURE_VIRTUAL(AChunkSpawnerBase::ChangeVoxelInChunk)
-	
+
+	virtual void ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& EditChunk) PURE_VIRTUAL(
+		AChunkSpawnerBase::ChangeVoxelInChunk)
+
 	bool bIsInitialized = false;
 
 private:

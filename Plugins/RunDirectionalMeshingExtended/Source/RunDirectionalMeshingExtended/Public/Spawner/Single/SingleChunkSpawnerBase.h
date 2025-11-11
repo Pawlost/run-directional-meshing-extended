@@ -23,6 +23,8 @@ public:
 	
 	virtual TSharedFuture<void> SpawnChunksAsync() override;
 	
+	virtual void SpawnChunks();
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void StartMeshing(TArray<FVoxelEdit>& VoxelChange) PURE_VIRTUAL(ASingleChunkSpawnerBase::StartMeshing)
