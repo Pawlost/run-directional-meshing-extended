@@ -21,7 +21,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TAr
 		return;
 	}
 
-	// TODO: make private class member
+	// TODO: make private class member, problematic writing because of parallel thread execution, maybe should be wrapped in a class
 	FIndexParams IndexParams;
 	IndexParams.VoxelChanges = &VoxelChange;
 
@@ -191,26 +191,46 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, FM
 
 		int CopyVoxelRunIndex = -1;
 
-		uint32 DeleteFirstRUn = 0;
+		uint32 RemainingIndex = 0;
 
 		TSharedPtr<TArray<FRLEVoxel>> EditEventArray = MakeShared<TArray<FRLEVoxel>>();
 		EditEventArray->Push(EditVoxelRun);
 		IndexParams.MeshingEvents[EMeshingEventIndex::EditEvent] = {EditEventArray, EditEventIndex, 0};
 
+		CopyVoxelRunIndex++;
+		auto CopyVoxel = (*OldVoxelGrid)[CopyVoxelRunIndex];
+		uint32 Offset = 0;
 		// First voxel in a chunk
 		if (EditEventIndex == 0)
 		{
 			IndexParams.VoxelGrid->Add(EditVoxelRun);
-			DeleteFirstRUn = EditVoxelRun.RunLenght;
+
+			RemainingIndex = CopyVoxel.RunLenght;
+			while (EditVoxelRun.RunLenght > RemainingIndex)
+			{
+				Offset += CopyVoxel.RunLenght;
+				CopyVoxelRunIndex++;
+				CopyVoxel = (*OldVoxelGrid)[CopyVoxelRunIndex];
+				RemainingIndex += CopyVoxel.RunLenght;
+			}
+			
 			AdvanceEditInterval(IndexParams);
+
+			CopyVoxel.RunLenght = RemainingIndex - EditVoxelRun.RunLenght;
+
+			if (IndexParams.VoxelGrid->Last().Voxel == CopyVoxel.Voxel)
+			{
+				IndexParams.VoxelGrid->Last().RunLenght += CopyVoxel.RunLenght;
+			}else
+			{
+				IndexParams.VoxelGrid->Add(CopyVoxel);
+			}
+		}else
+		{
+			IndexParams.VoxelGrid->Add(CopyVoxel);
 		}
-
-		CopyVoxelRunIndex++;
-		auto CopyVoxel = (*OldVoxelGrid)[CopyVoxelRunIndex];
-		CopyVoxel.RunLenght -= DeleteFirstRUn;
-		IndexParams.VoxelGrid->Add(CopyVoxel);
-
-		IndexParams.MeshingEvents[EMeshingEventIndex::CopyEvent] = {OldVoxelGrid, 0, CopyVoxelRunIndex};
+		
+		IndexParams.MeshingEvents[EMeshingEventIndex::CopyEvent] = {OldVoxelGrid, Offset, CopyVoxelRunIndex};
 	}
 
 	IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval] = {IndexParams.VoxelGrid, 0, 0};
