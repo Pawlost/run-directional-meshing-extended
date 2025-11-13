@@ -21,7 +21,6 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FChunk
 	
 	TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT> BorderChunks;
 
-	// Saving voxel grids is not implemented in this demo, but a property specifier for saving has been added.
 	UPROPERTY()
 	TObjectPtr<UVoxelModel> VoxelModel;
 

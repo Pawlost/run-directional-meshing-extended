@@ -8,8 +8,8 @@ public class VoxelMeshingShowcaseTarget : TargetRules
 	public VoxelMeshingShowcaseTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
-		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_6;
+		DefaultBuildSettings = BuildSettingsVersion.V6;
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_7;
 		ExtraModuleNames.Add("VoxelMeshingShowcase");
 	}
 }
