@@ -22,7 +22,7 @@ void UVoxelMesherBase::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGri
 	auto VoxelGridObject = NewObject<UVoxelGrid>();
 	VoxelGridObject->VoxelGrid = MakeShared<TArray<FVoxel>>();
 	VoxelGridObject->VoxelGrid->Append(VoxelGrid);
-	Chunk.VoxelModel = VoxelGridObject;
+	Chunk.VoxelModel = TStrongObjectPtr<UVoxelGrid>(VoxelGridObject);
 
 #if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT)
 	const FString MapName = GetWorld()->GetMapName();

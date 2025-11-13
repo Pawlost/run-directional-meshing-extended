@@ -21,8 +21,7 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FChunk
 	
 	TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT> BorderChunks;
 
-	UPROPERTY()
-	TObjectPtr<UVoxelModel> VoxelModel;
+	TStrongObjectPtr<UVoxelModel> VoxelModel;
 
 	UPROPERTY()
 	FIntVector GridPosition = FIntVector(0, 0, 0);

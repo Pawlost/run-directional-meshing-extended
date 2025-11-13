@@ -14,7 +14,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TAr
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RLE RunDirectionalMeshing generation")
 #endif
 
-	const auto VoxelGridPtr = Cast<URLEVoxelGrid>(MeshVars.ChunkParams.OriginalChunk->VoxelModel);
+	const auto VoxelGridPtr = Cast<URLEVoxelGrid>(MeshVars.ChunkParams.OriginalChunk->VoxelModel.Get());
 
 	if (VoxelGridPtr == nullptr)
 	{
@@ -110,6 +110,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TAr
 	if (IndexParams.EditEnabled)
 	{
 		// TODO: remove check when rewrite is finished
+		VoxelGridPtr->RLEVoxelGrid = IndexParams.VoxelGrid;
 		int VoxelCount = VoxelGridPtr->RLEVoxelGrid->Num();
 		for (int i = 0; i < VoxelCount - 2; i++)
 		{
@@ -117,7 +118,6 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TAr
 			auto Voxel = (*VoxelGridPtr->RLEVoxelGrid)[i];
 			check(NextVoxel.Voxel != Voxel.Voxel)
 		}
-		VoxelGridPtr->RLEVoxelGrid = IndexParams.VoxelGrid;
 	}
 }
 
@@ -147,7 +147,7 @@ void URLERunDirectionalVoxelMesher::CompressVoxelGrid(FChunk& Chunk, TArray<FVox
 	}
 
 	VoxelGridObject->RLEVoxelGrid = RLEVoxelGrid;
-	Chunk.VoxelModel = VoxelGridObject;
+	Chunk.VoxelModel = TStrongObjectPtr<URLEVoxelGrid>(VoxelGridObject);
 
 #if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT)
 	const FString MapName = GetWorld()->GetMapName();
