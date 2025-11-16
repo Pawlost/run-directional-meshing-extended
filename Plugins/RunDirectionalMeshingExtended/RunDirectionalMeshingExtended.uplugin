@@ -18,6 +18,11 @@
 			"Name": "RunDirectionalMeshingExtended",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RDMTests",
+			"Type": "Developer",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
