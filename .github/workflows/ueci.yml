@@ -1,0 +1,43 @@
+name: Unreal Engine CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Unreal Engine
+        uses: actions/setup-unreal@v2
+        with:
+          version: '5.7'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build project
+        run: |
+          /path/to/UnrealEngine/Engine/Build/BatchFiles/Linux/RunUAT.sh BuildCookRun \
+          -project=VoxelMeshingShowcase.uproject \
+          -noP4 \
+          -platform=Linux \
+          -clientconfig=Development \
+          -serverconfig=Development \
+          -cook \
+          -allmaps \
+          -build
+
+      - name: Run automation tests
+        run: |
+          /path/to/UnrealEngine/Engine/Binaries/Linux/UE4Editor \
+          VoxelMeshingShowcase.uproject \
+          -ExecCmds="Automation RunTests All Exit" \
+          -unattended \
+          -nopause \
+          -nullrhi
