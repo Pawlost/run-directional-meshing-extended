@@ -5,7 +5,7 @@
 /**
  * Struct representing single voxel face. Inside helper struct not intended to be used with Unreal Engine.
  */
-struct RUNDIRECTIONALMESHINGEXTENDED_API FVirtualVoxelFace
+struct RDMMESHERS_API FVirtualVoxelFace
 {
 	FVoxel Voxel;
 	FIntVector StartVertexDown;

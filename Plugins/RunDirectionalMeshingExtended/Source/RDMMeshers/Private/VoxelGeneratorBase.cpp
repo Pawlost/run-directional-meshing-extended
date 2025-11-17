@@ -1,4 +1,4 @@
-﻿#include "Voxel/Generator/VoxelGeneratorBase.h"
+﻿#include "VoxelGeneratorBase.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 
 void UVoxelGeneratorBase::BeginPlay()
@@ -72,10 +72,88 @@ uint32 UVoxelGeneratorBase::GetVoxelCountPerChunk() const
 
 void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelEdit>& VoxelChanges) const
 {
+	const uint32 VoxelLayer = GetVoxelCountPerVoxelPlane();
+	
+	bool* IsBorderSampled[CHUNK_FACE_COUNT];
+
+	auto& BorderChunks = MeshVars.ChunkParams.OriginalChunk->BorderChunks;
+
+	// Allocate Borders, after creating change
+	// TODO: move
+	for (int d = 0; d < CHUNK_FACE_COUNT; d++)
+	{
+		const auto& FaceTemplate = FaceTemplates[d];
+
+		if (BorderChunks[d] == nullptr)
+		{
+			auto SideChunk = MeshVars.ChunkParams.SideChunks[FaceTemplate.StaticMeshingData.FaceDirection];
+			if (SideChunk != nullptr && SideChunk->VoxelModel != nullptr)
+			{
+				// TODO: move to chunk spawning
+				auto& BorderChunkPtr = SideChunk->BorderChunks[FaceTemplate.StaticMeshingData.InverseFaceDirection];
+
+				if (BorderChunkPtr == nullptr)
+				{
+					BorderChunkPtr = MakeShared<FBorderChunk>(VoxelLayer);
+				}
+
+				BorderChunks[d] = BorderChunkPtr;
+			}
+			else
+			{
+				BorderChunks[d] = MakeShared<FBorderChunk>(VoxelLayer);
+			}
+		}
+
+		TSharedPtr<TArray<FRLEVoxel>> BorderChunkSamples = nullptr;
+		bool* IsSampled;
+
+		if (FaceTemplate.StaticMeshingData.IsInverseDirection)
+		{
+			auto BorderChunk = BorderChunks[d];
+			BorderChunkSamples = BorderChunk->InversedBorderVoxelSamples;
+			IsSampled = &BorderChunk->IsInverseSampled;
+
+			//TODO: try better preallocation
+			BorderChunk->IsInverseSampled = false;
+			BorderChunk->InversedBorderVoxelSamples->Reset();
+			BorderChunk->InversedBorderVoxelSamples->SetNum(VoxelLayer);
+		}
+		else
+		{
+			auto BorderChunk = BorderChunks[d];
+			BorderChunkSamples = BorderChunk->BorderVoxelSamples;
+			IsSampled = &BorderChunk->IsSampled;
+
+			BorderChunk->IsSampled = false;
+			BorderChunk->BorderVoxelSamples->Reset();
+			BorderChunk->BorderVoxelSamples->SetNum(VoxelLayer);
+		}
+
+		BorderChunks[d]->IsGenerated = false;
+		IndexParams.SampledBorderChunks[d] = BorderChunkSamples;
+		IsBorderSampled[d] = IsSampled;
+	}
+
+	
 	if (bEnableVoxelMeshing)
 	{
 		VoxelMesher->GenerateMesh(MesherVariables, VoxelChanges);
 	}
+	
+	
+	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
+	{
+		auto IsSampled = IsBorderSampled[i];
+		if (IsSampled != nullptr)
+		{
+			*(IsSampled) = true;
+		}
+	}
+
+	BorderGeneration(MeshVars, BorderChunks);
+
+	GenerateProcMesh(MeshVars);
 }
 
 double UVoxelGeneratorBase::GetHighestElevationAtLocation(const FVector& Location)

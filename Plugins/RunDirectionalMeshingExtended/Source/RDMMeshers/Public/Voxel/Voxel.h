@@ -8,12 +8,14 @@
  * Contains an ID and a transparency flag.
  */
 USTRUCT()
-struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxel
+struct RDMMESHERS_API FVoxel
 {
 	GENERATED_BODY()
 
-	// Tied to FVoxel namespace
+	// Empty voxel ID tied to FVoxel namespace
 	static constexpr int32 EMPTY_VOXEL = 0; 
+	
+	// Offset is important for transparent voxel IDs.
 	static constexpr int32 OFFSET_FROM_EMPTY_VOXEL = FVoxel::EMPTY_VOXEL + 1;
 
 	// Saving voxels is not implemented in this demo, but a property specifier for saving has been added.

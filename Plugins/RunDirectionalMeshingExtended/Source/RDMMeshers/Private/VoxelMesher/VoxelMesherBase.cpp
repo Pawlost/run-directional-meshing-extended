@@ -1,9 +1,8 @@
 ﻿#include "VoxelMesher/VoxelMesherBase.h"
 
-#include "Log/VoxelMeshingProfilingLogger.h"
 #include "VoxelMesher/MeshingUtils/MesherVariables.h"
-#include "Voxel/Grid/VoxelGrid.h"
 #include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
+#include "VoxelModel/VoxelGrid.h"
 
 void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase)
 {
@@ -11,7 +10,7 @@ void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& 
 	UpdateAllFacesParams();
 }
 
-void UVoxelMesherBase::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid)
+void UVoxelMesherBase::CompressVoxelGrid(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid)
 {
 
 #if CPUPROFILERTRACE_ENABLED
@@ -19,25 +18,10 @@ void UVoxelMesherBase::CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGri
 #endif
 
 	// Unoptimized because it is out of scope for this thesis
-	auto VoxelGridObject = NewObject<UVoxelGrid>();
+	const auto VoxelGridObject = NewObject<UVoxelGrid>();
 	VoxelGridObject->VoxelGrid = MakeShared<TArray<FVoxel>>();
 	VoxelGridObject->VoxelGrid->Append(VoxelGrid);
-	Chunk.VoxelModel = TStrongObjectPtr<UVoxelGrid>(VoxelGridObject);
-
-#if defined(UE_BUILD_DEBUG) || defined(UE_BUILD_DEVELOPMENT)
-	const FString MapName = GetWorld()->GetMapName();
-	FVoxelMeshingProfilingLogger::LogAllocatedMemory(MapName, VoxelGridObject->VoxelGrid->GetAllocatedSize());
-
-	const uint32 VoxelCount = VoxelGenerator->GetVoxelCountPerChunk();
-	uint32 OpaqueVoxelCount = 0;
-	// TODO: fix measuring
-	/*for (const auto OpaqueVoxels : Chunk.ChunkVoxelIdTable)
-	{
-		OpaqueVoxelCount += OpaqueVoxels.Value;
-	}*/
-	FVoxelMeshingProfilingLogger::LogVoxelSparsity(MapName, OpaqueVoxelCount, VoxelCount - OpaqueVoxelCount);
-#endif
-	
+	VoxelModel = TStrongObjectPtr<UVoxelGrid>(VoxelGridObject);
 }
 
 const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTangents[] = {
@@ -89,7 +73,8 @@ void UVoxelMesherBase::UpdateFaceParams(FMeshingDirections& Face, const FIntVect
 	Face.ChunkBorderIndex = VoxelGenerator->CalculateVoxelIndex(ChunkBorderIndexVector);
 }
 
-void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
+void UVoxelMesherBase::PreallocateArrays(TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces, 
+	TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData) const
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Mesh generation preallocation")
@@ -99,48 +84,47 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 	auto ChunkLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
 
 	// TODO: rewrite, keep preallocation
-	MeshVars.ChunkMeshData = nullptr;
+	ChunkMeshData = nullptr;
 
-	if (MeshVars.ChunkMeshData == nullptr)
+	if (ChunkMeshData == nullptr)
 	{
-		MeshVars.ChunkMeshData = MakeShared<TArray<FProcMeshSectionVars>>();
+		ChunkMeshData = MakeShared<TArray<FProcMeshSectionVars>>();
 	}
-
+/*
 	MeshVars.BorderChunkMeshData = nullptr;
 	if (MeshVars.BorderChunkMeshData == nullptr)
 	{
 		MeshVars.BorderChunkMeshData = MakeShared<TArray<FProcMeshSectionVars>>();
 	}
-
+*/
 	for (int t = 0; t < 10; t++)
 	{
-		auto& ChunkMeshData = *MeshVars.ChunkMeshData;
-		if (ChunkMeshData.IsValidIndex(t))
+		if (ChunkMeshData->IsValidIndex(t))
 		{
-			ChunkMeshData[t].EmptyValues();
+			(*ChunkMeshData)[t].EmptyValues();
 		}else
 		{
-			ChunkMeshData.Emplace(VoxelGenerator->GetVoxelCountPerChunk());
-		}
+			ChunkMeshData->Emplace(VoxelGenerator->GetVoxelCountPerChunk());
+		}/*
 
-		auto& BorderChunkMeshData = *MeshVars.BorderChunkMeshData;
+		auto& BorderChunkMeshData = *BorderChunkMeshData;
 		if (BorderChunkMeshData.IsValidIndex(t))
 		{
 			BorderChunkMeshData[t].EmptyValues();
 		}else
 		{
 			BorderChunkMeshData.Emplace(VoxelGenerator->GetVoxelCountPerChunk());
-		}
+		}*/
 	}
 	
 	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
-		auto FaceArray = MeshVars.VirtualFaces[f];
+		auto FaceArray = VirtualFaces[f];
 		if (FaceArray == nullptr || !FaceArray.IsValid())
 		{
 			// In case voxel table is not available this code needs to be rewritten to add local voxels id dynamically during voxel grid traversal
 			FaceArray = MakeShared<TArray<TArray<FVirtualVoxelFace>>>();
-			MeshVars.VirtualFaces[f] = FaceArray;
+			VirtualFaces[f] = FaceArray;
 		}
 		else
 		{
@@ -148,10 +132,10 @@ void UVoxelMesherBase::PreallocateArrays(FMesherVariables& MeshVars) const
 			FaceArray->Empty();
 		}
 
-		MeshVars.VirtualFaces[f]->SetNum(ChunkDimension);
+		VirtualFaces[f]->SetNum(ChunkDimension);
 		for (uint32 y = 0; y < ChunkDimension; y++)
 		{
-			(*MeshVars.VirtualFaces[f])[y].Reserve(ChunkLayer);
+			(*VirtualFaces[f])[y].Reserve(ChunkLayer);
 		}
 	}
 }

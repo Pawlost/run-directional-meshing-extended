@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "VoxelGeneratorBase.h"
 #include "MeshingUtils/FaceDirection.h"
 #include "MeshingUtils/MeshingDirections.h"
 #include "MeshingUtils/ProcMeshSectionVars.h"
-#include "Voxel/Generator/VoxelGeneratorBase.h"
 #include "VoxelMesherBase.generated.h"
 
 struct FChunkParams;
@@ -15,14 +15,18 @@ struct FMesherVariables;
   * @brief Base class for components that convert voxel models into a mesh.
   */
 UCLASS(Abstract, Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API UVoxelMesherBase : public UActorComponent
+class RDMMESHERS_API UVoxelMesherBase : public UActorComponent
 {
 	GENERATED_BODY()
 	
 public:
 	void SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase);
-	virtual void GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelEdit>& VoxelChange) PURE_VIRTUAL(UMesherBase::GenerateMesh)
-	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid);
+	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel, 
+		TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
+		TMap<int32, uint32> LocalVoxelTable,
+		const TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
+		TArray<FVoxelEdit>& VoxelChange) PURE_VIRTUAL(UMesherBase::GenerateMesh)
+	virtual void CompressVoxelGrid(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid);
 
 protected:
 	
@@ -68,7 +72,8 @@ protected:
 	void UpdateFaceParams(FMeshingDirections& Face, FIntVector ForwardVoxelIndexVector,
 						  FIntVector ChunkBorderIndexVector, FIntVector PreviousVoxelIndexVector) const;
 	
-	void PreallocateArrays(FMesherVariables& MeshVars) const;
+	void PreallocateArrays(TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces, 
+		TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData) const;
 	
 	void GenerateProcMesh(const FMesherVariables& MeshVars) const;
 	

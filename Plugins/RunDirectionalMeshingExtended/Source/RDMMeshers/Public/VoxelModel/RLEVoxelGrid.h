@@ -28,7 +28,7 @@ struct FBorderChunk
 };
 
 UCLASS()
-class RUNDIRECTIONALMESHINGEXTENDED_API URLEVoxelGrid : public UVoxelModel
+class RDMMESHERS_API URLEVoxelGrid : public UVoxelModel
 {
 	GENERATED_BODY()
 

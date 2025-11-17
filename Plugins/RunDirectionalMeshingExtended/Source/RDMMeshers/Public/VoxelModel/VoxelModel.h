@@ -2,10 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "Voxel/Voxel.h"
 #include "VoxelModel.generated.h"
 
+// Used primarily for casting to derived class
 UCLASS()
-class RUNDIRECTIONALMESHINGEXTENDED_API UVoxelModel : public UObject
+class RDMMESHERS_API UVoxelModel : public UObject
 {
 	GENERATED_BODY()
 

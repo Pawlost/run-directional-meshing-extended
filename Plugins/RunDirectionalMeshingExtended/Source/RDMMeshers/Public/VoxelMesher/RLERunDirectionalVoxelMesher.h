@@ -2,20 +2,24 @@
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
 #include "Voxel/RLEVoxel.h"
-#include "Voxel/Grid/RLEVoxelGrid.h"
 #include "RLERunDirectionalVoxelMesher.generated.h"
 
 class URLEVoxelGrid;
 struct FChunkParams;
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
+class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 {
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelEdit>& VoxelChange) override;
-	virtual void CompressVoxelGrid(FChunk& Chunk, TArray<FVoxel>& VoxelGrid) override;
+	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel, 
+	                          TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
+	                          TMap<int32, uint32> LocalVoxelTable,
+	                          const TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
+	                          TArray<FVoxelEdit>& VoxelChange) override;
+	
+	virtual void CompressVoxelGrid(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid) override;
 
 private:
 	struct FMeshingEvent
@@ -99,12 +103,12 @@ private:
 		}
 	};
 
-	void CreateFace(FMesherVariables& MeshVars,
-	                const FStaticMergeData& StaticData,
-	                const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-	                const int YEnd, bool CanGenerate);
+	static void URLERunDirectionalVoxelMesher::CreateFace(const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
+	                                                      const FStaticMergeData& StaticData,
+	                                                      const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
+	                                                      const int YEnd, const bool CanGenerate);
 
-	void FaceGeneration(FIndexParams& IndexParams, FMesherVariables& MeshVars);
+	void FaceGeneration(FIndexParams& IndexParams, const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces);
 
 	// return true when interval advanced
 	static bool AdvanceMeshingEvent(FIndexParams& IndexParams, const EMeshingEventIndex IntervalFlagIndex);

@@ -9,7 +9,7 @@ class URLEVoxelGrid;
 struct FChunkParams;
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API URunDirectionalVoxelMesher : public UVoxelMesherBase
+class RDMMESHERS_API URunDirectionalVoxelMesher : public UVoxelMesherBase
 {
 	GENERATED_BODY()
 

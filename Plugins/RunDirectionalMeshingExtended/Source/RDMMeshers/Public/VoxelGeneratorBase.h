@@ -1,8 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "Chunk/Chunk.h"
 #include "Voxel/Voxel.h"
-#include "Voxel/VoxelTableRow.h"
+#include "VoxelModel/VoxelModel.h"
 #include "VoxelGeneratorBase.generated.h"
 
 struct FVoxelEdit;
@@ -13,7 +12,7 @@ class UVoxelMesherBase;
  * Base for components used to fill voxel models with voxels.
  */
 UCLASS(ClassGroup=(VoxelGeneration), Abstract, Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API UVoxelGeneratorBase : public UActorComponent
+class RDMMESHERS_API UVoxelGeneratorBase : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -59,14 +58,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual double GetHighestElevationAtLocation(const FVector& Location);
 
-	// Abstract functions
-	virtual TTuple<FName, FVoxelTableRow> GetVoxelTableRow(const FVoxel& Voxel) const PURE_VIRTUAL(
-		UVoxelGeneratorBase::GetVoxelTypeById, return TTuple<FName, FVoxelTableRow>();)
-	
 	virtual FVoxel GetVoxelByName(const FName& VoxelName) const PURE_VIRTUAL(
 		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)
 
-	virtual void GenerateVoxels(FChunk& Chunk) PURE_VIRTUAL(UVoxelGeneratorBase::GenerateVoxels)
+	virtual void GenerateVoxels(TStrongObjectPtr<UVoxelModel>& VoxelModel) PURE_VIRTUAL(UVoxelGeneratorBase::GenerateVoxels)
 	
 protected:
 	UPROPERTY()

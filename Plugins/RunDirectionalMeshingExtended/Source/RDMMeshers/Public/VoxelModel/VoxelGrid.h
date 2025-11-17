@@ -7,7 +7,7 @@
 #include "VoxelGrid.generated.h"
 
 UCLASS()
-class RUNDIRECTIONALMESHINGEXTENDED_API UVoxelGrid : public UVoxelModel
+class RDMMESHERS_API UVoxelGrid : public UVoxelModel
 {
 	GENERATED_BODY()
 

@@ -4,7 +4,7 @@
 #include "VoxelChange.generated.h"
 
 USTRUCT(BlueprintType)
-struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelEdit
+struct RDMMESHERS_API FVoxelEdit
 {
 	GENERATED_BODY()
 
@@ -16,7 +16,7 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelEdit
 };
 
 USTRUCT(BlueprintType)
-struct RUNDIRECTIONALMESHINGEXTENDED_API FChunkEdit
+struct RDMMESHERS_API FChunkEdit
 {
 	GENERATED_BODY()
 
@@ -31,7 +31,7 @@ struct RUNDIRECTIONALMESHINGEXTENDED_API FChunkEdit
 
 
 USTRUCT(BlueprintType)
-struct RUNDIRECTIONALMESHINGEXTENDED_API FCrossChunkEdit
+struct RDMMESHERS_API FCrossChunkEdit
 {
 	GENERATED_BODY()
 
