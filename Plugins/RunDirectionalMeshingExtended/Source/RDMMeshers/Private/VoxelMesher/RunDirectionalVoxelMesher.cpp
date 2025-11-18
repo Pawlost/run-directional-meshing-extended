@@ -1,6 +1,5 @@
 ﻿#include "VoxelMesher/RunDirectionalVoxelMesher.h"
 
-#include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
 /*
 void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelEdit>& VoxelChanges)

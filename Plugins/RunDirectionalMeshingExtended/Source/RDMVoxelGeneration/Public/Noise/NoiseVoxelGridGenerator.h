@@ -1,12 +1,14 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "Voxel/Generator/VoxelGeneratorBase.h"
+#include "VoxelGeneratorBase.h"
+#include "VoxelTableRow.h"
+#include "Chunk/Chunk.h"
 #include "NoiseVoxelGridGenerator.generated.h"
 
 struct FNoiseSurfaceGenerator;
 
 UCLASS(ClassGroup=(VoxelGeneration), Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API UNoiseVoxelGridGenerator : public UVoxelGeneratorBase
+class RDMVOXELGENERATION_API UNoiseVoxelGridGenerator : public UVoxelGeneratorBase
 {
 	GENERATED_BODY()
 
@@ -14,7 +16,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Voxels")
 	TObjectPtr<UDataTable> VoxelTypeTable;
 
-	virtual void GenerateVoxels(FChunk& Chunk) override;
+	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
 
 	virtual double GetHighestElevationAtLocation(const FVector& Location) override;
 	virtual TTuple<FName, FVoxelTableRow> GetVoxelTableRow(const FVoxel& Voxel) const override;

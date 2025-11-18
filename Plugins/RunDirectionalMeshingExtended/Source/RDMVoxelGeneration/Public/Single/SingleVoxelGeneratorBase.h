@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Voxel/Generator/VoxelGeneratorBase.h"
+#include "VoxelGeneratorBase.h"
 #include "SingleVoxelGeneratorBase.generated.h"
 
 UCLASS(ClassGroup=(VoxelGeneration), Abstract, Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API USingleVoxelGeneratorBase : public UVoxelGeneratorBase
+class RDMVOXELGENERATION_API USingleVoxelGeneratorBase : public UVoxelGeneratorBase
 {
 	GENERATED_BODY()
 

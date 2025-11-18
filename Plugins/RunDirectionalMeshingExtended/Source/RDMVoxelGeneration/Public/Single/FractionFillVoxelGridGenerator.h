@@ -4,7 +4,7 @@
 #include "FractionFillVoxelGridGenerator.generated.h"
 
 UCLASS(ClassGroup=(VoxelGeneration), Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API UFractionFillVoxelGridGenerator : public USingleVoxelGeneratorBase
+class RDMVOXELGENERATION_API UFractionFillVoxelGridGenerator : public USingleVoxelGeneratorBase
 {
 	GENERATED_BODY()
 
@@ -18,5 +18,5 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = "1"), Category = "Voxel grid size")
 	int32 ZFraction = 1;
 
-	virtual void GenerateVoxels(FChunk& Chunk) override;
+	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
 };

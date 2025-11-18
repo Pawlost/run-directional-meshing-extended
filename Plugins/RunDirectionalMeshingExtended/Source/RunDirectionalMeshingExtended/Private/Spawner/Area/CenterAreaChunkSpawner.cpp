@@ -1,7 +1,5 @@
 ﻿#include "Spawner/Area/CenterAreaChunkSpawner.h"
 
-#include "VoxelMesher/MeshingUtils/MesherVariables.h"
-
 void ACenterAreaChunkSpawner::GenerateArea()
 {
 	FMesherVariables MesherVars;

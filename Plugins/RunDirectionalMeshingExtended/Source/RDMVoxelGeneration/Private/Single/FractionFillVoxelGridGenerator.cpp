@@ -1,14 +1,13 @@
-﻿#include "Voxel/Generator/Single/FractionFillVoxelGridGenerator.h"
+﻿#include "Single/FractionFillVoxelGridGenerator.h"
 
 #include "VoxelMesher/VoxelMesherBase.h"
 
-void UFractionFillVoxelGridGenerator::GenerateVoxels(FChunk& Chunk)
+void UFractionFillVoxelGridGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
 
-	TArray<FVoxel> VoxelGrid;
-	VoxelGrid.SetNum(GetVoxelCountPerChunk());
+	VoxelModel.SetNum(GetVoxelCountPerChunk());
 
 	for (uint32 x = 0; x < ChunkDimension / XFraction; x++)
 	{
@@ -17,10 +16,9 @@ void UFractionFillVoxelGridGenerator::GenerateVoxels(FChunk& Chunk)
 			for (uint32 z = 0; z < ChunkDimension / ZFraction; z++)
 			{
 				const auto Index = CalculateVoxelIndex(x, y, z);
-				ChangeKnownVoxelAtIndex(VoxelGrid, Index, VoxelFillIndex);
+				
+				VoxelModel[Index] = VoxelFillIndex;
 			}
 		}
 	}
-
-	VoxelMesher->CompressVoxelGrid(Chunk, VoxelGrid);
 }

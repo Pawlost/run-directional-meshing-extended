@@ -1,7 +1,7 @@
-﻿#include "Spawner/ChunkSpawnerBase.h"
+﻿#include "ChunkSpawnerBase.h"
 
-#include "VoxelMesher/MeshingUtils/MesherVariables.h"
-#include "Voxel/Generator/VoxelGeneratorBase.h"
+#include "BaseVoxelData.h"
+#include "VoxelGeneratorBase.h"
 
 bool AChunkSpawnerBase::IsInitialized() const
 {

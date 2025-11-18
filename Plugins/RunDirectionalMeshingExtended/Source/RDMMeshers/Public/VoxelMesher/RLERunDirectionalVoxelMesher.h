@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
 #include "Voxel/RLEVoxel.h"
+#include "VoxelModel/RLEVoxelGrid.h"
 #include "RLERunDirectionalVoxelMesher.generated.h"
 
 class URLEVoxelGrid;
@@ -13,13 +14,18 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel, 
+	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
 	                          TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
 	                          TMap<int32, uint32> LocalVoxelTable,
+	                          TMap<int32, uint32> BorderLocalVoxelTable,
 	                          const TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-	                          TArray<FVoxelEdit>& VoxelChange) override;
-	
-	virtual void CompressVoxelGrid(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid) override;
+	                          const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
+	                          TArray<FVoxelEdit>& VoxelChange,
+	                          TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks,
+								TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
+	                          bool ShowBorders) override;
+
+	virtual void CompressVoxelModel(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid) override;
 
 private:
 	struct FMeshingEvent
@@ -81,7 +87,7 @@ private:
 	*/
 	struct FIndexParams
 	{
-		TSharedPtr<TArray<FRLEVoxel>> SampledBorderChunks[CHUNK_FACE_COUNT];
+		TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks;
 		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 
 		// Current event index made of all meshing events that were already processed/traversed.
@@ -103,10 +109,11 @@ private:
 		}
 	};
 
-	static void URLERunDirectionalVoxelMesher::CreateFace(const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
-	                                                      const FStaticMergeData& StaticData,
-	                                                      const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-	                                                      const int YEnd, const bool CanGenerate);
+	static void CreateFace(
+		const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
+		const FStaticMergeData& StaticData,
+		const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
+		const int YEnd, const bool CanGenerate);
 
 	void FaceGeneration(FIndexParams& IndexParams, const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces);
 
@@ -120,10 +127,12 @@ private:
 
 	void AddBorderSample(const FIndexParams& IndexParams, const FIntVector IndexCoords,
 	                     const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
-	
+
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
-	
-	void BorderGeneration(FMesherVariables& MeshVars, TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks) const;
+
+	void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
+	                      TMap<int32, uint32> BorderLocalVoxelTable,
+	                      TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks, bool ShowBorders);
 
 	void GenerateBorder(TArray<FVirtualVoxelFace>& FaceContainer, TArray<FVirtualVoxelFace>& InverseFaceContainer,
 	                    TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,

@@ -1,24 +1,20 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "VoxelMesher/MeshingUtils/MesherVariables.h"
+#include "VoxelGeneratorBase.h"
+#include "Chunk/ChunkActor.h"
+#include "Chunk/MesherVariables.h"
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "ChunkSpawnerBase.generated.h"
 
-struct FVoxelPosition;
-enum EFaceDirection : uint8;
-struct FChunk;
-struct FMesherVariables;
-class UVoxelGeneratorBase;
-
 UCLASS(ClassGroup=(ChunkSpawners), Abstract, Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API AChunkSpawnerBase : public AActor
+class RDMVOXELGENERATION_API AChunkSpawnerBase : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
 		Category="Chunk")
-	TSubclassOf<UVoxelGeneratorBase> VoxelGeneratorBlueprint = nullptr;
+	TSubclassOf<UBaseVoxelData> VoxelGeneratorBlueprint = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chunk")
 	bool UseWorldCenter = false;
@@ -69,9 +65,6 @@ protected:
 	void AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
 	                    const FIntVector& GridPosition, TSharedFuture<void>* AsyncExecution = nullptr) const;
 
-	UPROPERTY()
-	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
-
 	// Wait for all futures
 	static void WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks);
 
@@ -85,7 +78,9 @@ protected:
 
 	virtual void ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& EditChunk) PURE_VIRTUAL(
 		AChunkSpawnerBase::ChangeVoxelInChunk)
-
+	
+	UPROPERTY()
+	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 	bool bIsInitialized = false;
 
 private:

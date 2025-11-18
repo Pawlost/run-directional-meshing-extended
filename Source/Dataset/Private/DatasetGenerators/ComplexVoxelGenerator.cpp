@@ -1,7 +1,7 @@
 #include "DatasetGenerators/ComplexShapeVoxelGenerator.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 
-void UComplexShapeVoxelGenerator::GenerateVoxels(FChunk& Chunk)
+void UComplexShapeVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
@@ -20,13 +20,11 @@ void UComplexShapeVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 				if (ShapeSinus(x) + ShapeSinus(y) + ShapeSinus(z) > 0)
 				{
 					const auto Index = CalculateVoxelIndex(x, y, z);
-					ChangeKnownVoxelAtIndex(VoxelGrid, Index, VoxelFillIndex);
+					VoxelModel[Index] = VoxelFillIndex;
 				}
 			}
 		}
 	}
-	
-	VoxelMesher->CompressVoxelGrid(Chunk, VoxelGrid);
 }
 
 float UComplexShapeVoxelGenerator::ShapeSinus(const int Coordinate) const

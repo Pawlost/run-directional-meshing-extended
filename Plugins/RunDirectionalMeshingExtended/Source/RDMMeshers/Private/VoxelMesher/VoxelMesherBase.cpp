@@ -1,16 +1,16 @@
 ﻿#include "VoxelMesher/VoxelMesherBase.h"
 
-#include "VoxelMesher/MeshingUtils/MesherVariables.h"
+#include "BaseVoxelData.h"
 #include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
 #include "VoxelModel/VoxelGrid.h"
 
-void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase)
+void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase)
 {
 	this->VoxelGenerator = VoxelGeneratorBase;
 	UpdateAllFacesParams();
 }
 
-void UVoxelMesherBase::CompressVoxelGrid(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid)
+void UVoxelMesherBase::CompressVoxelModel(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid)
 {
 
 #if CPUPROFILERTRACE_ENABLED
@@ -137,46 +137,6 @@ void UVoxelMesherBase::PreallocateArrays(TSharedPtr<TArray<TArray<FVirtualVoxelF
 		{
 			(*VirtualFaces[f])[y].Reserve(ChunkLayer);
 		}
-	}
-}
-
-void UVoxelMesherBase::GenerateProcMesh(const FMesherVariables& MeshVars) const
-{
-#if CPUPROFILERTRACE_ENABLED
-	TRACE_CPUPROFILER_EVENT_SCOPE("Creating Actor - RunDirectionalMeshing from VoxelGrid generation")
-#endif
-
-	AddMeshToActor(MeshVars.ChunkParams.OriginalChunk->ChunkMeshActor, MeshVars.ChunkMeshData, MeshVars.LocalVoxelTable);
-	AddMeshToActor(MeshVars.ChunkParams.OriginalChunk->BorderChunkMeshActor, MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable);
-}
-
-void UVoxelMesherBase::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
-	const TMap<int32, uint32>& LocalVoxelTable) const
-{
-	for (const auto LocalVoxelType : LocalVoxelTable)
-	{
-		auto SectionId = LocalVoxelType.Value;
-
-		if (!IsValid(VoxelGenerator))
-		{
-			return;
-		}
-
-		const auto Voxel = FVoxel(LocalVoxelType.Key);
-		const auto VoxelRow = VoxelGenerator->GetVoxelTableRow(Voxel);
-
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, ChunkMeshData, SectionId, VoxelRow]()
-		{
-			MeshActor->ProceduralMeshComponent->SetMaterial(SectionId, VoxelRow.Value.Material);
-			const FProcMeshSectionVars& QuadMeshSection = (*ChunkMeshData)[SectionId];
-
-			MeshActor->ProceduralMeshComponent->ClearMeshSection(SectionId);
-			// Add voxel materials to mesh
-			MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(
-				SectionId, QuadMeshSection.Vertices, QuadMeshSection.Triangles, QuadMeshSection.Normals,
-				QuadMeshSection.UV0, TArray<FLinearColor>(),
-				QuadMeshSection.Tangents, true);
-		});
 	}
 }
 

@@ -2,7 +2,7 @@
 
 #include "VoxelMesher/VoxelMesherBase.h"
 
-void URandomVoxelGenerator::GenerateVoxels(FChunk& Chunk)
+void URandomVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
@@ -22,11 +22,9 @@ void URandomVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 				{
 					FIntVector VoxelPosition(x, y, z);
 					const auto Index = CalculateVoxelIndex(VoxelPosition);
-					ChangeKnownVoxelAtIndex(VoxelGrid, Index, VoxelFillIndex);
+					VoxelModel[Index] = VoxelFillIndex;
 				}
 			}
 		}
 	}
-
-	VoxelMesher->CompressVoxelGrid(Chunk, VoxelGrid);
 }

@@ -4,10 +4,10 @@
 #include "SingleVoxelGenerator.generated.h"
 
 UCLASS(ClassGroup=(VoxelGeneration), Blueprintable)
-class RUNDIRECTIONALMESHINGEXTENDED_API USingleVoxelGenerator : public USingleVoxelGeneratorBase
+class RDMVOXELGENERATION_API USingleVoxelGenerator : public USingleVoxelGeneratorBase
 {
 	GENERATED_BODY()
 
 public:
-		virtual void GenerateVoxels(FChunk& Chunk) override;
+		virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
 };

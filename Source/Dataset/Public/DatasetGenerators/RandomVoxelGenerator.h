@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Single/SingleVoxelGeneratorBase.h"
 #include "UObject/Object.h"
-#include "Voxel/Generator/Single/SingleVoxelGeneratorBase.h"
 #include "RandomVoxelGenerator.generated.h"
 
 UCLASS()
@@ -11,7 +11,7 @@ class DATASET_API URandomVoxelGenerator : public USingleVoxelGeneratorBase
 	GENERATED_BODY()
 	
 public:
-	virtual void GenerateVoxels(FChunk& Chunk) override;
+	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)  override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Voxel")
 	int32 Seed = 1;

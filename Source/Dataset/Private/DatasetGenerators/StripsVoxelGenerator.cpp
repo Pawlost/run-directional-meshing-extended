@@ -14,7 +14,7 @@ uint32 UStripsVoxelGenerator::CalculateStripSize(const float ChunkDimension, con
 	return FMath::Max<uint32>(FMath::FloorToInt32(StripSize), 1);
 }
 
-void UStripsVoxelGenerator::GenerateVoxels(FChunk& Chunk)
+void UStripsVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
@@ -39,10 +39,8 @@ void UStripsVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 				}
 				
 				const auto Index = CalculateVoxelIndex(VoxelPosition);
-				ChangeKnownVoxelAtIndex(VoxelGrid,Index, VoxelFillIndex);
+				VoxelModel[Index] = VoxelFillIndex;
 			}
 		}
 	}
-
-	VoxelMesher->CompressVoxelGrid(Chunk, VoxelGrid);
 }

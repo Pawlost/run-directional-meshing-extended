@@ -1,8 +1,5 @@
 ﻿#include "Spawner/Area/AreaChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/MesherVariables.h"
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
-#include "Voxel/Generator/VoxelGeneratorBase.h"
-#include "Voxel/Grid/VoxelModel.h"
 
 void AAreaChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits)
 {

@@ -1,7 +1,7 @@
-﻿#include "Voxel/Generator/Noise/NoiseVoxelGridGenerator.h"
+﻿#include "Noise/NoiseVoxelGridGenerator.h"
 
 #include "Chunk/Chunk.h"
-#include "Voxel/Generator/Noise/NoiseSurfaceGenerator.h"
+#include "Noise/NoiseSurfaceGenerator.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 
 void UNoiseVoxelGridGenerator::BeginPlay()
@@ -33,7 +33,7 @@ void UNoiseVoxelGridGenerator::BeginPlay()
 	}
 }
 
-void UNoiseVoxelGridGenerator::GenerateVoxels(FChunk& Chunk)
+void UNoiseVoxelGridGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	//NOTICE: This generation is unoptimized because it is not major part of my bachelor's thesis
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
@@ -47,8 +47,7 @@ void UNoiseVoxelGridGenerator::GenerateVoxels(FChunk& Chunk)
 		return;
 	}
 
-	TArray<FVoxel> VoxelGrid;
-	VoxelGrid.SetNum(GetVoxelCountPerChunk());
+	VoxelModel.SetNum(GetVoxelCountPerChunk());
 
 	// Iteration through voxel grid (voxel model)
 	for (uint16 x = 0; x < ChunkDimension; x++)
@@ -117,15 +116,13 @@ void UNoiseVoxelGridGenerator::GenerateVoxels(FChunk& Chunk)
 
 					if (AddVoxel)
 					{
-						// Rewrite voxel at index from previous value
-						ChangeKnownVoxelAtIndex(VoxelGrid, Index, Voxel);
+						VoxelModel[Index] = Voxel;
 					}
 				}
 			}
 		}
 	}
 
-	VoxelMesher->CompressVoxelGrid(Chunk,VoxelGrid);
 }
 
 double UNoiseVoxelGridGenerator::GetHighestElevationAtLocation(const FVector& Location)

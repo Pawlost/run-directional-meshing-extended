@@ -2,15 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "FastNoiseWrapper.h"
-#include "Voxel/VoxelTableRow.h"
 #include "NoiseSurfaceGenerator.generated.h"
 
 USTRUCT()
-struct RUNDIRECTIONALMESHINGEXTENDED_API FNoiseSurfaceGenerator
+struct RDMVOXELGENERATION_API FNoiseSurfaceGenerator
 {
 	GENERATED_BODY()
-
-	//PROPERTY()
+	
+	// TODO: rewrite
+	//UPROPERTY()
 	TObjectPtr<UFastNoiseWrapper> SurfaceGenerator;
 
 	//UPROPERTY()

@@ -1,15 +1,15 @@
 ﻿using UnrealBuildTool;
 
-public class Dataset : ModuleRules
+public class RDMVoxelGeneration : ModuleRules
 {
-    public Dataset(ReadOnlyTargetRules Target) : base(Target)
+    public RDMVoxelGeneration(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core", "RunDirectionalMeshingExtended", "ProceduralMeshComponent", "RDMVoxelGeneration"
+                "Core", "RDMMeshers", "FastNoise", "FastNoiseGenerator", "ProceduralMeshComponent"
             }
         );
 

@@ -5,7 +5,7 @@
 #include "ChunkActor.generated.h"
 
 UCLASS()
-class RUNDIRECTIONALMESHINGEXTENDED_API AChunkActor : public AActor
+class RDMVOXELGENERATION_API AChunkActor : public AActor
 {
 	GENERATED_BODY()
 

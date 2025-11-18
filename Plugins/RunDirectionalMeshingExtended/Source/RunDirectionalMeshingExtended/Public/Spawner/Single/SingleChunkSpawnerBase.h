@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Spawner/ChunkSpawnerBase.h"
+#include "ChunkSpawnerBase.h"
 #include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "SingleChunkSpawnerBase.generated.h"
 

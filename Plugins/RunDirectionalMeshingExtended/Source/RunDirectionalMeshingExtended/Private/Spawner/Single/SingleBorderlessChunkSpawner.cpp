@@ -1,8 +1,5 @@
 ﻿#include "Spawner/Single/SingleBorderlessChunkSpawner.h"
 
-#include "VoxelMesher/MeshingUtils/MesherVariables.h"
-#include "Voxel/Generator/VoxelGeneratorBase.h"
-
 void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FVoxelEdit>& VoxelChanges)
 {
 	FMesherVariables ChunkParams;

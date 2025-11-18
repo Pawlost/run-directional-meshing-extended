@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Voxel/Generator/Single/SingleVoxelGeneratorBase.h"
+#include "Single/SingleVoxelGeneratorBase.h"
 #include "StripsVoxelGenerator.generated.h"
 
 struct FChunk;
@@ -13,7 +13,7 @@ class DATASET_API UStripsVoxelGenerator : public USingleVoxelGeneratorBase
 	GENERATED_BODY()
 	
 public:
-	virtual void GenerateVoxels(FChunk& Chunk) override;
+	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)  override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = "0"), Category = "Voxel")
 	int32 XGapCount = 1;

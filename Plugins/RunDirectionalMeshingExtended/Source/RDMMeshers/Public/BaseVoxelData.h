@@ -1,18 +1,13 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "Voxel/Voxel.h"
-#include "VoxelModel/VoxelModel.h"
-#include "VoxelGeneratorBase.generated.h"
-
-struct FVoxelEdit;
-struct FMesherVariables;
-class UVoxelMesherBase;
-
+#include "VoxelMesher/VoxelMesherBase.h"
+#include "BaseVoxelData.generated.h"
 /**
  * Base for components used to fill voxel models with voxels.
  */
 UCLASS(ClassGroup=(VoxelGeneration), Abstract, Blueprintable)
-class RDMMESHERS_API UVoxelGeneratorBase : public UActorComponent
+class RDMMESHERS_API UBaseVoxelData : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -30,13 +25,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category ="Voxels",
 		meta=(ToolTip="Size of a single voxel in world coordinates.", MinClamp="0"))
 	double VoxelSize = 20;
-
-
-	UPROPERTY(EditAnywhere, Category ="Voxels")
-	bool bEnableVoxelMeshing = true;
-	
-	void ChangeKnownVoxelAtIndex(TArray<FVoxel>& VoxelGrid, const uint32& Index,
-												  const FVoxel& Voxel);
 	
 	/**
 	 * Calculate voxel index in chunk grid from grid coordinates.
@@ -53,21 +41,19 @@ public:
 	uint32 GetVoxelCountPerVoxelLine() const;
 	uint32 GetVoxelCountPerVoxelPlane() const;
 	uint32 GetVoxelCountPerChunk() const;
-	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelEdit>& VoxelChanges) const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual double GetHighestElevationAtLocation(const FVector& Location);
-
+	
+	// TODO: Move
 	virtual FVoxel GetVoxelByName(const FName& VoxelName) const PURE_VIRTUAL(
 		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)
-
-	virtual void GenerateVoxels(TStrongObjectPtr<UVoxelModel>& VoxelModel) PURE_VIRTUAL(UVoxelGeneratorBase::GenerateVoxels)
 	
 protected:
 	UPROPERTY()
 	TObjectPtr<UVoxelMesherBase> VoxelMesher;
 	virtual void BeginPlay() override;
-
+	
 private:
 	double ChunkSpacing = 0.0, InternalVoxelSize = 0.0;
 	int32 VoxelCountY = 0, VoxelCountYZ = 0, VoxelCountXYZ = 0;

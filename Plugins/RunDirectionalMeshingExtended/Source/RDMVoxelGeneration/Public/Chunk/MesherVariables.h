@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "FaceDirection.h"
+#include "Chunk/Chunk.h"
+#include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 #include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
 #include "MesherVariables.generated.h"
@@ -7,7 +8,7 @@
 class AChunkSpawnerBase;
 
 USTRUCT()
-struct RDMMESHERS_API FChunkParams
+struct RDMVOXELGENERATION_API FChunkParams
 {
 	GENERATED_BODY()
 
@@ -22,7 +23,7 @@ struct RDMMESHERS_API FChunkParams
 };
 
 USTRUCT()
-struct RDMMESHERS_API FMesherVariables
+struct RDMVOXELGENERATION_API FMesherVariables
 {
 	GENERATED_BODY()
 	

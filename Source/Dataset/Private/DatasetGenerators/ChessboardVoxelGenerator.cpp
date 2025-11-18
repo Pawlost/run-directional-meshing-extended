@@ -3,7 +3,7 @@
 #include "DatasetGenerators/SphereVoxelGenerator.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 
-void UChessboardVoxelGenerator::GenerateVoxels(FChunk& Chunk)
+void UChessboardVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
@@ -18,10 +18,8 @@ void UChessboardVoxelGenerator::GenerateVoxels(FChunk& Chunk)
 			for (uint32 y = (z + x)%2; y < ChunkDimension; y+=2)
 			{
 				const auto Index = CalculateVoxelIndex(x, y, z);
-				ChangeKnownVoxelAtIndex(VoxelGrid, Index, VoxelFillIndex);
+				VoxelModel[Index] = VoxelFillIndex;
 			}
 		}
 	}
-	
-	VoxelMesher->CompressVoxelGrid(Chunk, VoxelGrid);
 }

@@ -2,14 +2,13 @@
 #include "CoreMinimal.h"
 #include "ChunkActor.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
-#include "Voxel/RLEVoxel.h"
-#include "Voxel/Grid/RLEVoxelGrid.h"
+#include "VoxelModel/RLEVoxelGrid.h"
 #include "Chunk.generated.h"
 
 class UVoxelModel;
 
 USTRUCT()
-struct RUNDIRECTIONALMESHINGEXTENDED_API FChunk
+struct RDMVOXELGENERATION_API FChunk
 {
 	GENERATED_BODY()
 

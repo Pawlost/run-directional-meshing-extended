@@ -1,7 +1,5 @@
 ﻿#include "Spawner/Area/CubicAreaChunkSpawner.h"
 
-#include "VoxelMesher/MeshingUtils/MesherVariables.h"
-
 void ACubicAreaChunkSpawner::GenerateArea()
 {
 	const auto MinPosition = CenterGridPosition - FIntVector(SpawnZone, SpawnZone, ChunksBelowSpawner);

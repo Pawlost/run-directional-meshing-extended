@@ -4,7 +4,7 @@
 #include "VoxelTableRow.generated.h"
 
 USTRUCT(BlueprintType)
-struct RUNDIRECTIONALMESHINGEXTENDED_API FVoxelTableRow : public FTableRowBase
+struct RDMVOXELGENERATION_API FVoxelTableRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
