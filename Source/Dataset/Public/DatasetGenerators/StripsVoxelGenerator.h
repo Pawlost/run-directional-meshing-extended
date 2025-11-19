@@ -3,9 +3,9 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "Single/SingleVoxelGeneratorBase.h"
+#include "Voxel/Voxel.h"
+#include "Chunk/Chunk.h"
 #include "StripsVoxelGenerator.generated.h"
-
-struct FChunk;
 
 UCLASS()
 class DATASET_API UStripsVoxelGenerator : public USingleVoxelGeneratorBase

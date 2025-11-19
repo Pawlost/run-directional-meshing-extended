@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "Voxel/Voxel.h"
-#include "VoxelMesher/VoxelMesherBase.h"
 #include "BaseVoxelData.generated.h"
 /**
  * Base for components used to fill voxel models with voxels.
@@ -12,10 +11,6 @@ class RDMMESHERS_API UBaseVoxelData : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
-		Category="Voxels")
-	TSubclassOf<UVoxelMesherBase> VoxelMesherBlueprint = nullptr;
-
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Voxels",
 		meta=(ToolTip=
 			"The number of voxels in a single dimension (X, Y, or Z) of the chunk. This value represents the count of voxels along one axis of the chunk, not the total number of voxels in the entire chunk."
@@ -50,8 +45,6 @@ public:
 		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)
 	
 protected:
-	UPROPERTY()
-	TObjectPtr<UVoxelMesherBase> VoxelMesher;
 	virtual void BeginPlay() override;
 	
 private:

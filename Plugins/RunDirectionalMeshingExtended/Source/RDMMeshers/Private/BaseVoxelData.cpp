@@ -9,19 +9,6 @@ void UBaseVoxelData::BeginPlay()
 	VoxelCountXYZ = VoxelCountYZ * VoxelCountY;
 
 	Super::BeginPlay();
-
-	checkf(VoxelMesherBlueprint, TEXT("Mesher blueprint must be set"));
-	if (VoxelMesherBlueprint)
-	{
-		// Register mesher
-		VoxelMesher = NewObject<UVoxelMesherBase>(this, VoxelMesherBlueprint);
-
-		if (VoxelMesher)
-		{
-			VoxelMesher->SetVoxelGenerator(this);
-			VoxelMesher->RegisterComponent();
-		}
-	}
 }
 
 uint32 UBaseVoxelData::CalculateVoxelIndex(const int32 X, const int32 Y, const int32 Z) const

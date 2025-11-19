@@ -1,5 +1,5 @@
 ﻿#include "Spawner/Single/SingleChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelChange.h"
+#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 
 void ASingleChunkSpawnerBase::BeginPlay()
 {

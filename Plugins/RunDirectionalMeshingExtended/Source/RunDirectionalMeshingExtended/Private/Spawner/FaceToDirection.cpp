@@ -1,4 +1,4 @@
-﻿#include "VoxelMesher/MeshingUtils/FaceDirection.h"
+﻿#include "FaceToDirection.h"
 
 FFaceToDirection FFaceToDirection::TopDirection = FFaceToDirection(EFaceDirection::Top, FIntVector(0, 0, 1));
 FFaceToDirection FFaceToDirection::BottomDirection = FFaceToDirection(EFaceDirection::Bottom,FIntVector(0, 0, -1));

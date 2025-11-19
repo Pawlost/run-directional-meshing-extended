@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelChange.h"
+#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 #include "SingleChunkSpawnerBase.generated.h"
 
 struct FVoxelPosition;

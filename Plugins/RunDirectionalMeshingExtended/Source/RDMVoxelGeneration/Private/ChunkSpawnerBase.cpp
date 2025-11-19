@@ -258,7 +258,7 @@ void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit
 
 	const FVoxelEdit Modification(VoxelType, VoxelPosition);
 	auto& VoxelModifications = OutChunkEdit.FindOrAdd(ChunkPosition);
-	VoxelModifications.Add(Modification);
+	VoxelModifications.VoxelEdits.Add(Modification);
 }
 
 FIntVector AChunkSpawnerBase::GetChunkGridPositionFromGlobalPosition(const FVector& GlobalPosition) const

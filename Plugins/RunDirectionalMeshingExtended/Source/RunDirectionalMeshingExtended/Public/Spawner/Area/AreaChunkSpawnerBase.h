@@ -1,12 +1,8 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "ChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelChange.h"
+#include "FaceToDirection.h"
 #include "AreaChunkSpawnerBase.generated.h"
-
-struct FVoxelPosition;
-struct FFaceToDirection;
-class AChunkActor;
 
 UCLASS(Abstract)
 class RUNDIRECTIONALMESHINGEXTENDED_API AAreaChunkSpawnerBase : public AChunkSpawnerBase

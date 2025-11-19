@@ -1,5 +1,7 @@
 ﻿#include "Spawner/Area/PreloadedVoxelCenterAreaChunkSpawner.h"
 
+#include "FaceToDirection.h"
+
 void APreloadedVoxelCenterAreaChunkSpawner::GenerateArea()
 {
 	auto InitialCenter = CenterGridPosition;

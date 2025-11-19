@@ -21,6 +21,11 @@ class RDMVOXELGENERATION_API UVoxelGeneratorBase : public UBaseVoxelData
 	GENERATED_BODY()
 
 public:
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
+		Category="Voxels")
+	TSubclassOf<UVoxelMesherBase> VoxelMesherBlueprint = nullptr;
+	
 	UPROPERTY(EditAnywhere, Category ="Voxels")
 	bool bEnableVoxelMeshing = true;
 
@@ -42,4 +47,9 @@ public:
 protected:
 	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 		PURE_VIRTUAL(UVoxelGeneratorBase::GenerateVoxels);
+
+	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	TObjectPtr<UVoxelMesherBase> VoxelMesher;
 };

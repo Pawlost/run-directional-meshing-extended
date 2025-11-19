@@ -1,5 +1,4 @@
 ﻿#include "Spawner/Area/AreaChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelChange.h"
 
 void AAreaChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits)
 {
@@ -93,12 +92,12 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	MesherVars.ChunkParams.ShowBorders = ShowChunkBorders;
 	MesherVars.ChunkParams.WorldTransform = UseWorldCenter;
 
-	AddChunkFromGrid(MesherVars, FFaceToDirection::TopDirection);
+	/*AddChunkFromGrid(MesherVars, FFaceToDirection::TopDirection);
 	AddChunkFromGrid(MesherVars, FFaceToDirection::BottomDirection);
 	AddChunkFromGrid(MesherVars, FFaceToDirection::RightDirection);
 	AddChunkFromGrid(MesherVars, FFaceToDirection::LeftDirection);
 	AddChunkFromGrid(MesherVars, FFaceToDirection::FrontDirection);
-	AddChunkFromGrid(MesherVars, FFaceToDirection::BackDirection);
+	AddChunkFromGrid(MesherVars, FFaceToDirection::BackDirection);*/
 
 	DequeueChunkActor(Chunk->ChunkMeshActor);
 	DequeueChunkActor(Chunk->BorderChunkMeshActor);

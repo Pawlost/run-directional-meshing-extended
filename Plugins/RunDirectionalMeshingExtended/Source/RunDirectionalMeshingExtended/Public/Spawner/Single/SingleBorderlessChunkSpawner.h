@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "FaceToDirection.h"
 #include "SingleChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelChange.h"
-#include "VoxelMesher/MeshingUtils/FaceDirection.h"
+#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 #include "SingleBorderlessChunkSpawner.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))

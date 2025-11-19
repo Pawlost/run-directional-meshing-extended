@@ -1,5 +1,5 @@
 ﻿#include "VoxelMesher/RLERunDirectionalVoxelMesher.h"
-#include "VoxelMesher/MeshingUtils/VoxelChange.h"
+#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 #include "VoxelMesher/RunDirectionalVoxelMesher.h"
 #include "Voxel/RLEVoxel.h"
 #include "VoxelModel/RLEVoxelGrid.h"

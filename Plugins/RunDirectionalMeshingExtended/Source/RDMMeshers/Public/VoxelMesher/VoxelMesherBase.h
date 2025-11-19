@@ -1,10 +1,9 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "BaseVoxelData.h"
-#include "MeshingUtils/FaceDirection.h"
 #include "MeshingUtils/MeshingDirections.h"
 #include "MeshingUtils/ProcMeshSectionVars.h"
-#include "MeshingUtils/VoxelChange.h"
+#include "MeshingUtils/VoxelEdit.h"
 #include "Voxel/RLEVoxel.h"
 #include "VoxelModel/RLEVoxelGrid.h"
 #include "VoxelMesherBase.generated.h"

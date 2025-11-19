@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "ChunkEdit.h"
 #include "VoxelGeneratorBase.h"
 #include "Chunk/ChunkActor.h"
 #include "Chunk/MesherVariables.h"
-#include "VoxelMesher/MeshingUtils/VoxelChange.h"
 #include "ChunkSpawnerBase.generated.h"
 
 UCLASS(ClassGroup=(ChunkSpawners), Abstract, Blueprintable)

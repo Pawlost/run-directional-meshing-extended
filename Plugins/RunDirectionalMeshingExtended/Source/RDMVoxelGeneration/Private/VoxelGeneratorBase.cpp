@@ -4,6 +4,24 @@
 #include "VoxelMesher/VoxelMesherBase.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 
+void UVoxelGeneratorBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	checkf(VoxelMesherBlueprint, TEXT("Mesher blueprint must be set"));
+	if (VoxelMesherBlueprint)
+	{
+		// Register mesher
+		VoxelMesher = NewObject<UVoxelMesherBase>(this, VoxelMesherBlueprint);
+
+		if (VoxelMesher)
+		{
+			VoxelMesher->SetVoxelGenerator(this);
+			VoxelMesher->RegisterComponent();
+		}
+	}
+}
+
 void UVoxelGeneratorBase::GenerateVoxels(FChunk& Chunk)
 {
 	TArray<FVoxel> VoxelModelArray;
