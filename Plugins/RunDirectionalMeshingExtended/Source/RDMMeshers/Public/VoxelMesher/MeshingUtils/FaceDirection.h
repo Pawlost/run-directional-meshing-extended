@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "FaceDirection.generated.h"
 
+#define CHUNK_FACE_COUNT 6
+
 UENUM()
 enum EFaceDirection : uint8
 {

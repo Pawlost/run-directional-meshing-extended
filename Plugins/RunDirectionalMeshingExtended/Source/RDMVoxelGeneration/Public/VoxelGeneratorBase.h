@@ -52,4 +52,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UVoxelMesherBase> VoxelMesher;
+	
+	
+private:
+	FCriticalSection Mutex;
 };

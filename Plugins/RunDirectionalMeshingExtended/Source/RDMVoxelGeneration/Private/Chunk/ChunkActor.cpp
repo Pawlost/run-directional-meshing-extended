@@ -9,7 +9,7 @@ AChunkActor::AChunkActor()
 
 bool AChunkActor::HasMesh() const
 {
-	return ProceduralMeshComponent->GetNumSections() != 0;
+	return IsValid(ProceduralMeshComponent) && ProceduralMeshComponent->GetNumSections() != 0;
 }
 
 void AChunkActor::ClearMesh() const

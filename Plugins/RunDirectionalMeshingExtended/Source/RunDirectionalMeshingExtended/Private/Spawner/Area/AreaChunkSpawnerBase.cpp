@@ -144,7 +144,6 @@ void AAreaChunkSpawnerBase::SpawnChunk(const FIntVector& ChunkGridPosition, TSha
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Chunk spawning generation");
 #endif
-
 	
 	if (!IsValid(this) || ChunkGrid.Contains(ChunkGridPosition))
 	{
@@ -183,7 +182,7 @@ void AAreaChunkSpawnerBase::DequeueChunkActor(TWeakObjectPtr<AChunkActor> ChunkA
 
 void AAreaChunkSpawnerBase::EnqueueChunkActor(TWeakObjectPtr<AChunkActor> ChunkActor)
 {
-	if (!ChunkActor->HasMesh())
+	if (ChunkActor.IsValid() && !ChunkActor->HasMesh())
 	{
 		UnusedActorsPool.Enqueue(ChunkActor);
 		ChunkActor = nullptr;

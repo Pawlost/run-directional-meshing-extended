@@ -41,14 +41,14 @@ void UNoiseVoxelGridGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelMod
 
 	const auto GridPos = Chunk.GridPosition * ChunkDimension;
 
+	VoxelModel.SetNum(GetVoxelCountPerChunk());
+	
 	if (IsChunkPositionOutOfBounds(GridPos.Z, GridPos.Z + ChunkDimension - 1))
 	{
 		// Skip all chunks outside possible noise fill
 		return;
 	}
-
-	VoxelModel.SetNum(GetVoxelCountPerChunk());
-
+	
 	// Iteration through voxel grid (voxel model)
 	for (uint16 x = 0; x < ChunkDimension; x++)
 	{

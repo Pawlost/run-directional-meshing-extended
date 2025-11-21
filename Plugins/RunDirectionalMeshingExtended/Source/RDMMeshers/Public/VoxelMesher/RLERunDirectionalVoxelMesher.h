@@ -15,14 +15,15 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 
 public:
 	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
-	                          TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
-	                          TMap<int32, uint32> LocalVoxelTable,
-	                          TMap<int32, uint32> BorderLocalVoxelTable,
-	                          const TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-	                          const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
+								TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+	                          TMap<int32, uint32>& LocalVoxelTable,
+	                          TMap<int32, uint32>& BorderLocalVoxelTable,
+	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
+	                          TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 	                          TArray<FVoxelEdit>& VoxelChange,
-	                          TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks,
+	                          TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
 								TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
+								TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,
 	                          bool ShowBorders) override;
 
 	virtual void CompressVoxelModel(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid) override;
@@ -109,13 +110,12 @@ private:
 		}
 	};
 
-	static void CreateFace(
-		const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
-		const FStaticMergeData& StaticData,
-		const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-		const int YEnd, const bool CanGenerate);
+	static void CreateFace(const TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+											   const FStaticMergeData& StaticData,
+											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
+											   const int YEnd, const bool CanGenerate);
 
-	void FaceGeneration(FIndexParams& IndexParams, const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces);
+	void FaceGeneration(FIndexParams& IndexParams, TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces);
 
 	// return true when interval advanced
 	static bool AdvanceMeshingEvent(FIndexParams& IndexParams, const EMeshingEventIndex IntervalFlagIndex);
@@ -131,7 +131,7 @@ private:
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
 
 	void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
-	                      TMap<int32, uint32> BorderLocalVoxelTable,
+	                      TMap<int32, uint32>& BorderLocalVoxelTable,
 	                      TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks, bool ShowBorders);
 
 	void GenerateBorder(TArray<FVirtualVoxelFace>& FaceContainer, TArray<FVirtualVoxelFace>& InverseFaceContainer,

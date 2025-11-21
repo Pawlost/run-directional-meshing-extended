@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "ChunkActor.h"
+#include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
+#include "VoxelModel/BorderChunk.h"
 #include "VoxelModel/RLEVoxelGrid.h"
 #include "Chunk.generated.h"
 
@@ -17,6 +19,8 @@ struct RDMVOXELGENERATION_API FChunk
 	
 	UPROPERTY()
 	TWeakObjectPtr<AChunkActor> BorderChunkMeshActor = nullptr;
+	
+	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 	
 	TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT> BorderChunks;
 

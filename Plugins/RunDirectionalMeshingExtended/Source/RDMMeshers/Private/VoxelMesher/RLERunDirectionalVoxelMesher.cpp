@@ -5,14 +5,15 @@
 #include "VoxelModel/RLEVoxelGrid.h"
 
 void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel, 
-	TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
-	TMap<int32, uint32> LocalVoxelTable,
-	TMap<int32, uint32> BorderLocalVoxelTable,
-	const TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-	const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
+	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+	TMap<int32, uint32>& LocalVoxelTable,
+	TMap<int32, uint32>& BorderLocalVoxelTable,
+	TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
+	TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 	TArray<FVoxelEdit>& VoxelChange,
 	TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks,
 	TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
+	TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,
 	bool ShowBorders)
 {
 #if CPUPROFILERTRACE_ENABLED
@@ -33,7 +34,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelMo
 	
 	IndexParams.VoxelGrid = VoxelGridPtr->RLEVoxelGrid;
 
-	PreallocateArrays(VirtualFaces, ChunkMeshData);
+	PreallocateArrays(VirtualFaces, ChunkMeshData, BorderChunkMeshData);
 
 	FaceGeneration(IndexParams, VirtualFaces);
 	
@@ -45,6 +46,15 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelMo
 		{
 			DirectionalGreedyMerge(*ChunkMeshData, LocalVoxelTable,
 								   FaceTemplates[f].StaticMeshingData, (*VirtualFaces[f])[y]);
+		}
+	}
+	
+	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
+	{
+		auto IsSampled = IsBorderSampled[i];
+		if (IsSampled != nullptr)
+		{
+			*(IsSampled) = true;
 		}
 	}
 	
@@ -69,7 +79,7 @@ void URLERunDirectionalVoxelMesher::CompressVoxelModel(TStrongObjectPtr<UVoxelMo
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("RLE compression generation")
 #endif
-
+	
 	auto VoxelGridObject = NewObject<URLEVoxelGrid>();
 
 	const auto RLEVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
@@ -93,7 +103,7 @@ void URLERunDirectionalVoxelMesher::CompressVoxelModel(TStrongObjectPtr<UVoxelMo
 	VoxelModel = TStrongObjectPtr<URLEVoxelGrid>(VoxelGridObject);
 }
 
-void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces)
+void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("RLE Meshing - RunDirectionalMeshing from RLECompression generation")
@@ -435,7 +445,7 @@ void URLERunDirectionalVoxelMesher::AdvanceEditInterval(FIndexParams& IndexParam
 }
 
 void URLERunDirectionalVoxelMesher::BorderGeneration(
-	const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData, TMap<int32, uint32> BorderLocalVoxelTable,
+	const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData, TMap<int32, uint32>& BorderLocalVoxelTable,
 	TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks, bool ShowBorders)
 {
 #if CPUPROFILERTRACE_ENABLED
@@ -572,7 +582,7 @@ void URLERunDirectionalVoxelMesher::SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TA
 	}
 }
 
-void URLERunDirectionalVoxelMesher::CreateFace(const TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
+void URLERunDirectionalVoxelMesher::CreateFace(const TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
                                                const FStaticMergeData& StaticData,
                                                const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
                                                const int YEnd, const bool CanGenerate)

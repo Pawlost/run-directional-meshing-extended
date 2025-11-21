@@ -2,7 +2,6 @@
 #include "CoreMinimal.h"
 #include "Voxel/Voxel.h"
 
-#define CHUNK_FACE_COUNT 6
 
 /**
  * Struct representing single voxel face. Inside helper struct not intended to be used with Unreal Engine.

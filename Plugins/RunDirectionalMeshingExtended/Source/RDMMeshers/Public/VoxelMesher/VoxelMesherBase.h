@@ -5,6 +5,7 @@
 #include "MeshingUtils/ProcMeshSectionVars.h"
 #include "MeshingUtils/VoxelEdit.h"
 #include "Voxel/RLEVoxel.h"
+#include "VoxelModel/BorderChunk.h"
 #include "VoxelModel/RLEVoxelGrid.h"
 #include "VoxelMesherBase.generated.h"
 class UBaseVoxelData;
@@ -20,14 +21,15 @@ public:
 	void SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase);
 
 	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
-	                          TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
-	                          TMap<int32, uint32> LocalVoxelTable,
-	                          TMap<int32, uint32> BorderLocalVoxelTable,
-	                          const TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-	                          const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
+								TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+	                          TMap<int32, uint32>& LocalVoxelTable,
+	                          TMap<int32, uint32>& BorderLocalVoxelTable,
+	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
+	                          TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 	                          TArray<FVoxelEdit>& VoxelChange,
 	                          TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks,
 								TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
+								TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,
 	                          bool ShowBorders) PURE_VIRTUAL(UMesherBase::GenerateMesh)
 
 	virtual void CompressVoxelModel(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid);
@@ -75,8 +77,9 @@ protected:
 	void UpdateFaceParams(FMeshingDirections& Face, FIntVector ForwardVoxelIndexVector,
 	                      FIntVector ChunkBorderIndexVector, FIntVector PreviousVoxelIndexVector) const;
 
-	void PreallocateArrays(TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces,
-	                       TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData) const;
+	void PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+	                       TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
+	                       TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData) const;
 
 	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, TMap<int32, uint32>& LocalVoxelTable,
 	                           const FVirtualVoxelFace& Face,

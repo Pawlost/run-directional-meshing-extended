@@ -24,6 +24,7 @@ void UVoxelGeneratorBase::BeginPlay()
 
 void UVoxelGeneratorBase::GenerateVoxels(FChunk& Chunk)
 {
+	FScopeLock Lock(&Mutex);
 	TArray<FVoxel> VoxelModelArray;
 	AddVoxels(Chunk, VoxelModelArray);
 	VoxelMesher->CompressVoxelModel(Chunk.VoxelModel, VoxelModelArray);
@@ -73,7 +74,7 @@ void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxel
 	{
 		const uint32 VoxelLayer = GetVoxelCountPerVoxelPlane();
 
-		bool* IsBorderSampled[CHUNK_FACE_COUNT];
+		TStaticArray<bool*, CHUNK_FACE_COUNT> IsBorderSampled;
 
 		auto& BorderChunks = MeshVars.ChunkParams.OriginalChunk->BorderChunks;
 
@@ -140,17 +141,8 @@ void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxel
 		VoxelMesher->GenerateMesh(MeshVars.ChunkParams.OriginalChunk->VoxelModel, MeshVars.VirtualFaces,
 		                          MeshVars.LocalVoxelTable, MeshVars.BorderLocalVoxelTable,
 		                          MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData, VoxelChanges, BorderChunks,
-		                          SampledBorderChunks,
+		                          SampledBorderChunks, IsBorderSampled,
 		                          MeshVars.ChunkParams.ShowBorders);
-
-		for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
-		{
-			auto IsSampled = IsBorderSampled[i];
-			if (IsSampled != nullptr)
-			{
-				*(IsSampled) = true;
-			}
-		}
 
 		GenerateProcMesh(MeshVars);
 	}

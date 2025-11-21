@@ -73,8 +73,8 @@ void UVoxelMesherBase::UpdateFaceParams(FMeshingDirections& Face, const FIntVect
 	Face.ChunkBorderIndex = VoxelGenerator->CalculateVoxelIndex(ChunkBorderIndexVector);
 }
 
-void UVoxelMesherBase::PreallocateArrays(TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>* VirtualFaces, 
-	TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData) const
+void UVoxelMesherBase::PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+	TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData, TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData) const
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Mesh generation preallocation")
@@ -90,13 +90,13 @@ void UVoxelMesherBase::PreallocateArrays(TSharedPtr<TArray<TArray<FVirtualVoxelF
 	{
 		ChunkMeshData = MakeShared<TArray<FProcMeshSectionVars>>();
 	}
-/*
-	MeshVars.BorderChunkMeshData = nullptr;
-	if (MeshVars.BorderChunkMeshData == nullptr)
+
+	BorderChunkMeshData = nullptr;
+	if (BorderChunkMeshData == nullptr)
 	{
-		MeshVars.BorderChunkMeshData = MakeShared<TArray<FProcMeshSectionVars>>();
+		BorderChunkMeshData = MakeShared<TArray<FProcMeshSectionVars>>();
 	}
-*/
+	
 	for (int t = 0; t < 10; t++)
 	{
 		if (ChunkMeshData->IsValidIndex(t))
@@ -105,16 +105,15 @@ void UVoxelMesherBase::PreallocateArrays(TSharedPtr<TArray<TArray<FVirtualVoxelF
 		}else
 		{
 			ChunkMeshData->Emplace(VoxelGenerator->GetVoxelCountPerChunk());
-		}/*
+		}
 
-		auto& BorderChunkMeshData = *BorderChunkMeshData;
-		if (BorderChunkMeshData.IsValidIndex(t))
+		if (BorderChunkMeshData->IsValidIndex(t))
 		{
-			BorderChunkMeshData[t].EmptyValues();
+			(*BorderChunkMeshData)[t].EmptyValues();
 		}else
 		{
-			BorderChunkMeshData.Emplace(VoxelGenerator->GetVoxelCountPerChunk());
-		}*/
+			BorderChunkMeshData->Emplace(VoxelGenerator->GetVoxelCountPerChunk());
+		}
 	}
 	
 	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
@@ -122,14 +121,12 @@ void UVoxelMesherBase::PreallocateArrays(TSharedPtr<TArray<TArray<FVirtualVoxelF
 		auto FaceArray = VirtualFaces[f];
 		if (FaceArray == nullptr || !FaceArray.IsValid())
 		{
-			// In case voxel table is not available this code needs to be rewritten to add local voxels id dynamically during voxel grid traversal
-			FaceArray = MakeShared<TArray<TArray<FVirtualVoxelFace>>>();
-			VirtualFaces[f] = FaceArray;
+			VirtualFaces[f] = MakeShared<TArray<TArray<FVirtualVoxelFace>>>();
 		}
 		else
 		{
 			// If array was pulled from a pool, just empty it 
-			FaceArray->Empty();
+			VirtualFaces[f]->Reset();
 		}
 
 		VirtualFaces[f]->SetNum(ChunkDimension);
@@ -186,7 +183,8 @@ void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadM
 	TriangleIndex += 4;
 }
 
-void UVoxelMesherBase::DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& ChunkMeshData, TMap<int32, uint32>& LocalVoxelTable,
+void UVoxelMesherBase::DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& ChunkMeshData, 
+														TMap<int32, uint32>& LocalVoxelTable,
 														const FStaticMergeData& MergeData,
 														TArray<FVirtualVoxelFace>& FaceContainer) const
 {
