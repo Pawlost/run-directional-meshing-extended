@@ -19,7 +19,8 @@ public class RDMMeshersTests : ModuleRules
                 "CoreUObject",
                 "Engine",
                 "Slate",
-                "SlateCore"
+                "SlateCore",
+                "RDMMeshers"
             }
         );
     }

@@ -27,7 +27,7 @@ void ACubicAreaChunkSpawner::GenerateArea()
 			for (int32 z = MinPosition.Z; z < MaxPosition.Z; z++)
 			{
 				auto CurrentGridPosition = FIntVector(x, y, z);
-				TArray<FVoxelEdit> VoxelChanges;
+				TArray<FRLEVoxelEdit> VoxelChanges;
 				GenerateChunkMesh(MeshVars, CurrentGridPosition, VoxelChanges);
 			}
 		}

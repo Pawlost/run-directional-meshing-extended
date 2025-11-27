@@ -1,6 +1,6 @@
 ﻿#include "Spawner/Single/SingleBorderlessChunkSpawner.h"
 
-void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FVoxelEdit>& VoxelChanges)
+void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FRLEVoxelEdit>& VoxelChanges)
 {
 	FMesherVariables ChunkParams;
 	ChunkParams.ChunkParams.SpawnerPtr = this;

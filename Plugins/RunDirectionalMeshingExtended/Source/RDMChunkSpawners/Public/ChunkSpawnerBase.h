@@ -4,10 +4,11 @@
 #include "VoxelGeneratorBase.h"
 #include "Chunk/ChunkActor.h"
 #include "Chunk/MesherVariables.h"
+#include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "ChunkSpawnerBase.generated.h"
 
 UCLASS(ClassGroup=(ChunkSpawners), Abstract, Blueprintable)
-class RDMVOXELGENERATION_API AChunkSpawnerBase : public AActor
+class RDMCHUNKSPAWNERS_API AChunkSpawnerBase : public AActor
 {
 	GENERATED_BODY()
 
@@ -76,7 +77,7 @@ protected:
 
 	FIntVector GetChunkGridPositionFromGlobalPosition(const FVector& GlobalPosition) const;
 
-	virtual void ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& EditChunk) PURE_VIRTUAL(
+	virtual void ApplyVoxelChanges(TMap<FIntVector, TArray<FRLEVoxelEdit>>& EditChunk) PURE_VIRTUAL(
 		AChunkSpawnerBase::ChangeVoxelInChunk)
 	
 	UPROPERTY()

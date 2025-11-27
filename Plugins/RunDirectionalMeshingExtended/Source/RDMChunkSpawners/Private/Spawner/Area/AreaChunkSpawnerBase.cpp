@@ -1,6 +1,6 @@
 ﻿#include "Spawner/Area/AreaChunkSpawnerBase.h"
 
-void AAreaChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits)
+void AAreaChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, TArray<FRLEVoxelEdit>>& ChunkEdits)
 {
 	if (EditHandle.IsValid() && !EditHandle.IsReady())
 	{
@@ -22,7 +22,7 @@ void AAreaChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& Chun
 			
 			FMesherVariables MesherVars;
 			Chunk->bIsActive = false;
-			GenerateChunkMesh(MesherVars, Chunk->GridPosition, ChunkEdit.Value.VoxelEdits);
+			GenerateChunkMesh(MesherVars, Chunk->GridPosition, ChunkEdit.Value);
 
 			// TODO:rewrite
 			
@@ -60,7 +60,7 @@ void AAreaChunkSpawnerBase::BeginPlay()
 			//Spawn center chunk
 			SpawnChunk(CenterGridPosition);
 			FMesherVariables MesherVars;
-			auto VoxelChanges = TArray<FVoxelEdit>();
+			auto VoxelChanges = TArray<FRLEVoxelEdit>();
 			GenerateChunkMesh(MesherVars, CenterGridPosition, VoxelChanges);
 		}
 
@@ -69,7 +69,7 @@ void AAreaChunkSpawnerBase::BeginPlay()
 }
 
 //Running on main thread may cause deadlock
-void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition, TArray<FVoxelEdit>& VoxelChanges)
+void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition,  TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Area Mesh generation prepartion")
@@ -122,7 +122,7 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	}
 
 	//Mesh could be spawned on a Async Thread similarly to voxel models but it is not done so to showcase real time speed of mesh generation (requirement for bachelor thesis)
-	VoxelGenerator->GenerateMesh(MesherVars, VoxelChanges);
+	VoxelGenerator->GenerateMesh(MesherVars, VoxelEdits);
 	
 	EnqueueChunkActor(Chunk->ChunkMeshActor);
 	EnqueueChunkActor(Chunk->BorderChunkMeshActor);

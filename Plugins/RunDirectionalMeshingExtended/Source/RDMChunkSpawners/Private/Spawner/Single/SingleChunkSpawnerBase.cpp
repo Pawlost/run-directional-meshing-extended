@@ -1,5 +1,4 @@
 ﻿#include "Spawner/Single/SingleChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 
 void ASingleChunkSpawnerBase::BeginPlay()
 {
@@ -17,14 +16,14 @@ void ASingleChunkSpawnerBase::BeginPlay()
 	SpawnChunks();
 }
 
-void ASingleChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits)
+void ASingleChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, TArray<FRLEVoxelEdit>>& ChunkEdits)
 {
 	for (auto ChunkEdit : ChunkEdits)
 	{
 		if (ChunkEdit.Key == SingleChunkGridPosition)
 		{
 			// Modify voxel at hit position
-			StartMeshing(ChunkEdit.Value.VoxelEdits);
+			StartMeshing(ChunkEdit.Value);
 		}
 	}
 }
@@ -45,6 +44,6 @@ void ASingleChunkSpawnerBase::SpawnChunks()
 		SingleChunk->bIsActive = true;
 	}
 
-	TArray<FVoxelEdit> VoxelChanges;
-	StartMeshing(VoxelChanges);
+	TArray<FRLEVoxelEdit> VoxelEdits;
+	StartMeshing(VoxelEdits);
 }

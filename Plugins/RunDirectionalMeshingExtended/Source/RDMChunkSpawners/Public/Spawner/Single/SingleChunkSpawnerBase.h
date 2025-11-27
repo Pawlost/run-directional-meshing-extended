@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "ChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 #include "SingleChunkSpawnerBase.generated.h"
 
 struct FVoxelPosition;
@@ -19,7 +18,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Chunk")
 	bool AlignGridPositionWithSpawner = true;
 
-	virtual void ApplyVoxelChanges(TMap<FIntVector, FChunkEdit>& ChunkEdits) override;
+	virtual void ApplyVoxelChanges(TMap<FIntVector, TArray<FRLEVoxelEdit>>&  ChunkEdits) override;
 	
 	virtual TSharedFuture<void> SpawnChunksAsync() override;
 	
@@ -27,7 +26,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void StartMeshing(TArray<FVoxelEdit>& VoxelChange) PURE_VIRTUAL(ASingleChunkSpawnerBase::StartMeshing)
+	virtual void StartMeshing(TArray<FRLEVoxelEdit>& VoxelChange) PURE_VIRTUAL(ASingleChunkSpawnerBase::StartMeshing)
 	
 	TSharedPtr<FChunk> SingleChunk;
 };

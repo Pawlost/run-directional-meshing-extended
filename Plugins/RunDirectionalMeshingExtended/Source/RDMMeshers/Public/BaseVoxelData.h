@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "Voxel/Voxel.h"
+#include "Tests/TestAccess.h"
 #include "BaseVoxelData.generated.h"
 /**
  * Base for components used to fill voxel models with voxels.
  */
-UCLASS(ClassGroup=(VoxelGeneration), Abstract, Blueprintable)
+UCLASS(ClassGroup=(VoxelGeneration), Blueprintable)
 class RDMMESHERS_API UBaseVoxelData : public UActorComponent
 {
 	GENERATED_BODY()
@@ -40,14 +40,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual double GetHighestElevationAtLocation(const FVector& Location);
 	
-	// TODO: Move
-	virtual FVoxel GetVoxelByName(const FName& VoxelName) const PURE_VIRTUAL(
-		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)
-	
 protected:
 	virtual void BeginPlay() override;
 	
-private:
+TEST_PRIVATE_MODIFIER:
+	void CalculateVoxelData();
 	double ChunkSpacing = 0.0, InternalVoxelSize = 0.0;
 	int32 VoxelCountY = 0, VoxelCountYZ = 0, VoxelCountXYZ = 0;
 	FCriticalSection Mutex;

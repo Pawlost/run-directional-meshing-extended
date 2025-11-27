@@ -2,7 +2,6 @@
 #include "CoreMinimal.h"
 #include "FaceToDirection.h"
 #include "SingleChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 #include "SingleBorderlessChunkSpawner.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -11,7 +10,7 @@ class RDMCHUNKSPAWNERS_API ASingleBorderlessChunkSpawner : public ASingleChunkSp
 	GENERATED_BODY()
 	
 protected:
-	virtual void StartMeshing(TArray<FVoxelEdit>& VoxelChanges) override;
+	virtual void StartMeshing(TArray<FRLEVoxelEdit>& VoxelChanges) override;
 	
 private:
 	TSharedPtr<FChunk> SideChunk[CHUNK_FACE_COUNT];

@@ -6,7 +6,7 @@ void ASingleChunkSpawner::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ASingleChunkSpawner::StartMeshing(TArray<FVoxelEdit>& VoxelChange)
+void ASingleChunkSpawner::StartMeshing(TArray<FRLEVoxelEdit>& VoxelChange)
 {
 	FMesherVariables MeshVar;
 	MeshVar.ChunkParams.SpawnerPtr = this;

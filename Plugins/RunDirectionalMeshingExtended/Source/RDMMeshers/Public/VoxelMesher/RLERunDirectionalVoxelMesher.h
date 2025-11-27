@@ -20,7 +20,7 @@ public:
 	                          TMap<int32, uint32>& BorderLocalVoxelTable,
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
-	                          TArray<FVoxelEdit>& VoxelChange,
+								TArray<FRLEVoxelEdit>& VoxelChange,
 	                          TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
 								TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
 								TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,
@@ -101,7 +101,8 @@ private:
 
 		uint32 ContinueEditIndex = 0;
 
-		TArray<FVoxelEdit>* VoxelChanges = nullptr;
+		//TODO: rewrite pointer
+		TArray<FRLEVoxelEdit>* VoxelEdits = nullptr;
 		bool EditEnabled = false;
 
 		void TryUpdateNextMeshingEvent(const uint32 EventIndex)

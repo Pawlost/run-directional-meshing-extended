@@ -3,6 +3,7 @@
 #include "Chunk/MesherVariables.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
+#include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 
 void UVoxelGeneratorBase::BeginPlay()
 {
@@ -68,7 +69,7 @@ void UVoxelGeneratorBase::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
 	}
 }
 
-void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelEdit>& VoxelChanges) const
+void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits) const
 {
 	if (bEnableVoxelMeshing)
 	{
@@ -140,7 +141,7 @@ void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxel
 
 		VoxelMesher->GenerateMesh(MeshVars.ChunkParams.OriginalChunk->VoxelModel, MeshVars.VirtualFaces,
 		                          MeshVars.LocalVoxelTable, MeshVars.BorderLocalVoxelTable,
-		                          MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData, VoxelChanges, BorderChunks,
+		                          MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData, VoxelEdits, BorderChunks,
 		                          SampledBorderChunks, IsBorderSampled,
 		                          MeshVars.ChunkParams.ShowBorders);
 

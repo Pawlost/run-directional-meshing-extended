@@ -3,11 +3,12 @@
 #include "BaseVoxelData.h"
 #include "MeshingUtils/MeshingDirections.h"
 #include "MeshingUtils/ProcMeshSectionVars.h"
-#include "MeshingUtils/VoxelEdit.h"
+#include "MeshingUtils/RLEVoxelEdit.h"
 #include "Voxel/RLEVoxel.h"
 #include "VoxelModel/BorderChunk.h"
 #include "VoxelModel/RLEVoxelGrid.h"
 #include "VoxelMesherBase.generated.h"
+
 class UBaseVoxelData;
 /**
   * @brief Base class for components that convert voxel models into a mesh.
@@ -26,7 +27,7 @@ public:
 	                          TMap<int32, uint32>& BorderLocalVoxelTable,
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
-	                          TArray<FVoxelEdit>& VoxelChange,
+								TArray<FRLEVoxelEdit>& VoxelChange,
 	                          TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks,
 								TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
 								TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,

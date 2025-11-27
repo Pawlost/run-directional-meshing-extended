@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "SingleChunkSpawnerBase.h"
-#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 #include "SingleChunkSpawner.generated.h"
 
 UCLASS(ClassGroup=(ChunkSpawners), Blueprintable)
@@ -11,5 +10,5 @@ class RDMCHUNKSPAWNERS_API ASingleChunkSpawner : public ASingleChunkSpawnerBase
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void StartMeshing(TArray<FVoxelEdit>& VoxelChange) override;
+	virtual void StartMeshing(TArray<FRLEVoxelEdit>& VoxelChange) override;
 };

@@ -6,9 +6,9 @@
 #include "Chunk/ChunkActor.h"
 #include "Voxel/Voxel.h"
 #include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
+#include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "VoxelGeneratorBase.generated.h"
 
-struct FVoxelEdit;
 struct FMesherVariables;
 class UVoxelMesherBase;
 
@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, Category ="Voxels")
 	bool bEnableVoxelMeshing = true;
 
-	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FVoxelEdit>& VoxelChanges) const;
+	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges) const;
 	
 	virtual FVoxel GetVoxelByName(const FName& VoxelName) const PURE_VIRTUAL(
 		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)

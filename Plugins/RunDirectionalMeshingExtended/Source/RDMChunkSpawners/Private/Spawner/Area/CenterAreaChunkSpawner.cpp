@@ -74,7 +74,7 @@ void ACenterAreaChunkSpawner::GenerateArea()
 		if (FVector::Distance(FVector(InitialCenter), FVector(CenterPosition)) < MeshZone)
 		{
 			WaitForAllTasks(Tasks);
-			TArray<FVoxelEdit> VoxelChanges;
+			TArray<FRLEVoxelEdit> VoxelChanges;
 			GenerateChunkMesh(MesherVars, CenterPosition, VoxelChanges);
 		}
 	}

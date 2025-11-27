@@ -16,7 +16,7 @@ struct RDMVOXELGENERATION_API FChunkParams
 	TSharedPtr<FChunk> OriginalChunk;
 
 	UPROPERTY()
-	TWeakObjectPtr<AChunkSpawnerBase> SpawnerPtr = nullptr;
+	TWeakObjectPtr<AActor> SpawnerPtr = nullptr;
 
 	bool WorldTransform = false;
 	bool ShowBorders = false;

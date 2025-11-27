@@ -1,5 +1,4 @@
 ﻿#include "VoxelMesher/RLERunDirectionalVoxelMesher.h"
-#include "VoxelMesher/MeshingUtils/VoxelEdit.h"
 #include "VoxelMesher/RunDirectionalVoxelMesher.h"
 #include "Voxel/RLEVoxel.h"
 #include "VoxelModel/RLEVoxelGrid.h"
@@ -10,7 +9,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelMo
 	TMap<int32, uint32>& BorderLocalVoxelTable,
 	TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 	TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
-	TArray<FVoxelEdit>& VoxelChange,
+	TArray<FRLEVoxelEdit>& VoxelChanges,
 	TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks,
 	TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
 	TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,
@@ -29,7 +28,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelMo
 
 	// TODO: make private class member, problematic writing because of parallel thread execution, maybe should be wrapped in a class
 	FIndexParams IndexParams;
-	IndexParams.VoxelChanges = &VoxelChange;
+	IndexParams.VoxelEdits = &VoxelChanges;
 	IndexParams.SampledBorderChunks = SampledBorderChunks;
 	
 	IndexParams.VoxelGrid = VoxelGridPtr->RLEVoxelGrid;
@@ -116,45 +115,32 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, TS
 	TSharedPtr<TArray<FRLEVoxel>> OldVoxelGrid = nullptr;
 
 	// Set first run to trigger first condition in while loop
-	if (!IndexParams.VoxelChanges->IsEmpty())
+	if (!IndexParams.VoxelEdits->IsEmpty())
 	{
 		OldVoxelGrid = IndexParams.VoxelGrid;
 		IndexParams.VoxelGrid = MakeShared<TArray<FRLEVoxel>>();
-		IndexParams.VoxelGrid->Reserve(OldVoxelGrid->Num() + IndexParams.VoxelChanges->Num());
+		IndexParams.VoxelGrid->Reserve(OldVoxelGrid->Num() + IndexParams.VoxelEdits->Num());
 		IndexParams.EditEnabled = true;
 
-		auto VoxelChange = IndexParams.VoxelChanges->Pop();
-		auto ChangedVoxel = VoxelGenerator->GetVoxelByName(VoxelChange.VoxelName);
-		auto EditVoxelRun = FRLEVoxel{1, ChangedVoxel};
-		uint32 EditEventIndex = VoxelGenerator->CalculateVoxelIndex(VoxelChange.VoxelPosition);
-
-		// TODO: do when inserting
-		while (!IndexParams.VoxelChanges->IsEmpty() && (IndexParams.VoxelChanges->Top().VoxelPosition -
-				FIntVector(0, 1, 0)) == VoxelChange.VoxelPosition &&
-			VoxelChange.VoxelName == IndexParams.VoxelChanges->Top().VoxelName)
-		{
-			VoxelChange = IndexParams.VoxelChanges->Pop();
-			EditVoxelRun.RunLenght++;
-		}
-
+		auto VoxelEdit = IndexParams.VoxelEdits->Pop();
 		int CopyVoxelRunIndex = -1;
-
-		uint32 RemainingIndex = 0;
-
 		TSharedPtr<TArray<FRLEVoxel>> EditEventArray = MakeShared<TArray<FRLEVoxel>>();
-		EditEventArray->Push(EditVoxelRun);
-		IndexParams.MeshingEvents[EMeshingEventIndex::EditEvent] = {EditEventArray, EditEventIndex, 0};
+		
+		EditEventArray->Push(VoxelEdit.EditVoxel);
+		IndexParams.MeshingEvents[EMeshingEventIndex::EditEvent] = {EditEventArray, VoxelEdit.EditEventIndex, 0};
 
 		CopyVoxelRunIndex++;
 		auto CopyVoxel = (*OldVoxelGrid)[CopyVoxelRunIndex];
 		uint32 Offset = 0;
 		// First voxel in a chunk
-		if (EditEventIndex == 0)
+		
+		// TODO: fix and create test for this
+		if (VoxelEdit.EditEventIndex == 0)
 		{
-			IndexParams.VoxelGrid->Add(EditVoxelRun);
+			IndexParams.VoxelGrid->Add(VoxelEdit.EditVoxel);
 
-			RemainingIndex = CopyVoxel.RunLenght;
-			while (EditVoxelRun.RunLenght > RemainingIndex)
+			uint32 RemainingIndex = CopyVoxel.RunLenght;
+			while (VoxelEdit.EditVoxel.RunLenght > RemainingIndex)
 			{
 				Offset += CopyVoxel.RunLenght;
 				CopyVoxelRunIndex++;
@@ -164,7 +150,7 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, TS
 			
 			AdvanceEditInterval(IndexParams);
 
-			CopyVoxel.RunLenght = RemainingIndex - EditVoxelRun.RunLenght;
+			CopyVoxel.RunLenght = RemainingIndex - VoxelEdit.EditVoxel.RunLenght;
 
 			if (IndexParams.VoxelGrid->Last().Voxel == CopyVoxel.Voxel)
 			{
@@ -211,12 +197,12 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams, TS
 				auto& EditEvent = IndexParams.MeshingEvents[EMeshingEventIndex::EditEvent];
 				auto& LeadingEvent = IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval];
 
-				uint32 RemainingIndex = 0;
-				FVoxel CurrentVoxel;
-
 				if (EditEvent.LastEventIndex == IndexParams.CurrentMeshingEventIndex)
 				{
+					FVoxel CurrentVoxel;
+					uint32 RemainingIndex;
 					auto CopyVoxel = CopyEvent.GetCurrentVoxel();
+					
 					if (EditEvent.LastEventIndex == LeadingEvent.GetEventIndex())
 					{
 						CopyEvent.AdvanceEvent();
@@ -418,25 +404,14 @@ void URLERunDirectionalVoxelMesher::AdvanceEditInterval(FIndexParams& IndexParam
 {
 	auto& EditEvent = IndexParams.MeshingEvents[EMeshingEventIndex::EditEvent];
 
-	if (!IndexParams.VoxelChanges->IsEmpty())
+	if (!IndexParams.VoxelEdits->IsEmpty())
 	{
-		auto VoxelChange = IndexParams.VoxelChanges->Pop();
-		auto ChangedVoxel = VoxelGenerator->GetVoxelByName(VoxelChange.VoxelName);
-		auto EditVoxelRun = FRLEVoxel{1, ChangedVoxel};
-		uint32 EditEventIndex = VoxelGenerator->CalculateVoxelIndex(VoxelChange.VoxelPosition);
-
-		// TODO: do when inserting
-		while (!IndexParams.VoxelChanges->IsEmpty() && (IndexParams.VoxelChanges->Top().VoxelPosition -
-				FIntVector(0, 1, 0)) == VoxelChange.VoxelPosition &&
-			VoxelChange.VoxelName == IndexParams.VoxelChanges->Top().VoxelName)
-		{
-			VoxelChange = IndexParams.VoxelChanges->Pop();
-			EditVoxelRun.RunLenght++;
-		}
-
-		EditEvent.LastEventIndex = EditEventIndex;
+		auto VoxelEdit = IndexParams.VoxelEdits->Pop();
+		EditEvent.LastEventIndex = VoxelEdit.EditEventIndex;
+		// TODO: rewrite empty
+		// must remain empty because only one edit can be active at time
 		EditEvent.VoxelGridPtr->Empty();
-		EditEvent.VoxelGridPtr->Push(EditVoxelRun);
+		EditEvent.VoxelGridPtr->Push(VoxelEdit.EditVoxel);
 	}
 	else
 	{
