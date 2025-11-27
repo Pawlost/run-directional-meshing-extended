@@ -35,7 +35,7 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RDMVoxelGeneration",
+			"Name": "RDMChunkSpawners",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

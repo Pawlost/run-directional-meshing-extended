@@ -4,7 +4,7 @@
 #include "CenterAreaChunkSpawner.generated.h"
 
 UCLASS(ClassGroup=(ChunkSpawners), meta=(BlueprintSpawnableComponent))
-class RUNDIRECTIONALMESHINGEXTENDED_API ACenterAreaChunkSpawner : public ADespawnChunkSpawnerBase
+class RDMCHUNKSPAWNERS_API ACenterAreaChunkSpawner : public ADespawnChunkSpawnerBase
 {
 	GENERATED_BODY()
 

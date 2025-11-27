@@ -6,7 +6,7 @@
 #include "SingleBorderlessChunkSpawner.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class RUNDIRECTIONALMESHINGEXTENDED_API ASingleBorderlessChunkSpawner : public ASingleChunkSpawnerBase
+class RDMCHUNKSPAWNERS_API ASingleBorderlessChunkSpawner : public ASingleChunkSpawnerBase
 {
 	GENERATED_BODY()
 	

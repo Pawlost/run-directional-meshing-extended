@@ -4,7 +4,7 @@
 #include "PreloadedVoxelCenterAreaChunkSpawner.generated.h"
 
 UCLASS(ClassGroup=(ChunkSpawners), meta=(BlueprintSpawnableComponent))
-class RUNDIRECTIONALMESHINGEXTENDED_API APreloadedVoxelCenterAreaChunkSpawner : public AAreaChunkSpawnerBase
+class RDMCHUNKSPAWNERS_API APreloadedVoxelCenterAreaChunkSpawner : public AAreaChunkSpawnerBase
 {
 	GENERATED_BODY()
 

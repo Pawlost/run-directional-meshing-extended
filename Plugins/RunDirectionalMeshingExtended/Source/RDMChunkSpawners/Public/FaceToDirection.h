@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 
-struct FFaceToDirection
+struct RDMCHUNKSPAWNERS_API FFaceToDirection
 {
 	const EFaceDirection FaceSide;
 	const FIntVector Direction;

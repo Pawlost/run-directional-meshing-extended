@@ -7,7 +7,7 @@
  * Spawner base allowing grid changes and chunk despawning
  */
 UCLASS(Abstract)
-class RUNDIRECTIONALMESHINGEXTENDED_API ADespawnChunkSpawnerBase : public AAreaChunkSpawnerBase
+class RDMCHUNKSPAWNERS_API ADespawnChunkSpawnerBase : public AAreaChunkSpawnerBase
 {
 	GENERATED_BODY()
 

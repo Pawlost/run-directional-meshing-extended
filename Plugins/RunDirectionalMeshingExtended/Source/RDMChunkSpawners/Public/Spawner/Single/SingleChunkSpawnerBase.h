@@ -8,7 +8,7 @@
 struct FVoxelPosition;
 
 UCLASS(ClassGroup=(ChunkSpawners), Abstract)
-class RUNDIRECTIONALMESHINGEXTENDED_API ASingleChunkSpawnerBase : public AChunkSpawnerBase
+class RDMCHUNKSPAWNERS_API ASingleChunkSpawnerBase : public AChunkSpawnerBase
 {
 	GENERATED_BODY()
 

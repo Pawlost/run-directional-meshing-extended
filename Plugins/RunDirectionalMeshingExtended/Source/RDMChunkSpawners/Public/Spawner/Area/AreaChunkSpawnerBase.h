@@ -5,7 +5,7 @@
 #include "AreaChunkSpawnerBase.generated.h"
 
 UCLASS(Abstract)
-class RUNDIRECTIONALMESHINGEXTENDED_API AAreaChunkSpawnerBase : public AChunkSpawnerBase
+class RDMCHUNKSPAWNERS_API AAreaChunkSpawnerBase : public AChunkSpawnerBase
 {
 	GENERATED_BODY()
 

@@ -4,7 +4,7 @@
 #include "CubicAreaChunkSpawner.generated.h"
 
 UCLASS(ClassGroup=(ChunkSpawners), meta=(BlueprintSpawnableComponent))
-class RUNDIRECTIONALMESHINGEXTENDED_API ACubicAreaChunkSpawner : public ADespawnChunkSpawnerBase
+class RDMCHUNKSPAWNERS_API ACubicAreaChunkSpawner : public ADespawnChunkSpawnerBase
 {
 	GENERATED_BODY()
 
