@@ -38,6 +38,11 @@
 			"Name": "RDMChunkSpawners",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RDMMeshersTests",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
