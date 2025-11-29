@@ -8,6 +8,8 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 
 bool FRDMTestsExample::RunTest(const FString& Parameters)
 {
+
+	// TODO: delete
 	TestTrue(TEXT("Initial unit test"), true);
 	return true;
 }

@@ -17,15 +17,15 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelLineNumber::RunTest(const FString& Param
 {
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
-	constexpr int NumberOfVoxel = 32;
-	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxel;
+	constexpr int NumberOfVoxels = 32;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
 	
 	// Execute
 	BaseVoxelDataDummy->CalculateVoxelData();
 	
 	// Test
 	TestEqual("Voxel line should be set by VoxelCountPerChunkDimension member variable",
-		BaseVoxelDataDummy->GetVoxelCountPerVoxelLine(), NumberOfVoxel);
+		BaseVoxelDataDummy->GetVoxelCountPerVoxelLine(), NumberOfVoxels);
 	
 	return true;
 }
@@ -41,15 +41,15 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelPlaneNumber::RunTest(const FString& Para
 {
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
-	constexpr int NumberOfVoxel = 32;
-	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxel;
+	constexpr int NumberOfVoxels = 32;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
 	
 	// Execute
 	BaseVoxelDataDummy->CalculateVoxelData();
 	
 	// Test
 	TestEqual("Voxel plane should be power of 2 of VoxelCountPerChunkDimension member variable",
-		BaseVoxelDataDummy->GetVoxelCountPerVoxelPlane(), NumberOfVoxel * NumberOfVoxel);
+		BaseVoxelDataDummy->GetVoxelCountPerVoxelPlane(), NumberOfVoxels * NumberOfVoxels);
 	
 	return true;
 }
@@ -64,15 +64,15 @@ bool FRDMMeshersTestsBaseVoxelData_ChunkSize::RunTest(const FString& Parameters)
 {
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
-	constexpr int NumberOfVoxel = 32;
-	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxel;
+	constexpr int NumberOfVoxels = 32;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
 	
 	// Execute
 	BaseVoxelDataDummy->CalculateVoxelData();
 	
 	// Test
 	TestEqual("Chunk size should be power of 3 of VoxelCountPerChunkDimension member variable",
-		BaseVoxelDataDummy->GetVoxelCountPerChunk(), NumberOfVoxel * NumberOfVoxel * NumberOfVoxel);
+		BaseVoxelDataDummy->GetVoxelCountPerChunk(), NumberOfVoxels * NumberOfVoxels * NumberOfVoxels);
 	
 	return true;
 }
@@ -111,9 +111,9 @@ bool FRDMMeshersTestsBaseVoxelData_ChunkSpacing::RunTest(const FString& Paramete
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
 	constexpr double VoxelSize = 0.5;
-	constexpr int NumberOfVoxel = 32;
+	constexpr int NumberOfVoxels = 32;
 	
-	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxel;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
 	BaseVoxelDataDummy->VoxelSize = VoxelSize;
 	
 	// Execute
@@ -121,7 +121,7 @@ bool FRDMMeshersTestsBaseVoxelData_ChunkSpacing::RunTest(const FString& Paramete
 	
 	// Test
 	TestEqual("Chunk spacing should convert VoxelLine from virtual space to scene space",
-		BaseVoxelDataDummy->GetChunkSpacing(), VoxelSize * NumberOfVoxel);
+		BaseVoxelDataDummy->GetChunkSpacing(), VoxelSize * NumberOfVoxels);
 	
 	return true;
 }
@@ -138,9 +138,9 @@ bool FRDMMeshersTestsBaseVoxelData_ChunkIndexDirect::RunTest(const FString& Para
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
 	constexpr double VoxelSize = 0.5;
-	constexpr int NumberOfVoxel = 32;
+	constexpr int NumberOfVoxels = 32;
 	
-	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxel;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
 	BaseVoxelDataDummy->VoxelSize = VoxelSize;
 	
 	// Execute
@@ -148,7 +148,7 @@ bool FRDMMeshersTestsBaseVoxelData_ChunkIndexDirect::RunTest(const FString& Para
 	
 	// Test
 	TestEqual("Chunk spacing should convert VoxelLine from virtual space to scene space",
-		BaseVoxelDataDummy->GetChunkSpacing(), VoxelSize * NumberOfVoxel);
+		BaseVoxelDataDummy->GetChunkSpacing(), VoxelSize * NumberOfVoxels);
 	
 	return true;
 }
@@ -164,9 +164,9 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex::RunTest(const F
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
 	constexpr double VoxelSize = 0.5;
-	constexpr int NumberOfVoxel = 32;
+	constexpr int NumberOfVoxels = 32;
 	
-	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxel;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
 	BaseVoxelDataDummy->VoxelSize = VoxelSize;
 	
 	// Execute
@@ -181,7 +181,6 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex::RunTest(const F
 }
 
 
-
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex_Equals_OverloadedFIntVectorIndex,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.RandomDirectIndexEqualsOverloadedFIntVectorIndex",
@@ -192,11 +191,9 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex_Equals_Overloade
 {
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
-	constexpr double VoxelSize = 0.5;
-	constexpr int NumberOfVoxel = 32;
+	constexpr int NumberOfVoxels = 32;
 	
-	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxel;
-	BaseVoxelDataDummy->VoxelSize = VoxelSize;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
 	
 	// Execute
 	BaseVoxelDataDummy->CalculateVoxelData();
@@ -206,6 +203,116 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex_Equals_Overloade
 	// Test
 	TestEqual("Check if random voxel index return expected value",
 		Index, DirectIndex);
+	
+	
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FRDMMeshersTestsBaseVoxelData_VoxelIndex_ZeroIndex,
+	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.ZeroIndex",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_ZeroIndex::RunTest(const FString& Parameters)
+{
+	// Prepare 
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int NumberOfVoxels = 32;
+	
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
+	
+	// Execute
+	BaseVoxelDataDummy->CalculateVoxelData();
+	const uint32 Index = BaseVoxelDataDummy->CalculateVoxelIndex(0, 0, 0);
+	
+	// Test
+	TestEqual("Zero position is the first index. Index value should be 0.",
+		Index, 0);
+	
+	
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FRDMMeshersTestsBaseVoxelData_VoxelIndex_LastIndex,
+	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.LastIndex",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_LastIndex::RunTest(const FString& Parameters)
+{
+	// Prepare 
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int NumberOfVoxels = 32;
+	
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
+	
+	// Execute
+	BaseVoxelDataDummy->CalculateVoxelData();
+	const uint32 Index = BaseVoxelDataDummy->CalculateVoxelIndex(NumberOfVoxels, NumberOfVoxels, NumberOfVoxels);
+	
+	// TODO: check test validity
+
+	// Test
+	TestEqual("Max index in a voxel grid should be equal to chunk size.",
+		Index, UBaseVoxelDataDummy->GetVoxelCountPerChunk());
+	
+	
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FRDMMeshersTestsBaseVoxelData_VoxelIndex_IndexIsOutOfChunkBounds,
+	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.IndexIsOutOfChunkBounds",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_IndexIsOutOfChunkBounds::RunTest(const FString& Parameters)
+{
+	// Prepare 
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int NumberOfVoxels = 32;
+	
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
+	
+	// Execute
+	BaseVoxelDataDummy->CalculateVoxelData();
+	const uint32 InvalidIndex = BaseVoxelDataDummy->CalculateVoxelIndex(NumberOfVoxel + 1, NumberOfVoxels + 1, NumberOfVoxels + 1);
+	
+	// TODO: check test validity
+
+	// Test
+	TestGreaterThan("Out of bounds index is ignored if it is higher than what function GetVoxelCountPerChunk() returns.",
+		InvalidIndex, BaseVoxelDataDummy->GetVoxelCountPerChunk());
+	
+	
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FRDMMeshersTestsBaseVoxelData_VoxelIndex_NotNegative,
+	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.NotNegative",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_NotNegative::RunTest(const FString& Parameters)
+{
+	// Prepare 
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int NumberOfVoxels = 32;
+	
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
+	
+	// Execute
+	BaseVoxelDataDummy->CalculateVoxelData();
+	const auto NegativeIndex = BaseVoxelDataDummy->CalculateVoxelIndex(0, -1, 0);
+	
+	// TODO: check test validity
+
+	// Test
+	TestLesserThan("Index shouldn't be a negative number. Only positive.",
+		NegativeIndex, 0);
 	
 	
 	return true;
