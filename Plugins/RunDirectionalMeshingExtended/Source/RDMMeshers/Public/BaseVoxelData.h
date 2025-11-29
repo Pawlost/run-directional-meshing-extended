@@ -29,13 +29,13 @@ public:
 	/**
 	 * Calculate voxel index in chunk grid from vector grid coordinates.
 	 */
-	uint32 CalculateVoxelIndex(const FIntVector& VoxelPosition) const;
+	FORCEINLINE uint32 CalculateVoxelIndex(const FIntVector& VoxelPosition) const;
 
-	double GetChunkSpacing() const;
-	double GetVoxelSize() const;
-	uint32 GetVoxelCountPerVoxelLine() const;
-	uint32 GetVoxelCountPerVoxelPlane() const;
-	uint32 GetVoxelCountPerChunk() const;
+	FORCEINLINE double GetChunkSpacing() const;
+	FORCEINLINE double GetVoxelSize() const;
+	FORCEINLINE uint32 GetVoxelCountPerVoxelLine() const;
+	FORCEINLINE uint32 GetVoxelCountPerVoxelPlane() const;
+	FORCEINLINE uint32 GetVoxelCountPerChunk() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual double GetHighestElevationAtLocation(const FVector& Location);
@@ -43,7 +43,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-TEST_PRIVATE_MODIFIER:
+PRIVATE_MODIFIER:
 	void CalculateVoxelData();
 	double ChunkSpacing = 0.0, InternalVoxelSize = 0.0;
 	int32 VoxelCountY = 0, VoxelCountYZ = 0, VoxelCountXYZ = 0;
