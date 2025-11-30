@@ -250,13 +250,13 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_LastIndex::RunTest(const FString& 
 	
 	// Execute
 	BaseVoxelDataDummy->CalculateVoxelData();
-	const uint32 Index = BaseVoxelDataDummy->CalculateVoxelIndex(NumberOfVoxels, NumberOfVoxels, NumberOfVoxels);
+	const uint32 Index = BaseVoxelDataDummy->CalculateVoxelIndex(NumberOfVoxels - 1, NumberOfVoxels - 1, NumberOfVoxels - 1);
 	
 	// TODO: check test validity
 
 	// Test
-	TestEqual("Max index in a voxel grid should be equal to chunk size.",
-		Index, UBaseVoxelDataDummy->GetVoxelCountPerChunk());
+	TestEqual("Last index should be less than maximum number of voxels in a chunk.",
+		Index, BaseVoxelDataDummy->GetVoxelCountPerChunk() - 1);
 	
 	
 	return true;
@@ -278,14 +278,11 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_IndexIsOutOfChunkBounds::RunTest(c
 	
 	// Execute
 	BaseVoxelDataDummy->CalculateVoxelData();
-	const uint32 InvalidIndex = BaseVoxelDataDummy->CalculateVoxelIndex(NumberOfVoxel + 1, NumberOfVoxels + 1, NumberOfVoxels + 1);
+	const uint32 InvalidIndex = BaseVoxelDataDummy->CalculateVoxelIndex(NumberOfVoxels + 1, NumberOfVoxels + 1, NumberOfVoxels + 1);
 	
-	// TODO: check test validity
-
 	// Test
-	TestGreaterThan("Out of bounds index is ignored if it is higher than what function GetVoxelCountPerChunk() returns.",
-		InvalidIndex, BaseVoxelDataDummy->GetVoxelCountPerChunk());
-	
+	TestTrue("Out of bounds index is ignored if it is higher than what function GetVoxelCountPerChunk() returns.",
+		InvalidIndex > BaseVoxelDataDummy->GetVoxelCountPerChunk());
 	
 	return true;
 }
@@ -308,12 +305,9 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_NotNegative::RunTest(const FString
 	BaseVoxelDataDummy->CalculateVoxelData();
 	const auto NegativeIndex = BaseVoxelDataDummy->CalculateVoxelIndex(0, -1, 0);
 	
-	// TODO: check test validity
-
 	// Test
-	TestLesserThan("Index shouldn't be a negative number. Only positive.",
+	TestLessThan("Index shouldn't be a negative number. Only positive.",
 		NegativeIndex, 0);
-	
 	
 	return true;
 }
