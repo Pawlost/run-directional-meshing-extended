@@ -1,19 +1,14 @@
 ﻿#include "BaseVoxelData.h"
+#include "DummyTestClasses.h"
 #include "Misc/AutomationTest.h"
 
-class UBaseVoxelDataDummy : public UBaseVoxelData
-{
-public:
-	using UBaseVoxelData::CalculateVoxelData; // workaround to access protected method as public
-};
-
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_VoxelLineNumber,
-	"RDM.RDMMeshersTests.BaseVoxelData.VoxelPlaneNumber",
+	FRDMMeshersTests_BaseVoxelData_VoxelLineNumber,
+	"RDM.RDMMeshersTests.BaseVoxelData.VoxelLineNumber",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_VoxelLineNumber::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_VoxelLineNumber::RunTest(const FString& Parameters)
 {
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -32,12 +27,12 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelLineNumber::RunTest(const FString& Param
 
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_VoxelPlaneNumber,
+	FRDMMeshersTests_BaseVoxelData_VoxelPlaneNumber,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelPlaneNumber",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_VoxelPlaneNumber::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_VoxelPlaneNumber::RunTest(const FString& Parameters)
 {
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -55,12 +50,12 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelPlaneNumber::RunTest(const FString& Para
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_ChunkSize,
+	FRDMMeshersTests_BaseVoxelData_ChunkSize,
 	"RDM.RDMMeshersTests.BaseVoxelData.ChunkSize",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_ChunkSize::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_ChunkSize::RunTest(const FString& Parameters)
 {
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -78,12 +73,12 @@ bool FRDMMeshersTestsBaseVoxelData_ChunkSize::RunTest(const FString& Parameters)
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_VoxelSize,
+	FRDMMeshersTests_BaseVoxelData_VoxelSize,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelSize",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_VoxelSize::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_VoxelSize::RunTest(const FString& Parameters)
 {
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -101,12 +96,12 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelSize::RunTest(const FString& Parameters)
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_ChunkSpacing,
+	FRDMMeshersTests_BaseVoxelData_ChunkSpacing,
 	"RDM.RDMMeshersTests.BaseVoxelData.ChunkSpacing",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_ChunkSpacing::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_ChunkSpacing::RunTest(const FString& Parameters)
 {
 	// Prepare
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -128,12 +123,12 @@ bool FRDMMeshersTestsBaseVoxelData_ChunkSpacing::RunTest(const FString& Paramete
 
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_ChunkIndexDirect,
+	FRDMMeshersTests_BaseVoxelData_ChunkIndexDirect,
 	"RDM.RDMMeshersTests.BaseVoxelData.ChunkIndexDirect",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_ChunkIndexDirect::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_ChunkIndexDirect::RunTest(const FString& Parameters)
 {
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -154,12 +149,12 @@ bool FRDMMeshersTestsBaseVoxelData_ChunkIndexDirect::RunTest(const FString& Para
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex,
+	FRDMMeshersTests_BaseVoxelData_VoxelIndex_RandomDirectIndex,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.RandomDirectIndex",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_VoxelIndex_RandomDirectIndex::RunTest(const FString& Parameters)
 {
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -182,12 +177,12 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex::RunTest(const F
 
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex_Equals_OverloadedFIntVectorIndex,
+	FRDMMeshersTests_BaseVoxelData_VoxelIndex_RandomDirectIndex_Equals_OverloadedFIntVectorIndex,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.RandomDirectIndexEqualsOverloadedFIntVectorIndex",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex_Equals_OverloadedFIntVectorIndex::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_VoxelIndex_RandomDirectIndex_Equals_OverloadedFIntVectorIndex::RunTest(const FString& Parameters)
 {
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -209,12 +204,12 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_RandomDirectIndex_Equals_Overloade
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_VoxelIndex_ZeroIndex,
+	FRDMMeshersTests_BaseVoxelData_VoxelIndex_ZeroIndex,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.ZeroIndex",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_ZeroIndex::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_VoxelIndex_ZeroIndex::RunTest(const FString& Parameters)
 {
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -235,12 +230,12 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_ZeroIndex::RunTest(const FString& 
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_VoxelIndex_LastIndex,
+	FRDMMeshersTests_BaseVoxelData_VoxelIndex_LastIndex,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.LastIndex",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_LastIndex::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_VoxelIndex_LastIndex::RunTest(const FString& Parameters)
 {
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -251,8 +246,6 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_LastIndex::RunTest(const FString& 
 	// Execute
 	BaseVoxelDataDummy->CalculateVoxelData();
 	const uint32 Index = BaseVoxelDataDummy->CalculateVoxelIndex(NumberOfVoxels - 1, NumberOfVoxels - 1, NumberOfVoxels - 1);
-	
-	// TODO: check test validity
 
 	// Test
 	TestEqual("Last index should be less than maximum number of voxels in a chunk.",
@@ -263,12 +256,12 @@ bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_LastIndex::RunTest(const FString& 
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTestsBaseVoxelData_VoxelIndex_IndexIsOutOfChunkBounds,
+	FRDMMeshersTests_BaseVoxelData_VoxelIndex_IndexIsOutOfChunkBounds,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelIndex.IndexIsOutOfChunkBounds",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersTestsBaseVoxelData_VoxelIndex_IndexIsOutOfChunkBounds::RunTest(const FString& Parameters)
+bool FRDMMeshersTests_BaseVoxelData_VoxelIndex_IndexIsOutOfChunkBounds::RunTest(const FString& Parameters)
 {
 	// Prepare 
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();

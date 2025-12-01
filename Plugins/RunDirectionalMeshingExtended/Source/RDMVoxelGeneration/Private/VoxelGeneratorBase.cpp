@@ -28,7 +28,7 @@ void UVoxelGeneratorBase::GenerateVoxels(FChunk& Chunk)
 	FScopeLock Lock(&Mutex);
 	TArray<FVoxel> VoxelModelArray;
 	AddVoxels(Chunk, VoxelModelArray);
-	VoxelMesher->CompressVoxelModel(Chunk.VoxelModel, VoxelModelArray);
+	Chunk.VoxelModel = VoxelMesher->CompressVoxelModel(VoxelModelArray);
 }
 
 void UVoxelGeneratorBase::GenerateProcMesh(const FMesherVariables& MeshVars) const
@@ -81,8 +81,7 @@ void UVoxelGeneratorBase::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVo
 
 		// Allocate Borders, after creating change
 		// TODO: move
-		
-		TSharedPtr<TArray<FRLEVoxel>> SampledBorderChunks[CHUNK_FACE_COUNT];
+		TStaticArray<TSharedPtr<TArray<FRLEVoxel>>, CHUNK_FACE_COUNT> SampledBorderChunks;
 		
 		for (int d = 0; d < CHUNK_FACE_COUNT; d++)
 		{

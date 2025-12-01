@@ -29,11 +29,11 @@ public:
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 								TArray<FRLEVoxelEdit>& VoxelChange,
 	                          TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks,
-								TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
+								TStaticArray<TSharedPtr<TArray<FRLEVoxel>>, CHUNK_FACE_COUNT>& SampledBorderChunks,
 								TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,
 	                          bool ShowBorders) PURE_VIRTUAL(UMesherBase::GenerateMesh)
 
-	virtual void CompressVoxelModel(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid);
+	virtual TStrongObjectPtr<UVoxelModel> CompressVoxelModel(TArray<FVoxel>& VoxelGrid);
 
 	/*
 	Front = 0,

@@ -10,7 +10,7 @@ void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& Voxel
 	UpdateAllFacesParams();
 }
 
-void UVoxelMesherBase::CompressVoxelModel(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid)
+TStrongObjectPtr<UVoxelModel> UVoxelMesherBase::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 {
 
 #if CPUPROFILERTRACE_ENABLED
@@ -21,7 +21,7 @@ void UVoxelMesherBase::CompressVoxelModel(TStrongObjectPtr<UVoxelModel>& VoxelMo
 	const auto VoxelGridObject = NewObject<UVoxelGrid>();
 	VoxelGridObject->VoxelGrid = MakeShared<TArray<FVoxel>>();
 	VoxelGridObject->VoxelGrid->Append(VoxelGrid);
-	VoxelModel = TStrongObjectPtr<UVoxelGrid>(VoxelGridObject);
+	return TStrongObjectPtr<UVoxelGrid>(VoxelGridObject);
 }
 
 const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTangents[] = {

@@ -22,13 +22,13 @@ public:
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 								TArray<FRLEVoxelEdit>& VoxelChange,
 	                          TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
-								TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks,
+								TStaticArray<TSharedPtr<TArray<FRLEVoxel>>, CHUNK_FACE_COUNT>& SampledBorderChunks,
 								TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,
 	                          bool ShowBorders) override;
 
-	virtual void CompressVoxelModel(TStrongObjectPtr<UVoxelModel>& VoxelModel, TArray<FVoxel>& VoxelGrid) override;
-
-private:
+	virtual TStrongObjectPtr<UVoxelModel> CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
+	
+PRIVATE_MODIFIER:
 	struct FMeshingEvent
 	{
 		// Voxel sequence (run) to be traversed
@@ -88,7 +88,7 @@ private:
 	*/
 	struct FIndexParams
 	{
-		TSharedPtr<TArray<FRLEVoxel>>* SampledBorderChunks;
+		TStaticArray<TSharedPtr<TArray<FRLEVoxel>>, CHUNK_FACE_COUNT> SampledBorderChunks;
 		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 
 		// Current event index made of all meshing events that were already processed/traversed.
@@ -127,7 +127,7 @@ private:
 	                           const int YEnd);
 
 	void AddBorderSample(const FIndexParams& IndexParams, const FIntVector IndexCoords,
-	                     const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght) const;
+	                     const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght, bool CanSample) const;
 
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
 
