@@ -15,19 +15,31 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 
 public:
 	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
-								TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
-	                          TMap<int32, uint32>& LocalVoxelTable,
-	                          TMap<int32, uint32>& BorderLocalVoxelTable,
-	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-	                          TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
-								TArray<FRLEVoxelEdit>& VoxelChange,
-	                          TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
-								TStaticArray<TSharedPtr<TArray<FRLEVoxel>>, CHUNK_FACE_COUNT>& SampledBorderChunks,
-								TStaticArray<bool*, CHUNK_FACE_COUNT>& IsBorderSampled,
-	                          bool ShowBorders) override;
+		TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+		TMap<int32, uint32>& LocalVoxelTable,
+		TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
+		TArray<FRLEVoxelEdit>& VoxelChanges,
+		FBorderSamples& BorderSamples) override;
 
 	virtual TStrongObjectPtr<UVoxelModel> CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
+
+	virtual void SampleLeftChunkBorder(FBorderSamples& SampledBorderChunks, TSharedPtr<TArray<FRLEVoxel>> VoxelGrid) override;
 	
+	void AddLeftBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const;
+	void AddRightBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const;
+	void AddTopBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const;
+	void AddBottomBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const;
+	void AddFrontBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const;
+	void AddBackBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const;
+	
+	
+	virtual void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
+							TMap<int32, uint32>& BorderLocalVoxelTable, 
+						   TSharedPtr<TArray<FRLEVoxel>> BorderVoxelSamples,
+							TSharedPtr<TArray<FRLEVoxel>> InversedBorderVoxelSamples, 
+							EFaceDirection FaceDirection) override;
+
+
 PRIVATE_MODIFIER:
 	struct FMeshingEvent
 	{
@@ -88,7 +100,7 @@ PRIVATE_MODIFIER:
 	*/
 	struct FIndexParams
 	{
-		TStaticArray<TSharedPtr<TArray<FRLEVoxel>>, CHUNK_FACE_COUNT> SampledBorderChunks;
+		FBorderSamples* SampledBorderChunks;
 		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 
 		// Current event index made of all meshing events that were already processed/traversed.
@@ -98,16 +110,28 @@ PRIVATE_MODIFIER:
 		// End is equivalent to event in Discrete Event Simulation 
 		FMeshingEvent MeshingEvents[EventIndexCount];
 		uint32 NextMeshingEventIndex = 0;
+		uint32 IndexSequenceBetweenEvents = 0;
+		FRLEVoxel* PreviousVoxelRun = nullptr;
 
 		uint32 ContinueEditIndex = 0;
 
 		//TODO: rewrite pointer
 		TArray<FRLEVoxelEdit>* VoxelEdits = nullptr;
 		bool EditEnabled = false;
+		FIntVector InitialPosition = FIntVector(0, 0, 0);
+		
+		
+		TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 
 		void TryUpdateNextMeshingEvent(const uint32 EventIndex)
 		{
 			NextMeshingEventIndex = FMath::Min(EventIndex, NextMeshingEventIndex);
+		}
+		
+		void AddBorderSample(const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample,
+													const int RunLenght, bool CanSample)
+		{
+			SampledBorderChunks->AddBorderSample(CurrentMeshingEventIndex, FaceDirection, VoxelSample, RunLenght, CanSample);
 		}
 	};
 
@@ -116,7 +140,8 @@ PRIVATE_MODIFIER:
 											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 											   const int YEnd, const bool CanGenerate);
 
-	void FaceGeneration(FIndexParams& IndexParams, TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces);
+	void FaceGeneration(FIndexParams& IndexParams);
+	void AdvanceAllMeshingEvents(FIndexParams& IndexParams, int X, int Y, int Z);
 
 	// return true when interval advanced
 	static bool AdvanceMeshingEvent(FIndexParams& IndexParams, const EMeshingEventIndex IntervalFlagIndex);
@@ -125,20 +150,19 @@ PRIVATE_MODIFIER:
 	                           const FStaticMergeData& StaticData,
 	                           const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 	                           const int YEnd);
-
-	void AddBorderSample(const FIndexParams& IndexParams, const FIntVector IndexCoords,
-	                     const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample, const int RunLenght, bool CanSample) const;
-
+	
 	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
 
-	void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
-	                      TMap<int32, uint32>& BorderLocalVoxelTable,
-	                      TStaticArray<TSharedPtr<FBorderChunk>, 6>& BorderChunks, bool ShowBorders);
+	void AddBorderFace(TArray<FVirtualVoxelFace>& FaceContainer,
+												   TArray<FVirtualVoxelFace>& InverseFaceContainer,
+												   TSharedPtr<TArray<FRLEVoxel>> BorderVoxelSamples,
+													TSharedPtr<TArray<FRLEVoxel>> InversedBorderVoxelSamples,
+												   const FMeshingDirections& FaceTemplate,
+												   const FMeshingDirections& InverseFaceTemplate, int X, int Y) const;
 
-	void GenerateBorder(TArray<FVirtualVoxelFace>& FaceContainer, TArray<FVirtualVoxelFace>& InverseFaceContainer,
-	                    TStaticArray<TSharedPtr<FBorderChunk>, CHUNK_FACE_COUNT>& BorderChunks,
-	                    const FMeshingDirections& FaceTemplate, const FMeshingDirections& InverseFaceTemplate, int X,
-	                    int Y) const;
+	void CreateVirtualVoxelFacesInLShape(FIndexParams& IndexParams, int X, int Y, int Z);
+	void InitializeEdit(FIndexParams& IndexParams);
+	void EditVoxelGrid(FIndexParams& IndexParams);
 
 	void AdvanceEditInterval(FIndexParams& IndexParams) const;
 };

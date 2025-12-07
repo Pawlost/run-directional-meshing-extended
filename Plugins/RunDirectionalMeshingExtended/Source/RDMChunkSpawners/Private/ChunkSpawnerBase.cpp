@@ -30,6 +30,18 @@ void AChunkSpawnerBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AChunkSpawnerBase::SpawnChunkActors(const TSharedRef<FMesherVariables>& Spawner) const
+{
+	//Creating AsyncTask from main thread will cause deadlock
+	const auto Chunk = Spawner->OriginalChunk;
+	SpawnAndMoveChunkActor(Spawner, Chunk->ChunkMeshActor);
+	
+	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
+	{
+		SpawnAndMoveChunkActor(Spawner, Chunk->BorderChunkMeshActor[i]);
+	}
+}
+
 double AChunkSpawnerBase::GetHighestElevationAtLocation(const FVector& Location) const
 {
 	return VoxelGenerator->GetHighestElevationAtLocation(Location);
@@ -176,13 +188,6 @@ FIntVector AChunkSpawnerBase::CalculateGlobalVoxelPositionFromHit(const FVector&
 		AdjustedNormal;
 }
 
-void AChunkSpawnerBase::AddSideChunk(FMesherVariables& MeshVar, EFaceDirection Direction,
-                                     const TSharedPtr<FChunk>& Chunk)
-{
-	const auto DirectionIndex = static_cast<uint8>(Direction);
-	MeshVar.ChunkParams.SideChunks[DirectionIndex] = Chunk.IsValid() ? Chunk : nullptr;
-}
-
 void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
                                        const FIntVector& GridPosition, TSharedFuture<void>* AsyncExecution) const
 {
@@ -224,7 +229,7 @@ void AChunkSpawnerBase::WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks)
 }
 
 
-void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams,
+void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FMesherVariables>& ChunkParams,
                                                TWeakObjectPtr<AChunkActor>& OutActorPtr) const
 {
 	const auto World = GetWorld();

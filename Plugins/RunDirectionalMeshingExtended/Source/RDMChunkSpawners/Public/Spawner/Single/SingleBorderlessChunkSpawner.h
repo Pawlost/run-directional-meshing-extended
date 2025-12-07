@@ -14,5 +14,5 @@ protected:
 	
 private:
 	TSharedPtr<FChunk> SideChunk[CHUNK_FACE_COUNT];
-	void SpawnSideChunk(FMesherVariables& MeshVars, const FFaceToDirection& FaceDirection);
+	void SpawnSideChunk(const FFaceToDirection& FaceDirection);
 };

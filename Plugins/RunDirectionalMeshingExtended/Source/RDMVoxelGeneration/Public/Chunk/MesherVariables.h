@@ -8,21 +8,6 @@
 class AChunkSpawnerBase;
 
 USTRUCT()
-struct RDMVOXELGENERATION_API FChunkParams
-{
-	GENERATED_BODY()
-
-	TSharedPtr<FChunk> SideChunks[CHUNK_FACE_COUNT];
-	TSharedPtr<FChunk> OriginalChunk;
-
-	UPROPERTY()
-	TWeakObjectPtr<AActor> SpawnerPtr = nullptr;
-
-	bool WorldTransform = false;
-	bool ShowBorders = false;
-};
-
-USTRUCT()
 struct RDMVOXELGENERATION_API FMesherVariables
 {
 	GENERATED_BODY()
@@ -31,7 +16,15 @@ struct RDMVOXELGENERATION_API FMesherVariables
 	TMap<int32, uint32> LocalVoxelTable;
 	TMap<int32, uint32> BorderLocalVoxelTable;
 
-	FChunkParams ChunkParams;
+	TStaticArray<TSharedPtr<FChunk>, CHUNK_FACE_COUNT> SideChunks;
+	TSharedPtr<FChunk> OriginalChunk;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> SpawnerPtr = nullptr;
+
+	bool WorldTransform = false;
+	bool ShowBorders = false;
+	
 	TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData;
 	TSharedPtr<TArray<FProcMeshSectionVars>> BorderChunkMeshData;
 };

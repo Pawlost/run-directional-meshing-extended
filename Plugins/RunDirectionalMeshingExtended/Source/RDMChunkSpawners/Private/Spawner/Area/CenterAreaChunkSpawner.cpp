@@ -3,7 +3,7 @@
 void ACenterAreaChunkSpawner::GenerateArea()
 {
 	FMesherVariables MesherVars;
-	MesherVars.ChunkParams.ShowBorders = BufferZone == 0;
+	MesherVars.ShowBorders = BufferZone == 0;
 	
 	auto InitialCenter = CenterGridPosition;
 	// Visited position will create with every change of grid center

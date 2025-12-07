@@ -39,8 +39,6 @@ public:
 
 	void GenerateVoxels(FChunk& Chunk);
 	
-	void GenerateProcMesh(const FMesherVariables& MeshVars) const;
-	
 	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
 		const TMap<int32, uint32>& LocalVoxelTable) const;
 	

@@ -35,7 +35,7 @@ protected:
 	virtual void SpawnChunk(const FIntVector& ChunkGridPosition, TSharedFuture<void>* OutAsyncExecution = nullptr);
 
 private:
-	void AddChunkFromGrid(FMesherVariables& MesherVars, const FFaceToDirection& FaceDirection);
+	void AddChunksFromGrid(FMesherVariables& MesherVars, const FFaceToDirection& FaceDirection);
 	void DequeueChunkActor(TWeakObjectPtr<AChunkActor> ChunkActor);
 	void EnqueueChunkActor(TWeakObjectPtr<AChunkActor> ChunkActor);
 	

@@ -19,13 +19,13 @@ void AAreaChunkSpawnerBase::ApplyVoxelChanges(TMap<FIntVector, TArray<FRLEVoxelE
 			}
 
 			const auto Chunk = *FoundChunk;
-			
+
 			FMesherVariables MesherVars;
 			Chunk->bIsActive = false;
 			GenerateChunkMesh(MesherVars, Chunk->GridPosition, ChunkEdit.Value);
 
-			// TODO:rewrite
-			
+			// TODO: rewrite edit
+
 			/*EditHandle = Async(EAsyncExecution::ThreadPool, [this, MesherVars]()
 			{
 				FMesherVariables SideMesherVars;
@@ -54,7 +54,8 @@ void AAreaChunkSpawnerBase::BeginPlay()
 		CenterGridPosition = GetChunkGridPositionFromGlobalPosition(GetTransform().GetLocation());
 	}
 
-	if (bEnableInitialChunkSpawn){
+	if (bEnableInitialChunkSpawn)
+	{
 		if (bSpawnCenterChunk)
 		{
 			//Spawn center chunk
@@ -69,7 +70,8 @@ void AAreaChunkSpawnerBase::BeginPlay()
 }
 
 //Running on main thread may cause deadlock
-void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition,  TArray<FRLEVoxelEdit>& VoxelEdits)
+void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, const FIntVector& ChunkGridPosition,
+                                              TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Area Mesh generation prepartion")
@@ -87,47 +89,49 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 		return;
 	}
 
-	MesherVars.ChunkParams.SpawnerPtr = this;
-	MesherVars.ChunkParams.OriginalChunk = Chunk;
-	MesherVars.ChunkParams.ShowBorders = ShowChunkBorders;
-	MesherVars.ChunkParams.WorldTransform = UseWorldCenter;
+	MesherVars.SpawnerPtr = this;
+	MesherVars.OriginalChunk = Chunk;
+	MesherVars.ShowBorders = ShowChunkBorders;
+	MesherVars.WorldTransform = UseWorldCenter;
 
-	/*AddChunkFromGrid(MesherVars, FFaceToDirection::TopDirection);
-	AddChunkFromGrid(MesherVars, FFaceToDirection::BottomDirection);
-	AddChunkFromGrid(MesherVars, FFaceToDirection::RightDirection);
-	AddChunkFromGrid(MesherVars, FFaceToDirection::LeftDirection);
-	AddChunkFromGrid(MesherVars, FFaceToDirection::FrontDirection);
-	AddChunkFromGrid(MesherVars, FFaceToDirection::BackDirection);*/
+	AddChunksFromGrid(MesherVars, FFaceToDirection::TopDirection);
+	AddChunksFromGrid(MesherVars, FFaceToDirection::BottomDirection);
+	AddChunksFromGrid(MesherVars, FFaceToDirection::RightDirection);
+	AddChunksFromGrid(MesherVars, FFaceToDirection::LeftDirection);
+	AddChunksFromGrid(MesherVars, FFaceToDirection::FrontDirection);
+	AddChunksFromGrid(MesherVars, FFaceToDirection::BackDirection);
 
 	DequeueChunkActor(Chunk->ChunkMeshActor);
-	DequeueChunkActor(Chunk->BorderChunkMeshActor);
-	
-	auto Spawner = MakeShared<FChunkParams>(MesherVars.ChunkParams);
-	
+	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
+	{
+		DequeueChunkActor(Chunk->BorderChunkMeshActor[i]);
+	}
+
+	auto Spawner = MakeShared<FMesherVariables>(MesherVars);
+
 	if (IsInGameThread())
 	{
-		//Creating AsyncTask from main thread will cause deadlock
-		SpawnAndMoveChunkActor(Spawner, Chunk->ChunkMeshActor);
-		SpawnAndMoveChunkActor(Spawner, Chunk->BorderChunkMeshActor);
+		SpawnChunkActors(Spawner);
 	}
 	else
 	{
 		// Synchronize Mesh generation with game thread.
 		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
 		{
-			// TODO: rewrite
-			SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->ChunkMeshActor);
-			SpawnAndMoveChunkActor(Spawner, Spawner->OriginalChunk->BorderChunkMeshActor);
+			SpawnChunkActors(Spawner);
 		}).Wait();
 	}
 
 	//Mesh could be spawned on a Async Thread similarly to voxel models but it is not done so to showcase real time speed of mesh generation (requirement for bachelor thesis)
 	VoxelGenerator->GenerateMesh(MesherVars, VoxelEdits);
-	
-	EnqueueChunkActor(Chunk->ChunkMeshActor);
-	EnqueueChunkActor(Chunk->BorderChunkMeshActor);
 
-	for (auto SideChunk : MesherVars.ChunkParams.SideChunks)
+	EnqueueChunkActor(Chunk->ChunkMeshActor);
+	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
+	{
+		EnqueueChunkActor(Chunk->BorderChunkMeshActor[i]);
+	}
+
+	for (auto SideChunk : MesherVars.SideChunks)
 	{
 		if (SideChunk == nullptr || !SideChunk.IsValid())
 		{
@@ -144,7 +148,7 @@ void AAreaChunkSpawnerBase::SpawnChunk(const FIntVector& ChunkGridPosition, TSha
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Chunk spawning generation");
 #endif
-	
+
 	if (!IsValid(this) || ChunkGrid.Contains(ChunkGridPosition))
 	{
 		// Don't spawn chunk if there is one located at the grid position
@@ -159,16 +163,16 @@ void AAreaChunkSpawnerBase::SpawnChunk(const FIntVector& ChunkGridPosition, TSha
 	Mutex.Unlock();
 }
 
-void AAreaChunkSpawnerBase::AddChunkFromGrid(FMesherVariables& MesherVars, const FFaceToDirection& FaceDirection)
+void AAreaChunkSpawnerBase::AddChunksFromGrid(FMesherVariables& MesherVars, const FFaceToDirection& FaceDirection)
 {
-	const auto Chunk = ChunkGrid.Find(MesherVars.ChunkParams.OriginalChunk->GridPosition + FaceDirection.Direction);
-	if (Chunk == nullptr)
+	const auto ChunkPtr = ChunkGrid.Find(MesherVars.OriginalChunk->GridPosition + FaceDirection.Direction);
+	
+	const auto DirectionIndex = static_cast<uint8>(FaceDirection.FaceSide);
+	
+	if (ChunkPtr != nullptr)
 	{
-		AddSideChunk(MesherVars, FaceDirection.FaceSide, nullptr);
-	}
-	else
-	{
-		AddSideChunk(MesherVars, FaceDirection.FaceSide, *Chunk);
+		auto& Chunk = *ChunkPtr;
+		MesherVars.SideChunks[DirectionIndex] = Chunk.IsValid() ? Chunk : nullptr;
 	}
 }
 

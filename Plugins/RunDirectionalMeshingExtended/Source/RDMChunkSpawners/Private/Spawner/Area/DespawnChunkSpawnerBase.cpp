@@ -46,7 +46,10 @@ void ADespawnChunkSpawnerBase::DespawnChunks()
 				auto Chunk = *ChunkGrid.Find(ChunkKey);
 
 				RemoveActor(Chunk->ChunkMeshActor);
-				RemoveActor(Chunk->BorderChunkMeshActor);
+				for (int i = 0; i < CHUNK_FACE_COUNT; i++)
+				{
+					RemoveActor(Chunk->BorderChunkMeshActor[i]);
+				}
 
 				Chunk->bIsActive = false;
 

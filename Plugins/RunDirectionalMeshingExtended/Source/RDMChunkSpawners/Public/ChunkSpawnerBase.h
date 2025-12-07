@@ -59,9 +59,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	static void AddSideChunk(FMesherVariables& MeshVar, EFaceDirection Direction,
-	                         const TSharedPtr<FChunk>& Chunk);
+	
+	void SpawnChunkActors(const TSharedRef<FMesherVariables>& Spawner) const;
 
 	void AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
 	                    const FIntVector& GridPosition, TSharedFuture<void>* AsyncExecution = nullptr) const;
@@ -69,7 +68,7 @@ protected:
 	// Wait for all futures
 	static void WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks);
 
-	void SpawnAndMoveChunkActor(const TSharedPtr<FChunkParams>& ChunkParams,
+	void SpawnAndMoveChunkActor(const TSharedPtr<FMesherVariables>& ChunkParams,
 	                            TWeakObjectPtr<AChunkActor>& OutActorPtr) const;
 
 	void AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit>& OutChunkEdit, const FIntVector& GlobalVoxelPosition,

@@ -1,12 +1,5 @@
-﻿#include "Misc/AutomationTest.h"
-#include "VoxelMesher/RLERunDirectionalVoxelMesher.h"
-
-class UDummyRLERunDirectionalVoxelMesher : public URLERunDirectionalVoxelMesher
-{
-public:
-	using URLERunDirectionalVoxelMesher::AdvanceEditInterval;
-};
-
+﻿#include "DummyTestClasses.h"
+#include "Misc/AutomationTest.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FRDMMeshersRLERunDirectionalVoxelMesher,

@@ -13,5 +13,6 @@ class UDummyRLERunDirectionalVoxelMesher : public URLERunDirectionalVoxelMesher
 {
 public:
 	using URLERunDirectionalVoxelMesher::AdvanceEditInterval;
+	using URLERunDirectionalVoxelMesher::AdvanceAllMeshingEvents;
 };
 

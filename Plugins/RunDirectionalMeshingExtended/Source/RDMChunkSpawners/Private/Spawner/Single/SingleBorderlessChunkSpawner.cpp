@@ -2,27 +2,26 @@
 
 void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FRLEVoxelEdit>& VoxelChanges)
 {
-	FMesherVariables ChunkParams;
-	ChunkParams.ChunkParams.SpawnerPtr = this;
-	ChunkParams.ChunkParams.OriginalChunk = SingleChunk;
-	ChunkParams.ChunkParams.WorldTransform = UseWorldCenter;
+	FMesherVariables MesherVariables;
+	MesherVariables.SpawnerPtr = this;
+	MesherVariables.OriginalChunk = SingleChunk;
+	MesherVariables.WorldTransform = UseWorldCenter;
 
-	SpawnSideChunk(ChunkParams, FFaceToDirection::TopDirection);
-	SpawnSideChunk(ChunkParams, FFaceToDirection::BottomDirection);
-	SpawnSideChunk(ChunkParams, FFaceToDirection::BackDirection);
-	SpawnSideChunk(ChunkParams, FFaceToDirection::FrontDirection);
-	SpawnSideChunk(ChunkParams, FFaceToDirection::RightDirection);
-	SpawnSideChunk(ChunkParams, FFaceToDirection::LeftDirection);
+	SpawnSideChunk(FFaceToDirection::TopDirection);
+	SpawnSideChunk(FFaceToDirection::BottomDirection);
+	SpawnSideChunk(FFaceToDirection::BackDirection);
+	SpawnSideChunk(FFaceToDirection::FrontDirection);
+	SpawnSideChunk(FFaceToDirection::RightDirection);
+	SpawnSideChunk(FFaceToDirection::LeftDirection);
 
-	VoxelGenerator->GenerateMesh(ChunkParams, VoxelChanges);
+	VoxelGenerator->GenerateMesh(MesherVariables, VoxelChanges);
 }
 
-void ASingleBorderlessChunkSpawner::SpawnSideChunk(FMesherVariables& MeshVars, const FFaceToDirection& FaceDirection )
+void ASingleBorderlessChunkSpawner::SpawnSideChunk(const FFaceToDirection& FaceDirection )
 {
 	const auto Index = static_cast<uint8>(FaceDirection.FaceSide);
 	auto Chunk = MakeShared<FChunk>().ToSharedPtr();
 	SideChunk[Index] = Chunk;
 	const auto GridPosition = SingleChunkGridPosition + FaceDirection.Direction;
 	AddChunkToGrid(Chunk, GridPosition);
-	AddSideChunk(MeshVars, FaceDirection.FaceSide, SideChunk[Index]);
 }
