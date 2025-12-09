@@ -2,11 +2,8 @@
 #include "CoreMinimal.h"
 #include "BaseVoxelData.h"
 #include "VoxelTableRow.h"
-#include "Chunk/Chunk.h"
-#include "Chunk/ChunkActor.h"
+#include "Chunk/VirtualVoxelChunk.h"
 #include "Voxel/Voxel.h"
-#include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
-#include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "VoxelGeneratorBase.generated.h"
 
 struct FMesherVariables;
@@ -21,37 +18,18 @@ class RDMVOXELGENERATION_API UVoxelGeneratorBase : public UBaseVoxelData
 	GENERATED_BODY()
 
 public:
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
-		Category="Voxels")
-	TSubclassOf<UVoxelMesherBase> VoxelMesherBlueprint = nullptr;
-	
-	UPROPERTY(EditAnywhere, Category ="Voxels")
-	bool bEnableVoxelMeshing = true;
-
-	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges) const;
-	
 	virtual FVoxel GetVoxelByName(const FName& VoxelName) const PURE_VIRTUAL(
 		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)
 	
 	virtual TTuple<FName, FVoxelTableRow> GetVoxelTableRow(const FVoxel& Voxel) const PURE_VIRTUAL(
 		UVoxelGeneratorBase::GetVoxelTableRow, return TTuple<FName, FVoxelTableRow>();)
 
-	void GenerateVoxels(FChunk& Chunk);
-	
-	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
-		const TMap<int32, uint32>& LocalVoxelTable) const;
+	void AddVoxelsToChunk(const FVirtualVoxelChunk& Chunk);
 	
 protected:
-	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
+	virtual void GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 		PURE_VIRTUAL(UVoxelGeneratorBase::GenerateVoxels);
 
-	virtual void BeginPlay() override;
-
-	UPROPERTY()
-	TObjectPtr<UVoxelMesherBase> VoxelMesher;
-	
-	
 private:
 	FCriticalSection Mutex;
 };

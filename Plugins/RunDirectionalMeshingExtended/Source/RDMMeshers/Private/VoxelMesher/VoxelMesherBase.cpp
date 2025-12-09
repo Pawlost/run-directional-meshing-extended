@@ -2,26 +2,11 @@
 
 #include "BaseVoxelData.h"
 #include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
-#include "VoxelModel/VoxelGrid.h"
 
 void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase)
 {
 	this->VoxelGenerator = VoxelGeneratorBase;
 	UpdateAllFacesParams();
-}
-
-TStrongObjectPtr<UVoxelModel> UVoxelMesherBase::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
-{
-
-#if CPUPROFILERTRACE_ENABLED
-	TRACE_CPUPROFILER_EVENT_SCOPE("Voxel compression generation")
-#endif
-
-	// Unoptimized because it is out of scope for this thesis
-	const auto VoxelGridObject = NewObject<UVoxelGrid>();
-	VoxelGridObject->VoxelGrid = MakeShared<TArray<FVoxel>>();
-	VoxelGridObject->VoxelGrid->Append(VoxelGrid);
-	return TStrongObjectPtr<UVoxelGrid>(VoxelGridObject);
 }
 
 const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTangents[] = {

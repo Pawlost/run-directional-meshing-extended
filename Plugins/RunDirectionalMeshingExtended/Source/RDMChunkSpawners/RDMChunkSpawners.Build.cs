@@ -9,7 +9,7 @@ public class RDMChunkSpawners : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core", "RDMMeshers", "RDMVoxelGeneration",
+                "Core", "RDMMeshers", "RDMVoxelGeneration", "ProceduralMeshComponent"
             }
         );
 

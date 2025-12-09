@@ -3,7 +3,7 @@
 void ASingleChunkSpawnerBase::BeginPlay()
 {
 	// Initialize single chunk
-	SingleChunk = MakeShared<FChunk>();
+	SingleChunk = MakeShared<FVirtualVoxelChunk>();
 	
 	Super::BeginPlay();
 

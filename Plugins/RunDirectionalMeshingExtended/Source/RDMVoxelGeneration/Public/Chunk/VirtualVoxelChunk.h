@@ -1,15 +1,15 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "ChunkActor.h"
+#include "VoxelMesher/VoxelMesherBase.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
-#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
-#include "VoxelModel/RLEVoxelGrid.h"
-#include "Chunk.generated.h"
+#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h" 
+#include "VirtualVoxelChunk.generated.h"
 
 class UVoxelModel;
 
 USTRUCT()
-struct RDMVOXELGENERATION_API FChunk
+struct RDMVOXELGENERATION_API FVirtualVoxelChunk
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,7 @@ struct RDMVOXELGENERATION_API FChunk
 	
 	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 
-	TStrongObjectPtr<UVoxelModel> VoxelModel;
+	TStrongObjectPtr<UVoxelMesherBase> VoxelMesher;
 
 	UPROPERTY()
 	FIntVector GridPosition = FIntVector(0, 0, 0);

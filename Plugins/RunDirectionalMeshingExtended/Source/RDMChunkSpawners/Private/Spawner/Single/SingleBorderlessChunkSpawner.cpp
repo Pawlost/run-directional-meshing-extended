@@ -14,13 +14,13 @@ void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FRLEVoxelEdit>& VoxelCha
 	SpawnSideChunk(FFaceToDirection::RightDirection);
 	SpawnSideChunk(FFaceToDirection::LeftDirection);
 
-	VoxelGenerator->GenerateMesh(MesherVariables, VoxelChanges);
+	GenerateMesh(MesherVariables, VoxelChanges);
 }
 
 void ASingleBorderlessChunkSpawner::SpawnSideChunk(const FFaceToDirection& FaceDirection )
 {
 	const auto Index = static_cast<uint8>(FaceDirection.FaceSide);
-	auto Chunk = MakeShared<FChunk>().ToSharedPtr();
+	auto Chunk = MakeShared<FVirtualVoxelChunk>().ToSharedPtr();
 	SideChunk[Index] = Chunk;
 	const auto GridPosition = SingleChunkGridPosition + FaceDirection.Direction;
 	AddChunkToGrid(Chunk, GridPosition);

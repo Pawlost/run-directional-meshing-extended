@@ -1,6 +1,6 @@
 ﻿#include "Noise/NoiseVoxelGridGenerator.h"
 
-#include "Chunk/Chunk.h"
+#include "Chunk/VirtualVoxelChunk.h"
 #include "Noise/NoiseSurfaceGenerator.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 
@@ -33,7 +33,7 @@ void UNoiseVoxelGridGenerator::BeginPlay()
 	}
 }
 
-void UNoiseVoxelGridGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
+void UNoiseVoxelGridGenerator::GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	//NOTICE: This generation is unoptimized because it is not major part of my bachelor's thesis
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();

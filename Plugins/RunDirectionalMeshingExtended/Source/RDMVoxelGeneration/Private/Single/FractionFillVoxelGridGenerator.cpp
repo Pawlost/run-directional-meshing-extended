@@ -2,7 +2,7 @@
 
 #include "VoxelMesher/VoxelMesherBase.h"
 
-void UFractionFillVoxelGridGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
+void UFractionFillVoxelGridGenerator::GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();

@@ -11,6 +11,9 @@ class RDMMESHERS_API URunDirectionalVoxelMesher : public UVoxelMesherBase
 
 private:
 	
+	UPROPERTY()
+	TArray<FVoxel> VoxelGrid;
+	
 	struct FBorderVoxelIndexParams
 	{
 		int32 SideChunkVoxelIndex;

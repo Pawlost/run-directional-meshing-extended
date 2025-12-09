@@ -5,8 +5,6 @@
 #include "MeshingUtils/ProcMeshSectionVars.h"
 #include "MeshingUtils/RLEVoxelEdit.h"
 #include "Voxel/RLEVoxel.h"
-#include "VoxelModel/BorderChunk.h"
-#include "VoxelModel/RLEVoxelGrid.h"
 #include "VoxelMesherBase.generated.h"
 
 class UBaseVoxelData;
@@ -47,14 +45,14 @@ public:
 		}
 	};
 	
-	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
+	virtual void GenerateMesh(
 			TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
 			TMap<int32, uint32>& LocalVoxelTable,
 			TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 			TArray<FRLEVoxelEdit>& VoxelChanges,
-			FBorderSamples& BorderSamples) PURE_VIRTUAL(UMesherBase::GenerateMesh)
-
-	virtual TStrongObjectPtr<UVoxelModel> CompressVoxelModel(TArray<FVoxel>& VoxelGrid);
+			FBorderSamples& BorderSamples) PURE_VIRTUAL(UVoxelMesherBase::GenerateMesh)
+	
+	virtual void AddUncompressedGrid(TArray<FVoxel>& VoxelGrid) PURE_VIRTUAL(UVoxelMesherBase::AddUncompressedGrid);
 
 	/*
 	Front = 0,
@@ -70,7 +68,7 @@ public:
 		FMeshingDirections(FStaticMergeData::BottomFaceData), FMeshingDirections(FStaticMergeData::TopFaceData)
 	};
 	
-	virtual void SampleLeftChunkBorder(FBorderSamples& SampledBorderChunks, TSharedPtr<TArray<FRLEVoxel>> VoxelGrid) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
+	virtual void SampleLeftChunkBorder(FBorderSamples& SampledBorderChunks) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
 	virtual void SampleRightChunkBorder() PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
 	virtual void SampleTopChunkBorder() PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
 	virtual void SampleBottomChunkBorder() PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);

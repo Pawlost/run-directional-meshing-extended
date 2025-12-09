@@ -9,5 +9,5 @@ class RDMVOXELGENERATION_API USingleVoxelGenerator : public USingleVoxelGenerato
 	GENERATED_BODY()
 
 public:
-		virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
+		virtual void GenerateVoxels(const FVirtualVoxelChunk& Chunk,TArray<FVoxel>& VoxelModel) override;
 };

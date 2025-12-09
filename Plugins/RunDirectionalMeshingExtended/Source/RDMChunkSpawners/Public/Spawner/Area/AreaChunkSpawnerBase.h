@@ -24,7 +24,7 @@ public:
 	virtual TSharedFuture<void> SpawnChunksAsync() override;
 	
 protected:
-	TMap<FIntVector, TSharedPtr<FChunk>> ChunkGrid;
+	TMap<FIntVector, TSharedPtr<FVirtualVoxelChunk>> ChunkGrid;
 	bool ShowChunkBorders = false;
 	virtual void BeginPlay() override;
 

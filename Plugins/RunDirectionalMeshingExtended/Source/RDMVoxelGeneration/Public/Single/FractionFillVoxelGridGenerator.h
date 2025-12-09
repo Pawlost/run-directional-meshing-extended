@@ -18,5 +18,5 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = "1"), Category = "Voxel grid size")
 	int32 ZFraction = 1;
 
-	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
+	virtual void GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
 };

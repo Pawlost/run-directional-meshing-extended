@@ -28,5 +28,5 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void StartMeshing(TArray<FRLEVoxelEdit>& VoxelChange) PURE_VIRTUAL(ASingleChunkSpawnerBase::StartMeshing)
 	
-	TSharedPtr<FChunk> SingleChunk;
+	TSharedPtr<FVirtualVoxelChunk> SingleChunk;
 };

@@ -82,7 +82,7 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 		return;
 	}
 
-	const TSharedPtr<FChunk>& Chunk = *ChunkGrid.Find(ChunkGridPosition);
+	const TSharedPtr<FVirtualVoxelChunk>& Chunk = *ChunkGrid.Find(ChunkGridPosition);
 
 	if (Chunk->bIsActive)
 	{
@@ -106,25 +106,12 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	{
 		DequeueChunkActor(Chunk->BorderChunkMeshActor[i]);
 	}
-
-	auto Spawner = MakeShared<FMesherVariables>(MesherVars);
-
-	if (IsInGameThread())
-	{
-		SpawnChunkActors(Spawner);
-	}
-	else
-	{
-		// Synchronize Mesh generation with game thread.
-		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
-		{
-			SpawnChunkActors(Spawner);
-		}).Wait();
-	}
+	
+	SpawnChunkActorsAsync(MesherVars);
 
 	//Mesh could be spawned on a Async Thread similarly to voxel models but it is not done so to showcase real time speed of mesh generation (requirement for bachelor thesis)
-	VoxelGenerator->GenerateMesh(MesherVars, VoxelEdits);
-
+	GenerateMesh(MesherVars, VoxelEdits);
+	
 	EnqueueChunkActor(Chunk->ChunkMeshActor);
 	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
 	{
@@ -155,7 +142,7 @@ void AAreaChunkSpawnerBase::SpawnChunk(const FIntVector& ChunkGridPosition, TSha
 		return;
 	}
 
-	TSharedPtr<FChunk> Chunk = MakeShared<FChunk>();
+	TSharedPtr<FVirtualVoxelChunk> Chunk = MakeShared<FVirtualVoxelChunk>();
 	AddChunkToGrid(Chunk, ChunkGridPosition, AsyncExecution);
 
 	Mutex.Lock();

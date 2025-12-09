@@ -13,6 +13,6 @@ protected:
 	virtual void StartMeshing(TArray<FRLEVoxelEdit>& VoxelChanges) override;
 	
 private:
-	TSharedPtr<FChunk> SideChunk[CHUNK_FACE_COUNT];
+	TSharedPtr<FVirtualVoxelChunk> SideChunk[CHUNK_FACE_COUNT];	
 	void SpawnSideChunk(const FFaceToDirection& FaceDirection);
 };

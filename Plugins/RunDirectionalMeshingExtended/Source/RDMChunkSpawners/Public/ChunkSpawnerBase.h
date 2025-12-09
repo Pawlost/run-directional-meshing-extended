@@ -13,6 +13,14 @@ class RDMCHUNKSPAWNERS_API AChunkSpawnerBase : public AActor
 	GENERATED_BODY()
 
 public:
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
+		Category="Voxels")
+	TSubclassOf<UVoxelMesherBase> VoxelMesherBlueprint = nullptr;
+	
+	UPROPERTY(EditAnywhere, Category ="Voxels")
+	bool bEnableVoxelMeshing = true;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
 		Category="Chunk")
 	TSubclassOf<UBaseVoxelData> VoxelGeneratorBlueprint = nullptr;
@@ -59,12 +67,15 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+	void SpawnChunkActorsAsync(FMesherVariables& Spawner) const;
+
 	void SpawnChunkActors(const TSharedRef<FMesherVariables>& Spawner) const;
 
-	void AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
+	void AddChunkToGrid(TSharedPtr<FVirtualVoxelChunk>& Chunk,
 	                    const FIntVector& GridPosition, TSharedFuture<void>* AsyncExecution = nullptr) const;
 
+	void GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits) const;
+	
 	// Wait for all futures
 	static void WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks);
 
@@ -84,5 +95,9 @@ protected:
 	bool bIsInitialized = false;
 
 private:
+	
+	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
+		const TMap<int32, uint32>& LocalVoxelTable) const;
+	
 	bool CheckVoxelBoundary(const FIntVector& VoxelPosition) const;
 };

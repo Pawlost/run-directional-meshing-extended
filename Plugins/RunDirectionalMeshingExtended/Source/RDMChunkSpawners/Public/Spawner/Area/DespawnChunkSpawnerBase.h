@@ -39,7 +39,7 @@ protected:
 	virtual void SpawnChunk(const FIntVector& ChunkGridPosition, TSharedFuture<void>* OutAsyncExecution = nullptr) override;
 	
 	// Pool of despawned chunks
-	TQueue<TSharedPtr<FChunk>> DespawnedChunks;
+	TQueue<TSharedPtr<FVirtualVoxelChunk>> DespawnedChunks;
 	
 	FCriticalSection CriticalSection;
 	

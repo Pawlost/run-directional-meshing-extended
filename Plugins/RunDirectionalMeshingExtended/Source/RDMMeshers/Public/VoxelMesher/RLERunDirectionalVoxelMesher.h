@@ -2,9 +2,9 @@
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
 #include "Voxel/RLEVoxel.h"
-#include "VoxelModel/RLEVoxelGrid.h"
 #include "RLERunDirectionalVoxelMesher.generated.h"
 
+class UVoxelModel;
 class URLEVoxelGrid;
 struct FChunkParams;
 
@@ -14,16 +14,17 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
+	virtual void GenerateMesh(
 		TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
 		TMap<int32, uint32>& LocalVoxelTable,
 		TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 		TArray<FRLEVoxelEdit>& VoxelChanges,
 		FBorderSamples& BorderSamples) override;
+	
+	
+	virtual void AddUncompressedGrid(TArray<FVoxel>& VoxelGrid) override;
 
-	virtual TStrongObjectPtr<UVoxelModel> CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
-
-	virtual void SampleLeftChunkBorder(FBorderSamples& SampledBorderChunks, TSharedPtr<TArray<FRLEVoxel>> VoxelGrid) override;
+	virtual void SampleLeftChunkBorder(FBorderSamples& SampledBorderChunks) override;
 	
 	void AddLeftBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const;
 	void AddRightBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const;
@@ -41,11 +42,18 @@ public:
 
 
 PRIVATE_MODIFIER:
+	
+	UPROPERTY()
+	TArray<FRLEVoxel> RLEVoxelGrid;
+
+	TArray<FRLEVoxel> EditEventArray;
+	TSharedPtr<TArray<FRLEVoxel>> OldVoxelGrid = nullptr;
+	
 	struct FMeshingEvent
 	{
 		// Voxel sequence (run) to be traversed
 		// If null the end is a chunk dimension, not end of sequence
-		TSharedPtr<TArray<FRLEVoxel>> VoxelGridPtr;
+		TArray<FRLEVoxel>* VoxelGridPtr;
 
 		// Index where event ends
 		uint32 LastEventIndex = 0;
@@ -101,7 +109,6 @@ PRIVATE_MODIFIER:
 	struct FIndexParams
 	{
 		FBorderSamples* SampledBorderChunks;
-		TSharedPtr<TArray<FRLEVoxel>> VoxelGrid;
 
 		// Current event index made of all meshing events that were already processed/traversed.
 		uint32 CurrentMeshingEventIndex = 0;
@@ -119,7 +126,6 @@ PRIVATE_MODIFIER:
 		TArray<FRLEVoxelEdit>* VoxelEdits = nullptr;
 		bool EditEnabled = false;
 		FIntVector InitialPosition = FIntVector(0, 0, 0);
-		
 		
 		TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 

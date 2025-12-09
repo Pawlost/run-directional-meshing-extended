@@ -1,6 +1,6 @@
 ﻿#include "Spawner/Area/DespawnChunkSpawnerBase.h"
 
-#include "Chunk/Chunk.h"
+#include "Chunk/VirtualVoxelChunk.h"
 
 void ADespawnChunkSpawnerBase::ChangeGridCenterToPosition(const FVector& NewPosition)
 {
@@ -86,10 +86,10 @@ void ADespawnChunkSpawnerBase::SpawnChunk(const FIntVector& ChunkGridPosition, T
 	}
 
 	// Try to get chunk from chunk pool
-	TSharedPtr<FChunk> Chunk;
+	TSharedPtr<FVirtualVoxelChunk> Chunk;
 	if (!DespawnedChunks.Dequeue(Chunk))
 	{
-		Chunk = MakeShared<FChunk>();
+		Chunk = MakeShared<FVirtualVoxelChunk>();
 	}
 	
 	AddChunkToGrid(Chunk, ChunkGridPosition, AsyncExecution);

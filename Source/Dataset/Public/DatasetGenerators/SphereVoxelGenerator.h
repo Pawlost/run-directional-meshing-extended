@@ -11,7 +11,7 @@ class DATASET_API USphereVoxelGenerator : public USingleVoxelGeneratorBase
 	GENERATED_BODY()
 	
 public:
-	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
+	virtual void GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = "1"), Category = "Voxel")
 	float SphereRadius = 10.0;

@@ -13,7 +13,7 @@ uint32 UStripsVoxelGenerator::CalculateStripSize(const float ChunkDimension, con
 	return FMath::Max<uint32>(FMath::FloorToInt32(StripSize), 1);
 }
 
-void UStripsVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
+void UStripsVoxelGenerator::GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();

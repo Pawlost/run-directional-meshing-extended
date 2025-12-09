@@ -1,5 +1,19 @@
 ﻿#include "VoxelMesher/RunDirectionalVoxelMesher.h"
 /*
+
+#if CPUPROFILERTRACE_ENABLED
+	TRACE_CPUPROFILER_EVENT_SCOPE("Voxel compression generation")
+#endif
+
+	// Unoptimized because it is out of scope for this thesis
+	const auto VoxelGridObject = NewObject<UVoxelGrid>();
+	VoxelGridObject->VoxelGrid = MakeShared<TArray<FVoxel>>();
+	VoxelGridObject->VoxelGrid->Append(VoxelGrid);
+	return TStrongObjectPtr<UVoxelGrid>(VoxelGridObject);
+
+
+
+
 void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TArray<FVoxelEdit>& VoxelChanges)
 {
 #if CPUPROFILERTRACE_ENABLED

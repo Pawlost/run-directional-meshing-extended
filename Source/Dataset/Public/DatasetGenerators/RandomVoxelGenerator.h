@@ -11,7 +11,7 @@ class DATASET_API URandomVoxelGenerator : public USingleVoxelGeneratorBase
 	GENERATED_BODY()
 	
 public:
-	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)  override;
+	virtual void GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel)  override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Voxel")
 	int32 Seed = 1;

@@ -3,7 +3,7 @@
 #include "DatasetGenerators/ChessboardVoxelGenerator.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 
-void USphereVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
+void USphereVoxelGenerator::GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();

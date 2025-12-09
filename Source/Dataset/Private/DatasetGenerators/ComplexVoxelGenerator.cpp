@@ -1,7 +1,7 @@
 #include "DatasetGenerators/ComplexShapeVoxelGenerator.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 
-void UComplexShapeVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
+void UComplexShapeVoxelGenerator::GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelCountPerVoxelLine();

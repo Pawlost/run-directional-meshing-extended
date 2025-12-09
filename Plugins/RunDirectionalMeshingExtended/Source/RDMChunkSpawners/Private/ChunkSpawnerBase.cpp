@@ -30,9 +30,43 @@ void AChunkSpawnerBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AChunkSpawnerBase::SpawnChunkActorsAsync(FMesherVariables& MesherVars) const
+{
+	
+	auto Spawner = MakeShared<FMesherVariables>(MesherVars);
+	
+	//Creating AsyncTask from main thread will cause deadlock
+	if (IsInGameThread())
+	{
+		SpawnChunkActors(Spawner);
+	}
+	else
+	{
+		// TODO: make lazy evaluation of FMesherVariables
+		
+		// Synchronize Mesh generation with game thread.
+		Async(EAsyncExecution::TaskGraphMainThread, [this, Spawner]()
+		{
+			SpawnChunkActors(Spawner);
+		}).Wait();
+	}
+}
+
+
 void AChunkSpawnerBase::SpawnChunkActors(const TSharedRef<FMesherVariables>& Spawner) const
 {
 	//Creating AsyncTask from main thread will cause deadlock
+	if (Spawner->OriginalChunk->VoxelMesher == nullptr){
+		auto& VoxelMesher = Spawner->OriginalChunk->VoxelMesher;
+		checkf(VoxelMesherBlueprint, TEXT("Mesher blueprint must be set"));
+		if (VoxelMesherBlueprint)
+		{
+			// Register mesher
+			auto VoxelMesherObject = NewObject<UVoxelMesherBase>(VoxelMesherBlueprint);
+			VoxelMesher = TStrongObjectPtr<UVoxelMesherBase>(VoxelMesherObject);
+		}
+	}
+	
 	const auto Chunk = Spawner->OriginalChunk;
 	SpawnAndMoveChunkActor(Spawner, Chunk->ChunkMeshActor);
 	
@@ -188,7 +222,7 @@ FIntVector AChunkSpawnerBase::CalculateGlobalVoxelPositionFromHit(const FVector&
 		AdjustedNormal;
 }
 
-void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
+void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FVirtualVoxelChunk>& Chunk,
                                        const FIntVector& GridPosition, TSharedFuture<void>* AsyncExecution) const
 {
 	Chunk->GridPosition = GridPosition;
@@ -202,7 +236,7 @@ void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
 			TRACE_CPUPROFILER_EVENT_SCOPE("Voxel generation");
 #endif
 
-			VoxelGenerator->GenerateVoxels(*Chunk.Get());
+			VoxelGenerator->AddVoxelsToChunk(*Chunk.Get());
 		}).Share();
 	}
 	else
@@ -211,7 +245,7 @@ void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
 		TRACE_CPUPROFILER_EVENT_SCOPE("Voxel generation");
 #endif
 
-		VoxelGenerator->GenerateVoxels(*Chunk);
+		VoxelGenerator->AddVoxelsToChunk(*Chunk);
 	}
 }
 
@@ -228,6 +262,83 @@ void AChunkSpawnerBase::WaitForAllTasks(TArray<TSharedFuture<void>>& Tasks)
 	Tasks.Empty();
 }
 
+void AChunkSpawnerBase::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits) const
+{
+	if (bEnableVoxelMeshing)
+	{
+			
+#if CPUPROFILERTRACE_ENABLED
+		TRACE_CPUPROFILER_EVENT_SCOPE("Creating Actor - RunDirectionalMeshing from VoxelGrid generation")
+	#endif
+		
+		const uint32 VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
+		UVoxelMesherBase::FBorderSamples BorderSamples(VoxelLayer);
+		
+		// TODO: rewrite this
+		MeshVars.OriginalChunk->VoxelMesher->PreallocateArrays(MeshVars.VirtualFaces, MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData);
+
+		MeshVars.OriginalChunk->VoxelMesher->GenerateMesh(MeshVars.VirtualFaces,
+								  MeshVars.LocalVoxelTable,
+								  MeshVars.ChunkMeshData,VoxelEdits,
+								  BorderSamples);
+		
+		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor, MeshVars.ChunkMeshData,
+					   MeshVars.LocalVoxelTable);
+		
+		
+		// TODO: rewrite
+		bool ShowBorders = true;
+		
+		if (ShowBorders){
+		
+			UVoxelMesherBase::FBorderSamples InverseBorderSamples(VoxelLayer); 
+			
+			for (uint8 d = 0; d < CHUNK_FACE_COUNT; d++)
+			{
+				const auto& FaceTemplate = MeshVars.OriginalChunk->VoxelMesher->FaceTemplates[d];
+				auto LeftVoxelModel = MeshVars.SideChunks[FaceTemplate.StaticMeshingData.FaceDirection];
+		
+				if(LeftVoxelModel != nullptr)
+				{
+					MeshVars.OriginalChunk->VoxelMesher->SampleLeftChunkBorder(InverseBorderSamples);
+				}
+				
+				auto BorderSample = BorderSamples.BorderSamples[d];
+				auto InverseBorderSample = InverseBorderSamples.BorderSamples[d];
+				MeshVars.OriginalChunk->VoxelMesher->BorderGeneration(MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable, BorderSample, InverseBorderSample, static_cast<EFaceDirection>(d));
+				AddMeshToActor(MeshVars.OriginalChunk->BorderChunkMeshActor[d], MeshVars.BorderChunkMeshData,
+						   MeshVars.BorderLocalVoxelTable);
+			}
+		}
+	}
+}
+
+
+void AChunkSpawnerBase::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
+										 TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
+										 const TMap<int32, uint32>& LocalVoxelTable) const
+{
+	for (const auto LocalVoxelType : LocalVoxelTable)
+	{
+		auto SectionId = LocalVoxelType.Value;
+
+		const auto Voxel = FVoxel(LocalVoxelType.Key);
+		const auto VoxelRow = VoxelGenerator->GetVoxelTableRow(Voxel);
+
+		AsyncTask(ENamedThreads::GameThread, [MeshActor, ChunkMeshData, SectionId, VoxelRow]()
+		{
+			MeshActor->ProceduralMeshComponent->SetMaterial(SectionId, VoxelRow.Value.Material);
+			const FProcMeshSectionVars& QuadMeshSection = (*ChunkMeshData)[SectionId];
+
+			MeshActor->ProceduralMeshComponent->ClearMeshSection(SectionId);
+			// Add voxel materials to mesh
+			MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(
+				SectionId, QuadMeshSection.Vertices, QuadMeshSection.Triangles, QuadMeshSection.Normals,
+				QuadMeshSection.UV0, TArray<FLinearColor>(),
+				QuadMeshSection.Tangents, true);
+		});
+	}
+}
 
 void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FMesherVariables>& ChunkParams,
                                                TWeakObjectPtr<AChunkActor>& OutActorPtr) const

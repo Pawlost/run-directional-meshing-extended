@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "VoxelGeneratorBase.h"
 #include "VoxelTableRow.h"
-#include "Chunk/Chunk.h"
+#include "Chunk/VirtualVoxelChunk.h"
 #include "NoiseVoxelGridGenerator.generated.h"
 
 struct FNoiseSurfaceGenerator;
@@ -16,7 +16,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Voxels")
 	TObjectPtr<UDataTable> VoxelTypeTable;
 
-	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
+	virtual void GenerateVoxels(const FVirtualVoxelChunk& Chunk, TArray<FVoxel>& VoxelModel) override;
 
 	virtual double GetHighestElevationAtLocation(const FVector& Location) override;
 	virtual TTuple<FName, FVoxelTableRow> GetVoxelTableRow(const FVoxel& Voxel) const override;
