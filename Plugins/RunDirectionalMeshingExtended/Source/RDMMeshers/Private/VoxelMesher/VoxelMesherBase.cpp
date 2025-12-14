@@ -6,7 +6,7 @@
 
 void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase)
 {
-	this->VoxelGenerator = VoxelGeneratorBase;
+	this->VoxelData = VoxelGeneratorBase;
 	UpdateAllFacesParams();
 }
 
@@ -35,7 +35,7 @@ const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTang
 
 void UVoxelMesherBase::UpdateAllFacesParams()
 {
-	const auto ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
+	const auto ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
 	//Axis X
 	UpdateFaceParams(FaceTemplates[EFaceDirection::Front], FIntVector(1, 0, 0),
 					 FIntVector(0, 0, 0),
@@ -68,9 +68,9 @@ void UVoxelMesherBase::UpdateFaceParams(FMeshingDirections& Face, const FIntVect
                                    const FIntVector ChunkBorderIndexVector,
                                    const FIntVector PreviousVoxelIndexVector) const
 {
-	Face.ForwardVoxelIndex = VoxelGenerator->CalculateVoxelIndex(ForwardVoxelIndexVector);
-	Face.PreviousVoxelIndex = VoxelGenerator->CalculateVoxelIndex(PreviousVoxelIndexVector);
-	Face.ChunkBorderIndex = VoxelGenerator->CalculateVoxelIndex(ChunkBorderIndexVector);
+	Face.ForwardVoxelIndex = VoxelData->CalculateVoxelIndex(ForwardVoxelIndexVector);
+	Face.PreviousVoxelIndex = VoxelData->CalculateVoxelIndex(PreviousVoxelIndexVector);
+	Face.ChunkBorderIndex = VoxelData->CalculateVoxelIndex(ChunkBorderIndexVector);
 }
 
 void UVoxelMesherBase::PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
@@ -80,8 +80,8 @@ void UVoxelMesherBase::PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<F
 	TRACE_CPUPROFILER_EVENT_SCOPE("Mesh generation preallocation")
 #endif
 	
-	auto ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
-	auto ChunkLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
+	auto ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
+	auto ChunkLayer = VoxelData->GetVoxelCountPerVoxelPlane();
 
 	// TODO: rewrite, keep preallocation
 	ChunkMeshData = nullptr;
@@ -104,7 +104,7 @@ void UVoxelMesherBase::PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<F
 			(*ChunkMeshData)[t].EmptyValues();
 		}else
 		{
-			ChunkMeshData->Emplace(VoxelGenerator->GetVoxelCountPerChunk());
+			ChunkMeshData->Emplace(VoxelData->GetVoxelCountPerChunk());
 		}
 
 		if (BorderChunkMeshData->IsValidIndex(t))
@@ -112,7 +112,7 @@ void UVoxelMesherBase::PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<F
 			(*BorderChunkMeshData)[t].EmptyValues();
 		}else
 		{
-			BorderChunkMeshData->Emplace(VoxelGenerator->GetVoxelCountPerChunk());
+			BorderChunkMeshData->Emplace(VoxelData->GetVoxelCountPerChunk());
 		}
 	}
 	
@@ -140,7 +140,7 @@ void UVoxelMesherBase::PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<F
 void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, TMap<int32, uint32>& LocalVoxelTable, const FVirtualVoxelFace& Face,
                                               const int FaceIndex) const
 {
-	const double VoxelSize = VoxelGenerator->GetVoxelSize();
+	const double VoxelSize = VoxelData->GetVoxelSize();
 	
 	const auto VoxelId = Face.Voxel.VoxelId;
 	// TODO: remove

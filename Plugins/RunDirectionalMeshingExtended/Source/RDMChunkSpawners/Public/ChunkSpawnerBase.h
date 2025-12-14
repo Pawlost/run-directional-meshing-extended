@@ -13,6 +13,10 @@ class RDMCHUNKSPAWNERS_API AChunkSpawnerBase : public AActor
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
+		Category="Voxels")
+	TSubclassOf<UVoxelMesherBase> VoxelMesherBlueprint = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
 		Category="Chunk")
 	TSubclassOf<UBaseVoxelData> VoxelGeneratorBlueprint = nullptr;

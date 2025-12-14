@@ -19,6 +19,13 @@ class RDMMESHERS_API UVoxelMesherBase : public UActorComponent
 	GENERATED_BODY()
 
 public:
+		
+	UPROPERTY(EditAnywhere, Category ="Voxels")
+	bool bEnableVoxelMeshing = true;
+
+	UPROPERTY()
+	TObjectPtr<UBaseVoxelData> VoxelData;
+	
 	void SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase);
 
 	struct FBorderSamples
@@ -110,7 +117,7 @@ protected:
 
 	FORCEINLINE bool IsMaxBorder(const int X) const
 	{
-		return X == VoxelGenerator->GetVoxelCountPerVoxelLine() - 1;
+		return X == VoxelData->GetVoxelCountPerVoxelLine() - 1;
 	}
 
 	static const FNormalsAndTangents FaceNormalsAndTangents[CHUNK_FACE_COUNT];
@@ -131,6 +138,4 @@ protected:
 	static void AddFace(const FStaticMergeData& FaceMeshingData, const FVirtualVoxelFace& NewFace,
 	                    TArray<FVirtualVoxelFace>& ChunkFaces);
 	
-	UPROPERTY()
-	TObjectPtr<UBaseVoxelData> VoxelGenerator;
 };

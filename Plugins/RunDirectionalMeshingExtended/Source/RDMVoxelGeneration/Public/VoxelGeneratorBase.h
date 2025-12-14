@@ -22,15 +22,6 @@ class RDMVOXELGENERATION_API UVoxelGeneratorBase : public UBaseVoxelData
 
 public:
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(AllowAbstract="false", BlueprintBaseOnly), NoClear,
-		Category="Voxels")
-	TSubclassOf<UVoxelMesherBase> VoxelMesherBlueprint = nullptr;
-	
-	UPROPERTY(EditAnywhere, Category ="Voxels")
-	bool bEnableVoxelMeshing = true;
-
-	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges) const;
-	
 	virtual FVoxel GetVoxelByName(const FName& VoxelName) const PURE_VIRTUAL(
 		UVoxelGeneratorBase::GetVoxelByName, return FVoxel();)
 	
@@ -39,19 +30,12 @@ public:
 
 	void GenerateVoxels(FChunk& Chunk);
 	
-	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
-		const TMap<int32, uint32>& LocalVoxelTable) const;
-	
 protected:
 	virtual void AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 		PURE_VIRTUAL(UVoxelGeneratorBase::GenerateVoxels);
 
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
-	TObjectPtr<UVoxelMesherBase> VoxelMesher;
-	
-	
 private:
 	FCriticalSection Mutex;
 };

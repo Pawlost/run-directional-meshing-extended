@@ -32,7 +32,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelMo
 	
 	FaceGeneration(IndexParams);
 	
-	const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
+	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
 	
 	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
@@ -84,9 +84,9 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(FIndexParams& IndexParams)
 	TRACE_CPUPROFILER_EVENT_SCOPE("RLE Meshing - RunDirectionalMeshing from RLECompression generation")
 #endif
 
-	const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
-	const uint32 MaxChunkVoxelSequence = VoxelGenerator->GetVoxelCountPerChunk();
-	const uint32 VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
+	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
+	const uint32 MaxChunkVoxelSequence = VoxelData->GetVoxelCountPerChunk();
+	const uint32 VoxelLayer = VoxelData->GetVoxelCountPerVoxelPlane();
 
 	InitializeEdit(IndexParams);
 	
@@ -152,7 +152,7 @@ void URLERunDirectionalVoxelMesher::AdvanceAllMeshingEvents(FIndexParams& IndexP
 {
 	if (AdvanceMeshingEvent(IndexParams, EMeshingEventIndex::LeadingInterval))
 	{
-		const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
+		const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
 		const auto& LeadingMeshingEvent = IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval];
 		auto& LeadingMeshingEventVoxel = LeadingMeshingEvent.GetCurrentVoxel();
 
@@ -198,7 +198,7 @@ void URLERunDirectionalVoxelMesher::CreateVirtualVoxelFacesInLShape(FIndexParams
 	// Generate culled faces
 	if (!IsLeadingEmpty || !IsFollowingXEmpty || !IsFollowingZEmpty)
 	{
-		const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
+		const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
 		bool IsLeadingTransparent = LeadingEvent.GetCurrentVoxel().IsTransparent();
 		bool IsFollowingXTransparent = FollowingXEvent.GetCurrentVoxel().IsTransparent();
 		bool IsFollowingZTransparent = FollowingZEvent.GetCurrentVoxel().IsTransparent();
@@ -390,7 +390,7 @@ void URLERunDirectionalVoxelMesher::AdvanceEditInterval(FIndexParams& IndexParam
 	}
 	else
 	{
-		EditEvent.LastEventIndex = VoxelGenerator->GetVoxelCountPerChunk() + 1;
+		EditEvent.LastEventIndex = VoxelData->GetVoxelCountPerChunk() + 1;
 	}
 }
 
@@ -404,8 +404,8 @@ void URLERunDirectionalVoxelMesher::BorderGeneration(
 	TRACE_CPUPROFILER_EVENT_SCOPE("Border generation - RLE RunDirectionalMeshing generation")
 #endif
 
-	const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
-	const uint32 VoxelPlane = VoxelGenerator->GetVoxelCountPerVoxelPlane();
+	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
+	const uint32 VoxelPlane = VoxelData->GetVoxelCountPerVoxelPlane();
 
 	TArray<FVirtualVoxelFace> FaceContainer;
 	FaceContainer.Reserve(VoxelPlane);
@@ -463,14 +463,14 @@ void URLERunDirectionalVoxelMesher::AddBorderFace(TArray<FVirtualVoxelFace>& Fac
                                                    const FMeshingDirections& FaceTemplate,
                                                    const FMeshingDirections& InverseFaceTemplate, int X, int Y) const
 {
-	const int ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
+	const int ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
 
 
 	FIntVector QuadPosition;
 	FIntVector IndexPosition;
 
 	FaceTemplate.StaticMeshingData.BorderLocation(IndexPosition, QuadPosition, X, Y, ChunkDimension);
-	auto Index = VoxelGenerator->CalculateVoxelIndex(IndexPosition);
+	auto Index = VoxelData->CalculateVoxelIndex(IndexPosition);
 
 	// Smear border
 	auto SampledVoxel = (*BorderVoxelSamples)[Index];
@@ -551,9 +551,9 @@ void URLERunDirectionalVoxelMesher::SampleLeftChunkBorder(FBorderSamples& Sample
 	FIndexParams IndexParams;
 	IndexParams.VoxelGrid = VoxelGrid;
 	
-	const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
-	const uint32 MaxChunkVoxelSequence = VoxelGenerator->GetVoxelCountPerChunk();
-	const uint32 VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
+	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
+	const uint32 MaxChunkVoxelSequence = VoxelData->GetVoxelCountPerChunk();
+	const uint32 VoxelLayer = VoxelData->GetVoxelCountPerVoxelPlane();
 	IndexParams.NextMeshingEventIndex = MaxChunkVoxelSequence;
 	
 	IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval] = {IndexParams.VoxelGrid, 0, 0};
@@ -562,7 +562,7 @@ void URLERunDirectionalVoxelMesher::SampleLeftChunkBorder(FBorderSamples& Sample
 	{
 		for (uint32 Y = 0; Y < ChunkDimension; Y++)
 		{
-			uint32 NextIndex = VoxelGenerator->CalculateVoxelIndex(X, 0, Y);
+			uint32 NextIndex = VoxelData->CalculateVoxelIndex(X, 0, Y);
 			IndexParams.TryUpdateNextMeshingEvent(NextIndex);
 			do 
 			{
@@ -578,44 +578,44 @@ void URLERunDirectionalVoxelMesher::SampleLeftChunkBorder(FBorderSamples& Sample
 
 void URLERunDirectionalVoxelMesher::AddLeftBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y, const int Z, const FRLEVoxel& BorderSample) const
 {
-	const uint32 VoxelPlaneIndex =  VoxelGenerator->CalculateVoxelIndex(FIntVector(0, X, Z));
+	const uint32 VoxelPlaneIndex =  VoxelData->CalculateVoxelIndex(FIntVector(0, X, Z));
 	SampledBorderChunks.AddBorderSample(VoxelPlaneIndex, EFaceDirection::Left, BorderSample, 1, Y == 0);
 }
 
 void URLERunDirectionalVoxelMesher::AddRightBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y,
 	const int Z, const FRLEVoxel& BorderSample) const
 {
-	const uint32 VoxelPlaneIndex =  VoxelGenerator->CalculateVoxelIndex(FIntVector(0, X, Z));
+	const uint32 VoxelPlaneIndex =  VoxelData->CalculateVoxelIndex(FIntVector(0, X, Z));
 	SampledBorderChunks.AddBorderSample(VoxelPlaneIndex, EFaceDirection::Right, BorderSample, 1, true);
 }
 
 void URLERunDirectionalVoxelMesher::AddTopBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y,
 	const int Z, const FRLEVoxel& BorderSample) const
 {
-	const uint32 VoxelPlaneIndex =  VoxelGenerator->CalculateVoxelIndex(FIntVector(0, Y, X));
-	const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
+	const uint32 VoxelPlaneIndex =  VoxelData->CalculateVoxelIndex(FIntVector(0, Y, X));
+	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
 	SampledBorderChunks.AddBorderSample(VoxelPlaneIndex, EFaceDirection::Top, BorderSample, ChunkDimension - Y, Z == ChunkDimension - 1);
 }
 
 void URLERunDirectionalVoxelMesher::AddBottomBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y,
 	const int Z, const FRLEVoxel& BorderSample) const
 {	
-	const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
-	const uint32 VoxelPlaneIndex =  VoxelGenerator->CalculateVoxelIndex(FIntVector(0, Y, X));
+	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
+	const uint32 VoxelPlaneIndex =  VoxelData->CalculateVoxelIndex(FIntVector(0, Y, X));
 	SampledBorderChunks.AddBorderSample(VoxelPlaneIndex, EFaceDirection::Bottom, BorderSample, ChunkDimension - Y, Z == 0);
 }
 
 void URLERunDirectionalVoxelMesher::AddFrontBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y,
 	const int Z, const FRLEVoxel& BorderSample) const
 {
-	const uint32 ChunkDimension = VoxelGenerator->GetVoxelCountPerVoxelLine();
-	const uint32 VoxelPlaneIndex =  VoxelGenerator->CalculateVoxelIndex(FIntVector(0, Y, Z));
+	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
+	const uint32 VoxelPlaneIndex =  VoxelData->CalculateVoxelIndex(FIntVector(0, Y, Z));
 	SampledBorderChunks.AddBorderSample(VoxelPlaneIndex, EFaceDirection::Front, BorderSample, BorderSample.RunLenght, X == ChunkDimension - 1);
 }
 
 void URLERunDirectionalVoxelMesher::AddBackBorderSample(FBorderSamples& SampledBorderChunks, const int X, const int Y,
 	const int Z, const FRLEVoxel& BorderSample) const
 {
-	const uint32 VoxelPlaneIndex =  VoxelGenerator->CalculateVoxelIndex(FIntVector(0, Y, Z));
+	const uint32 VoxelPlaneIndex =  VoxelData->CalculateVoxelIndex(FIntVector(0, Y, Z));
 	SampledBorderChunks.AddBorderSample(VoxelPlaneIndex, EFaceDirection::Back, BorderSample, BorderSample.RunLenght, X == 0);
 }

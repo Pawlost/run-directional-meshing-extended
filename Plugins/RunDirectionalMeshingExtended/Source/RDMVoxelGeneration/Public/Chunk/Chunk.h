@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "ChunkActor.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 #include "VoxelModel/RLEVoxelGrid.h"
 #include "Chunk.generated.h"
 
+class AChunkActor;
 class UVoxelModel;
 
 USTRUCT()
@@ -27,4 +27,7 @@ struct RDMVOXELGENERATION_API FChunk
 
 	UPROPERTY(VisibleInstanceOnly)
 	bool bIsActive = false;
+	
+	UPROPERTY()
+	TArray<FVoxel> VoxelModelArray;
 };

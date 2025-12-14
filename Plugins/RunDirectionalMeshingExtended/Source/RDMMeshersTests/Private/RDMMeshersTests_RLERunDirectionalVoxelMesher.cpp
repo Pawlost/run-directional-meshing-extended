@@ -44,7 +44,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_TestValidVoxelSequenceAfterMe
 	
 	// Execute
 	TStrongObjectPtr<UVoxelModel> RLEVoxelGridPtr = DummyRLERunDirectionalVoxelMesher->CompressVoxelModel(VoxelModel);
-	DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
+	//DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
 	
 	/*
 	DummyRLERunDirectionalVoxelMesher->GenerateMesh(RLEVoxelGridPtr, 
@@ -97,7 +97,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_TestAdvanceAllMeshingEvents::
 	auto ChunkMeshDataPtr = ChunkMeshData.ToSharedPtr();
 	auto BorderChunkMeshDataPtr = BorderChunkMeshData.ToSharedPtr();
 	
-	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	TObjectPtr<UBaseVoxelDataDummy> BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
 	
 	TArray<FVoxel> VoxelModel;
 	auto BasicVoxel = FVoxel(FVoxel::EMPTY_VOXEL + 1);
@@ -116,7 +116,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_TestAdvanceAllMeshingEvents::
 	
 	// Execute
 	TStrongObjectPtr<UVoxelModel> RLEVoxelGridPtr = DummyRLERunDirectionalVoxelMesher->CompressVoxelModel(VoxelModel);
-	DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
+	//DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
 	
 	/*
 	DummyRLERunDirectionalVoxelMesher->AdvanceAllMeshingEvents();

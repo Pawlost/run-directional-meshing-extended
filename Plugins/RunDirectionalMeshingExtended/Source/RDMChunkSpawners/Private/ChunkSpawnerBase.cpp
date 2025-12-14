@@ -241,7 +241,7 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FMesherVariables
 	//Spawn actor
 	const auto Chunk = ChunkParams->OriginalChunk;
 	const auto SpawnLocation = FVector(Chunk->GridPosition) * VoxelGenerator->GetChunkSpacing();
-
+	
 	FAttachmentTransformRules ActorAttachmentRules = FAttachmentTransformRules::KeepWorldTransform;
 	if (!ChunkParams->WorldTransform)
 	{
@@ -279,6 +279,8 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FMesherVariables
 		}
 		OutActorPtr->ClearMesh();
 	}
+	
+	OutActorPtr->SetVoxelMesher(VoxelMesherBlueprint);
 }
 
 void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit>& OutChunkEdit,

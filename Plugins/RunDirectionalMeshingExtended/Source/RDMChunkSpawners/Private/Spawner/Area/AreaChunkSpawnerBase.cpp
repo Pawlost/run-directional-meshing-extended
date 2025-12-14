@@ -123,7 +123,8 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	}
 
 	//Mesh could be spawned on a Async Thread similarly to voxel models but it is not done so to showcase real time speed of mesh generation (requirement for bachelor thesis)
-	VoxelGenerator->GenerateMesh(MesherVars, VoxelEdits);
+	MesherVars.OriginalChunk->ChunkMeshActor->SetVoxelGenerator(VoxelGenerator);
+	MesherVars.OriginalChunk->ChunkMeshActor->GenerateMesh(MesherVars, VoxelEdits);
 
 	EnqueueChunkActor(Chunk->ChunkMeshActor);
 	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)

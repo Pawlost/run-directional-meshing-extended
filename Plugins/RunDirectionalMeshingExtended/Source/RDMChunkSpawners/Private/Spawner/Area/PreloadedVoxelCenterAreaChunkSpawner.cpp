@@ -4,6 +4,7 @@
 
 void APreloadedVoxelCenterAreaChunkSpawner::GenerateArea()
 {
+	// TODO: fix magic numbers
 	auto InitialCenter = CenterGridPosition;
 	TSet<FIntVector> VisitedSpawnPositions;
 	VisitedSpawnPositions.Reserve(SpawnZone * SpawnZone * SpawnZone * CHUNK_FACE_COUNT);

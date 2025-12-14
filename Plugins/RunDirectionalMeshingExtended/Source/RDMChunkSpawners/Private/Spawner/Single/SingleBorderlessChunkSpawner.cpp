@@ -2,10 +2,10 @@
 
 void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FRLEVoxelEdit>& VoxelChanges)
 {
-	FMesherVariables MesherVariables;
-	MesherVariables.SpawnerPtr = this;
-	MesherVariables.OriginalChunk = SingleChunk;
-	MesherVariables.WorldTransform = UseWorldCenter;
+	FMesherVariables MesherVars;
+	MesherVars.SpawnerPtr = this;
+	MesherVars.OriginalChunk = SingleChunk;
+	MesherVars.WorldTransform = UseWorldCenter;
 
 	SpawnSideChunk(FFaceToDirection::TopDirection);
 	SpawnSideChunk(FFaceToDirection::BottomDirection);
@@ -13,8 +13,9 @@ void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FRLEVoxelEdit>& VoxelCha
 	SpawnSideChunk(FFaceToDirection::FrontDirection);
 	SpawnSideChunk(FFaceToDirection::RightDirection);
 	SpawnSideChunk(FFaceToDirection::LeftDirection);
-
-	VoxelGenerator->GenerateMesh(MesherVariables, VoxelChanges);
+	
+	MesherVars.OriginalChunk->ChunkMeshActor->SetVoxelGenerator(VoxelGenerator);
+	MesherVars.OriginalChunk->ChunkMeshActor->GenerateMesh(MesherVars, VoxelChanges);
 }
 
 void ASingleBorderlessChunkSpawner::SpawnSideChunk(const FFaceToDirection& FaceDirection )
