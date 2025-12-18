@@ -13,5 +13,7 @@ void UVoxelGeneratorBase::BeginPlay()
 void UVoxelGeneratorBase::GenerateVoxels(FChunk& Chunk)
 {
 	FScopeLock Lock(&Mutex);
-	AddVoxels(Chunk, Chunk.VoxelModelArray);
+	TArray<FVoxel> VoxelModelArray;
+	AddVoxels(Chunk, VoxelModelArray);
+	Chunk.VoxelMesher->CompressVoxelModel( VoxelModelArray);
 }

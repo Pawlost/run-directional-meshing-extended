@@ -54,12 +54,106 @@ public:
 		}
 	};
 	
+	struct FMeshingEvent
+	{
+		// Voxel sequence (run) to be traversed
+		// If null the end is a chunk dimension, not end of sequence
+		TSharedPtr<TArray<FRLEVoxel>> VoxelGridPtr;
+
+		// Index where event ends
+		uint32 LastEventIndex = 0;
+
+		// Index of an run in a voxel array
+		int32 VoxelRunIndex = 0;
+
+		FORCEINLINE int GetEventIndex() const
+		{
+			return LastEventIndex + (*VoxelGridPtr)[VoxelRunIndex].RunLenght;
+		}
+
+		FORCEINLINE void AdvanceEvent()
+		{
+			LastEventIndex = LastEventIndex + GetCurrentVoxel().RunLenght;
+			VoxelRunIndex++;
+		}
+
+		FORCEINLINE FRLEVoxel& GetCurrentVoxel() const
+		{
+			return (*VoxelGridPtr)[VoxelRunIndex];
+		}
+	};
+	
+	
+	constexpr static int EventIndexCount = 5;
+
+	enum EMeshingEventIndex
+	{
+		LeadingInterval = 0,
+		FollowingXInterval = 1,
+		FollowingZInterval = 2,
+		EditEvent = 3,
+		CopyEvent = 4
+	};
+
+	struct FRLEMeshingData
+	{
+		const FStaticMergeData FaceData;
+		EMeshingEventIndex MeshingEventIndex;
+	};
+
+	/*
+Front = 0,
+Back = 1,
+Right = 2,
+Left = 3,
+Bottom = 4,
+Top = 5
+*/
+	struct FIndexParams
+	{
+		FBorderSamples* SampledBorderChunks;
+
+		// Current event index made of all meshing events that were already processed/traversed.
+		uint32 CurrentMeshingEventIndex = 0;
+
+		// After reaching closest end, updates it and sets next voxel interval to next
+		// End is equivalent to event in Discrete Event Simulation 
+		
+		FMeshingEvent MeshingEvents[EventIndexCount];
+		uint32 NextMeshingEventIndex = 0;
+		uint32 IndexSequenceBetweenEvents = 0;
+		FRLEVoxel* PreviousVoxelRun = nullptr;
+
+		uint32 ContinueEditIndex = 0;
+
+		//TODO: rewrite pointer
+		TArray<FRLEVoxelEdit>* VoxelEdits = nullptr;
+		bool EditEnabled = false;
+		FIntVector InitialPosition = FIntVector(0, 0, 0);
+		
+		TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
+		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
+		
+		void TryUpdateNextMeshingEvent(const uint32 EventIndex)
+		{
+			NextMeshingEventIndex = FMath::Min(EventIndex, NextMeshingEventIndex);
+		}
+		
+		void AddBorderSample(const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample,
+													const int RunLenght, bool CanSample)
+		{
+			SampledBorderChunks->AddBorderSample(CurrentMeshingEventIndex, FaceDirection, VoxelSample, RunLenght, CanSample);
+		}
+	};
+	
+	
 	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
-			TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
-			TMap<int32, uint32>& LocalVoxelTable,
-			TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-			TArray<FRLEVoxelEdit>& VoxelChanges,
-			FBorderSamples& BorderSamples) PURE_VIRTUAL(UMesherBase::GenerateMesh)
+							  TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
+							  TMap<int32, uint32>& LocalVoxelTable,
+							  TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
+							  TArray<FRLEVoxelEdit>& VoxelChanges,
+								TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
+							  TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, 6>& SideMeshers, FBorderSamples& BorderSamples) PURE_VIRTUAL(UMesherBase::GenerateMesh)
 
 	virtual TStrongObjectPtr<UVoxelModel> CompressVoxelModel(TArray<FVoxel>& VoxelGrid);
 
@@ -77,13 +171,8 @@ public:
 		FMeshingDirections(FStaticMergeData::BottomFaceData), FMeshingDirections(FStaticMergeData::TopFaceData)
 	};
 	
-	virtual void SampleLeftChunkBorder(FBorderSamples& SampledBorderChunks, TSharedPtr<TArray<FRLEVoxel>> VoxelGrid) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
-	virtual void SampleRightChunkBorder() PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
-	virtual void SampleTopChunkBorder() PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
-	virtual void SampleBottomChunkBorder() PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
-	virtual void SampleFrontChunkBorder() PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
-	virtual void SampleBackChunkBorder() PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder);
-	
+	// TODO: use simplier struct than index params
+	virtual bool SampleChunkBorder(FIndexParams& IndexParams, int X, int Y, int Z) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return false; );
 	
 	virtual void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 							TMap<int32, uint32>& BorderLocalVoxelTable, 
@@ -94,6 +183,7 @@ public:
 							
 							
 	void PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+							TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
 						   TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 						   TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData) const;
 	

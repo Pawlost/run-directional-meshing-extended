@@ -24,25 +24,9 @@ void AChunkActor::ClearMesh() const
 	ProceduralMeshComponent->ClearAllMeshSections();
 }
 
-void AChunkActor::SetVoxelMesher(const TSubclassOf<UVoxelMesherBase>& VoxelMesherBlueprint)
-{
-	checkf(VoxelMesherBlueprint, TEXT("Mesher blueprint must be set"));
-	if (VoxelMesherBlueprint)
-	{
-		// Register mesher
-		VoxelMesher = NewObject<UVoxelMesherBase>(this, VoxelMesherBlueprint);
-
-		if (VoxelMesher)
-		{
-			VoxelMesher->RegisterComponent();
-		}
-	}
-}
-
 void AChunkActor::SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase)
 {
 	VoxelGenerator = VoxelGeneratorBase;
-	VoxelMesher->SetVoxelGenerator(VoxelGeneratorBase);
 }
 
 void AChunkActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -79,10 +63,10 @@ void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
 
 void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits) const
 {
+	auto& VoxelMesher = MeshVars.OriginalChunk->VoxelMesher;
 	if (VoxelMesher->bEnableVoxelMeshing)
 	{
 		//TODO: move
-		MeshVars.OriginalChunk->VoxelModel = MeshVars.OriginalChunk->ChunkMeshActor->VoxelMesher->CompressVoxelModel( MeshVars.OriginalChunk->VoxelModelArray);
 			
 	#if CPUPROFILERTRACE_ENABLED
 		TRACE_CPUPROFILER_EVENT_SCOPE("Creating Actor - RunDirectionalMeshing from VoxelGrid generation")
@@ -92,19 +76,33 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		UVoxelMesherBase::FBorderSamples BorderSamples(VoxelLayer);
 		
 		// TODO: rewrite this
-		VoxelMesher->PreallocateArrays(MeshVars.VirtualFaces, MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData);
+		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
+		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+		
+		for (int i = 0; i < CHUNK_FACE_COUNT; i++)
+		{
+			auto& SideChunk= MeshVars.SideChunks[i];
+			if (SideChunk != nullptr)
+			{
+				SideMeshers = TStrongObjectPtr<UVoxelMesherBase>(SideChunk->VoxelMesher);
+			}
+			
+			SideFaces[i] = MakeShared<TArray<FVirtualVoxelFace>>();
+		}
+		
+		VoxelMesher->PreallocateArrays(MeshVars.VirtualFaces,SideFaces, MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData);
 
 		VoxelMesher->GenerateMesh(MeshVars.OriginalChunk->VoxelModel, MeshVars.VirtualFaces,
-								  MeshVars.LocalVoxelTable,
-								  MeshVars.ChunkMeshData,VoxelEdits,
-								  BorderSamples);
+		                          MeshVars.LocalVoxelTable,
+		                          MeshVars.ChunkMeshData,VoxelEdits, SideFaces,
+		                          SideMeshers, BorderSamples);
 		
 		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor, MeshVars.ChunkMeshData,
 					   MeshVars.LocalVoxelTable);
 		
 		
 		// TODO: rewrite
-		bool ShowBorders = true;
+		/*bool ShowBorders = true;
 		
 		if (ShowBorders){
 		
@@ -127,6 +125,6 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 				AddMeshToActor(MeshVars.OriginalChunk->BorderChunkMeshActor[d], MeshVars.BorderChunkMeshData,
 						   MeshVars.BorderLocalVoxelTable);
 			}
-		}
+		}*/
 	}
 }

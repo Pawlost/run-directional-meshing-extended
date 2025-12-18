@@ -12,7 +12,9 @@ void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& Voxel
 
 TStrongObjectPtr<UVoxelModel> UVoxelMesherBase::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 {
-
+	
+	// TODO: Remove return
+	
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Voxel compression generation")
 #endif
@@ -74,6 +76,7 @@ void UVoxelMesherBase::UpdateFaceParams(FMeshingDirections& Face, const FIntVect
 }
 
 void UVoxelMesherBase::PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+	TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
 	TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData, TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData) const
 {
 #if CPUPROFILERTRACE_ENABLED
@@ -119,6 +122,10 @@ void UVoxelMesherBase::PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<F
 	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
 		auto FaceArray = VirtualFaces[f];
+
+		SideFaces[f] = MakeShared<TArray<FVirtualVoxelFace>>();
+		SideFaces[f]->Reserve(ChunkLayer);
+		
 		if (FaceArray == nullptr || !FaceArray.IsValid())
 		{
 			VirtualFaces[f] = MakeShared<TArray<TArray<FVirtualVoxelFace>>>();

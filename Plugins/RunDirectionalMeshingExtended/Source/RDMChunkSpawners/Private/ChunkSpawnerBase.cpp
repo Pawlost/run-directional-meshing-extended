@@ -192,6 +192,7 @@ void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
                                        const FIntVector& GridPosition, TSharedFuture<void>* AsyncExecution) const
 {
 	Chunk->GridPosition = GridPosition;
+	Chunk->InitVoxelMesher(VoxelMesherBlueprint, VoxelGenerator);
 
 	if (AsyncExecution != nullptr)
 	{
@@ -279,8 +280,6 @@ void AChunkSpawnerBase::SpawnAndMoveChunkActor(const TSharedPtr<FMesherVariables
 		}
 		OutActorPtr->ClearMesh();
 	}
-	
-	OutActorPtr->SetVoxelMesher(VoxelMesherBlueprint);
 }
 
 void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit>& OutChunkEdit,

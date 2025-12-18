@@ -22,11 +22,6 @@ public:
 	FORCEINLINE bool HasMesh() const;
 	
 	void ClearMesh() const;
-	
-	UPROPERTY()
-	TObjectPtr<UVoxelMesherBase> VoxelMesher;
-	
-	void SetVoxelMesher(const TSubclassOf<UVoxelMesherBase>& VoxelMesherBlueprint);
 	void SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase);
 		
 	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges) const;
