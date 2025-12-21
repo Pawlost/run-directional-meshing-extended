@@ -111,8 +111,6 @@ Top = 5
 */
 	struct FIndexParams
 	{
-		FBorderSamples* SampledBorderChunks;
-
 		// Current event index made of all meshing events that were already processed/traversed.
 		uint32 CurrentMeshingEventIndex = 0;
 
@@ -137,12 +135,6 @@ Top = 5
 		void TryUpdateNextMeshingEvent(const uint32 EventIndex)
 		{
 			NextMeshingEventIndex = FMath::Min(EventIndex, NextMeshingEventIndex);
-		}
-		
-		void AddBorderSample(const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample,
-													const int RunLenght, bool CanSample)
-		{
-			SampledBorderChunks->AddBorderSample(CurrentMeshingEventIndex, FaceDirection, VoxelSample, RunLenght, CanSample);
 		}
 	};
 	
