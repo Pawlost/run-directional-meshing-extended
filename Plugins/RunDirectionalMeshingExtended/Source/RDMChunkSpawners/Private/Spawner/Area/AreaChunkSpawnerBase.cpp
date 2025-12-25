@@ -174,6 +174,9 @@ void AAreaChunkSpawnerBase::AddChunksFromGrid(FMesherVariables& MesherVars, cons
 	{
 		auto& Chunk = *ChunkPtr;
 		MesherVars.SideChunks[DirectionIndex] = Chunk.IsValid() ? Chunk : nullptr;
+	}else
+	{
+		MesherVars.SideChunks[DirectionIndex] = nullptr;
 	}
 }
 

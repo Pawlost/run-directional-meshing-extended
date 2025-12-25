@@ -147,7 +147,7 @@ Top = 5
 								TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
 							  TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, 6>& SideMeshers, FBorderSamples& BorderSamples) PURE_VIRTUAL(UMesherBase::GenerateMesh)
 
-	virtual TStrongObjectPtr<UVoxelModel> CompressVoxelModel(TArray<FVoxel>& VoxelGrid);
+	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) PURE_VIRTUAL(UMesherBase::GenerateMesh);
 
 	/*
 	Front = 0,
@@ -164,7 +164,7 @@ Top = 5
 	};
 	
 	// TODO: use simplier struct than index params
-	virtual bool SampleChunkBorder(FIndexParams& IndexParams, int X, int Y, int Z) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return false; );
+	virtual bool IsBorderVoxelEmpty(FIndexParams& IndexParams, int X, int Y, int Z) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return false; );
 	
 	virtual void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 							TMap<int32, uint32>& BorderLocalVoxelTable, 

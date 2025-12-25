@@ -84,7 +84,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 			auto& SideChunk= MeshVars.SideChunks[i];
 			if (SideChunk != nullptr)
 			{
-				SideMeshers = TStrongObjectPtr<UVoxelMesherBase>(SideChunk->VoxelMesher);
+				SideMeshers[i] = TStrongObjectPtr<UVoxelMesherBase>(SideChunk->VoxelMesher);
 			}
 			
 			SideFaces[i] = MakeShared<TArray<FVirtualVoxelFace>>();
