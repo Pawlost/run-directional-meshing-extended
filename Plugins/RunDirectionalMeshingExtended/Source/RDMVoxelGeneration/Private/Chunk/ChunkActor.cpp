@@ -26,7 +26,10 @@ void AChunkActor::ClearMesh() const
 
 void AChunkActor::SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase)
 {
-	VoxelGenerator = VoxelGeneratorBase;
+	if (IsValid(this))
+	{
+		VoxelGenerator = VoxelGeneratorBase;
+	}
 }
 
 void AChunkActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -69,7 +72,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		//TODO: move
 			
 	#if CPUPROFILERTRACE_ENABLED
-		TRACE_CPUPROFILER_EVENT_SCOPE("Mesh generation")
+		TRACE_CPUPROFILER_EVENT_SCOPE("Total - Mesh generation - RDM Meshing")
 	#endif
 		
 		const uint32 VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
@@ -88,6 +91,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 			}
 			
 			SideFaces[i] = MakeShared<TArray<FVirtualVoxelFace>>();
+			SideFaces[i]->Reserve(VoxelLayer);
 		}
 		
 		VoxelMesher->PreallocateArrays(MeshVars.VirtualFaces,SideFaces, MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData);

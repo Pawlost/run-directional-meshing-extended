@@ -53,17 +53,21 @@ PRIVATE_MODIFIER:
 	                           const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 	                           const int YEnd);
 
-	void CreateVirtualVoxelFacesInLShape(FIndexParams& IndexParams, int X, int Y, int Z);
+	void CreateVirtualVoxelFacesInLShape(FIndexParams& IndexParams,
+	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
+	TStaticArray<FIndexParams, CHUNK_FACE_COUNT>& BorderIndexParams,	
+	int X, int Y, int Z);
+	
 	void InitializeEdit(FIndexParams& IndexParams);
 	void EditVoxelGrid(FIndexParams& IndexParams);
 
 	void AdvanceEditInterval(FIndexParams& IndexParams) const;
 
 
-	void CreateBorder(
+	FORCEINLINE void CreateBorder(
 		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
 		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-		TStaticArray<FIndexParams, CHUNK_FACE_COUNT> BorderIndexParams,
+		TStaticArray<FIndexParams, CHUNK_FACE_COUNT>& BorderIndexParams,
 		const int X, const int Y, const int Z, const FRLEVoxel& BorderSample,
 		int IndexInBetweenIntervals, EFaceDirection Direction,
 		const int BorderX, const int BorderY, const int BorderZ, bool BorderCondition);
