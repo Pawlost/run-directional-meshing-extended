@@ -69,7 +69,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		//TODO: move
 			
 	#if CPUPROFILERTRACE_ENABLED
-		TRACE_CPUPROFILER_EVENT_SCOPE("Creating Actor - RunDirectionalMeshing from VoxelGrid generation")
+		TRACE_CPUPROFILER_EVENT_SCOPE("Mesh generation")
 	#endif
 		
 		const uint32 VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
@@ -99,32 +99,5 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		
 		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor, MeshVars.ChunkMeshData,
 					   MeshVars.LocalVoxelTable);
-		
-		
-		// TODO: rewrite
-		/*bool ShowBorders = true;
-		
-		if (ShowBorders){
-		
-			UVoxelMesherBase::FBorderSamples InverseBorderSamples(VoxelLayer); 
-			
-			for (uint8 d = 0; d < CHUNK_FACE_COUNT; d++)
-			{
-				const auto& FaceTemplate = VoxelMesher->FaceTemplates[d];
-				auto LeftVoxelModel = MeshVars.SideChunks[FaceTemplate.StaticMeshingData.FaceDirection];
-		
-				if(LeftVoxelModel != nullptr)
-				{
-					const auto LeftVoxelGridPtr = Cast<URLEVoxelGrid>(LeftVoxelModel->VoxelModel.Get());
-					VoxelMesher->SampleLeftChunkBorder(InverseBorderSamples, LeftVoxelGridPtr->RLEVoxelGrid);
-				}
-				
-				auto BorderSample = BorderSamples.BorderSamples[d];
-				auto InverseBorderSample = InverseBorderSamples.BorderSamples[d];
-				VoxelMesher->BorderGeneration(MeshVars.BorderChunkMeshData, MeshVars.BorderLocalVoxelTable, BorderSample, InverseBorderSample, static_cast<EFaceDirection>(d));
-				AddMeshToActor(MeshVars.OriginalChunk->BorderChunkMeshActor[d], MeshVars.BorderChunkMeshData,
-						   MeshVars.BorderLocalVoxelTable);
-			}
-		}*/
 	}
 }

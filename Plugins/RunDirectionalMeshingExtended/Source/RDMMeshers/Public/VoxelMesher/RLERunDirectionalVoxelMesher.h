@@ -19,35 +19,30 @@ public:
 	                          TMap<int32, uint32>& LocalVoxelTable,
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 	                          TArray<FRLEVoxelEdit>& VoxelChanges,
-								TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
-	                          TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, 6>& SideMeshers, FBorderSamples& BorderSamples) override;
+	                          TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
+	                          TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, 6>& SideMeshers,
+	                          FBorderSamples& BorderSamples) override;
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
 
 	virtual bool IsBorderVoxelEmpty(FIndexParams& IndexParams, int X, int Y, int Z) override;
 
-	virtual void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
-							TMap<int32, uint32>& BorderLocalVoxelTable, 
-						   TSharedPtr<TArray<FRLEVoxel>> BorderVoxelSamples,
-							TSharedPtr<TArray<FRLEVoxel>> InversedBorderVoxelSamples, 
-							EFaceDirection FaceDirection) override;
-	
 PRIVATE_MODIFIER:
-	
-	void TraverseYDirection(FIndexParams& IndexParams, uint32 X, uint32 Y, uint32 Z, 	
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-		TStaticArray<FIndexParams, CHUNK_FACE_COUNT>& BorderIndexParams);
+	void TraverseYDirection(FIndexParams& IndexParams, uint32 X, uint32 Y, uint32 Z,
+	                        TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
+	                        TStaticArray<FIndexParams, CHUNK_FACE_COUNT>& BorderIndexParams);
 
-	static void CreateFace(const TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
-											   const FStaticMergeData& StaticData,
-											   const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
-											   const int YEnd, const bool CanGenerate);
+	static void CreateFace(
+		const TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+		const FStaticMergeData& StaticData,
+		const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
+		const int YEnd, const bool CanGenerate);
 
-	void FaceGeneration(TArray<FRLEVoxelEdit>& VoxelEdits, 
-		TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces,
-		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,	
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers);
-	
+	void FaceGeneration(TArray<FRLEVoxelEdit>& VoxelEdits,
+	                    TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces,
+	                    TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
+	                    TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers);
+
 	void AdvanceAllMeshingEvents(FIndexParams& IndexParams, int X, int Y, int Z);
 
 	// return true when interval advanced
@@ -57,30 +52,21 @@ PRIVATE_MODIFIER:
 	                           const FStaticMergeData& StaticData,
 	                           const FIntVector& InitialPosition, const FRLEVoxel& RLEVoxel,
 	                           const int YEnd);
-	
-	static void SmearVoxelBorder(FRLEVoxel& CurrentVoxel, TArray<FRLEVoxel>& BorderVoxelSamples, const int Index);
-
-	void AddBorderFace(TArray<FVirtualVoxelFace>& FaceContainer,
-												   TArray<FVirtualVoxelFace>& InverseFaceContainer,
-												   TSharedPtr<TArray<FRLEVoxel>> BorderVoxelSamples,
-													TSharedPtr<TArray<FRLEVoxel>> InversedBorderVoxelSamples,
-												   const FMeshingDirections& FaceTemplate,
-												   const FMeshingDirections& InverseFaceTemplate, int X, int Y) const;
 
 	void CreateVirtualVoxelFacesInLShape(FIndexParams& IndexParams, int X, int Y, int Z);
 	void InitializeEdit(FIndexParams& IndexParams);
 	void EditVoxelGrid(FIndexParams& IndexParams);
 
 	void AdvanceEditInterval(FIndexParams& IndexParams) const;
-	
-	
-void CreateBorder(
+
+
+	void CreateBorder(
 		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
 		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
 		TStaticArray<FIndexParams, CHUNK_FACE_COUNT> BorderIndexParams,
-		const int X, const int Y, const int Z, const FRLEVoxel& BorderSample, 
+		const int X, const int Y, const int Z, const FRLEVoxel& BorderSample,
 		int IndexInBetweenIntervals, EFaceDirection Direction,
 		const int BorderX, const int BorderY, const int BorderZ, bool BorderCondition);
-	
+
 	TSharedPtr<TArray<FRLEVoxel>> RLEVoxelGrid;
 };
