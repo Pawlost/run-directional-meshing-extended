@@ -546,7 +546,7 @@ void URLERunDirectionalVoxelMesher::CreateSideFace(TArray<TArray<FVirtualVoxelFa
 	check(NewFace.Voxel.VoxelId != 0);
 
 	TArray<FVirtualVoxelFace>& PrevFaces = SideFaceData[NewFace.StartVertexDown.Y];
-
+	
 	if (PrevFaces.IsEmpty() || !StaticData.RunDirectionFaceMerge(PrevFaces.Last(), NewFace))
 	{
 		PrevFaces.Push(NewFace);
@@ -575,122 +575,6 @@ bool URLERunDirectionalVoxelMesher::IsBorderVoxelEmpty(FIndexParams& IndexParams
 	
 	return IndexParams.MeshingEvents[LeadingInterval].GetCurrentVoxel().Voxel.IsEmptyVoxel();
 }
-
-void URLERunDirectionalVoxelMesher::AddLeftBorderSample(
-		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-		FIndexParams& BorderIndexParams,
-		const int X, const int Y, const int Z, const FRLEVoxel& BorderSample, int IndexInBetweenIntervals) const
-{
-	if (Y == 0)
-	{
-		auto Mesher = SideMeshers[Left];
-	
-		const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
-		
-		if (Mesher != nullptr && !Mesher->IsBorderVoxelEmpty(BorderIndexParams, X, ChunkDimension - 1, Z))
-		{
-			return;
-		}
-	
-		auto StaticData = FaceTemplates[Left].StaticMeshingData;
-		const FVirtualVoxelFace NewFace = StaticData.FaceCreator(BorderSample.Voxel, FIntVector(X, Y, Z), 1);
-		AddFace(StaticData, NewFace, *SideFaces[Left]);
-	}
-}
-
-void URLERunDirectionalVoxelMesher::AddRightBorderSample(
-		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-		FIndexParams& BorderIndexParams,
-		const int X, const int Y, const int Z, const FRLEVoxel& BorderSample, int IndexInBetweenIntervals) const
-{
-	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
-	
-	if (Y == ChunkDimension)
-	{
-		auto Mesher = SideMeshers[Right];
-		
-		if (Mesher != nullptr && !Mesher->IsBorderVoxelEmpty(BorderIndexParams, X, 0, Z) )
-		{
-			return;
-		}
-		
-		auto StaticData = FaceTemplates[Right].StaticMeshingData;
-		const FVirtualVoxelFace NewFace = StaticData.FaceCreator(BorderSample.Voxel, FIntVector(X, Y, Z), 1);
-		AddFace(StaticData, NewFace, *SideFaces[Right]);
-	}
-}
-
-void URLERunDirectionalVoxelMesher::AddTopBorderSample(
-		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-		FIndexParams& BorderIndexParams, const int X, const int Y,
-	const int Z, const FRLEVoxel& BorderSample, int IndexInBetweenIntervals) const
-{
-	const int ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
-	if (Z == ChunkDimension - 1){
-		auto Mesher = SideMeshers[Top];
-		for (int y = 0; y < (ChunkDimension - Y); y++)
-		{
-    		if (Mesher != nullptr && !Mesher->IsBorderVoxelEmpty(BorderIndexParams, X, Y + y, 0) )
-    		{
-    			continue;
-    		}
-    		
-    		auto StaticData = FaceTemplates[Top].StaticMeshingData;
-    		const FVirtualVoxelFace NewFace = StaticData.FaceCreator(BorderSample.Voxel, FIntVector(X, Y + y, Z + 1), 1);
-    		AddFace(StaticData, NewFace, *SideFaces[Top]);
-    	}
-	}
-}
-
-void URLERunDirectionalVoxelMesher::AddBottomBorderSample(
-		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-		FIndexParams& BorderIndexParams,const int X, const int Y,
-	const int Z, const FRLEVoxel& BorderSample, int IndexInBetweenIntervals) const
-{	
-	if (Z == 0){
-		const int ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
-		auto Mesher = SideMeshers[Bottom];
-		for (int y = 0; y < ChunkDimension - Y; y++)
-		{
-			if (Mesher != nullptr && !Mesher->IsBorderVoxelEmpty(BorderIndexParams, X, Y + y, ChunkDimension - 1) )
-			{
-				continue;
-			}
-    		
-			auto StaticData = FaceTemplates[Bottom].StaticMeshingData;
-			const FVirtualVoxelFace NewFace = StaticData.FaceCreator(BorderSample.Voxel, FIntVector(X, Y + y, Z), 1);
-			AddFace(StaticData, NewFace, *SideFaces[Bottom]);
-		}
-	}
-}
-
-void URLERunDirectionalVoxelMesher::AddFrontBorderSample(
-		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-		FIndexParams& BorderIndexParams, const int X, const int Y,
-	const int Z, const FRLEVoxel& BorderSample, int IndexInBetweenIntervals) const
-{
-	const int ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
-	if (X == ChunkDimension - 1){
-		auto Mesher = SideMeshers[Front];
-		for (int y = 0; y < ChunkDimension - Y; y++)
-		{
-			if (Mesher != nullptr && !Mesher->IsBorderVoxelEmpty(BorderIndexParams, 0, Y + y, Z))
-			{
-				continue;
-			}
-    		
-			auto StaticData = FaceTemplates[Front].StaticMeshingData;
-			const FVirtualVoxelFace NewFace = StaticData.FaceCreator(BorderSample.Voxel, FIntVector(X + 1, Y + y, Z), 1);
-			AddFace(StaticData, NewFace, *SideFaces[Front]);
-		}
-	}
-}
-
 
 void URLERunDirectionalVoxelMesher::CreateBorder(
 		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
