@@ -39,8 +39,8 @@ PRIVATE_MODIFIER:
 		const int YEnd, const bool CanGenerate);
 
 	void FaceGeneration(TArray<FRLEVoxelEdit>& VoxelEdits,
-	                    TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces,
-	                    TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
+	                    TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
+	                    TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
 	                    TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers);
 
 	void AdvanceAllMeshingEvents(FIndexParams& IndexParams, int X, int Y, int Z);
@@ -58,13 +58,12 @@ PRIVATE_MODIFIER:
 	TStaticArray<FIndexParams, CHUNK_FACE_COUNT>& BorderIndexParams,	
 	int X, int Y, int Z);
 	
-	void InitializeEdit(FIndexParams& IndexParams);
+	TSharedPtr<TArray<FRLEVoxel>> InitializeEdit(FIndexParams& IndexParams);
 	void EditVoxelGrid(FIndexParams& IndexParams);
 
 	void AdvanceEditInterval(FIndexParams& IndexParams) const;
-
-
-	FORCEINLINE void CreateBorder(
+	
+	void CreateBorder(
 		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
 		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
 		TStaticArray<FIndexParams, CHUNK_FACE_COUNT>& BorderIndexParams,
