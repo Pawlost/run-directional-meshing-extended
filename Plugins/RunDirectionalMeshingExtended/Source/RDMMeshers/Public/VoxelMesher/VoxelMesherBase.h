@@ -213,6 +213,8 @@ protected:
 	                           int FaceIndex) const;
 
 	void DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
+								TArray<FVirtualVoxelFace>& FirstArray,
+								TArray<FVirtualVoxelFace>& SecondArray,
 	                            TMap<int32, uint32>& LocalVoxelTable,
 	                            const FStaticMergeData& MergeData,
 	                            TArray<FVirtualVoxelFace>& FaceContainer) const;

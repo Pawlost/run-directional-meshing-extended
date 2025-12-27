@@ -54,20 +54,28 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelMo
 
 	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
 
+
 	{
 #if CPUPROFILERTRACE_ENABLED
 		TRACE_CPUPROFILER_EVENT_SCOPE("Meshing - Directional Greedy Merge");
 #endif
 
+		TArray<FVirtualVoxelFace> FirstArray;
+		constexpr int EstimatedRows = 3;
+		FirstArray.Reserve(ChunkDimension * EstimatedRows);
+
+		TArray<FVirtualVoxelFace> SecondArray;
+		SecondArray.Reserve(ChunkDimension * EstimatedRows);
+
 		for (int f = 0; f < CHUNK_FACE_COUNT; f++)
 		{
 			for (uint32 y = 0; y < ChunkDimension; y++)
 			{
-				DirectionalGreedyMerge(*ChunkMeshData, LocalVoxelTable,
+				DirectionalGreedyMerge(*ChunkMeshData, FirstArray, SecondArray, LocalVoxelTable,
 				                       FaceTemplates[f].StaticMeshingData, (*VirtualFaces[f])[y]);
 			}
 
-			DirectionalGreedyMerge(*ChunkMeshData, LocalVoxelTable,
+			DirectionalGreedyMerge(*ChunkMeshData, FirstArray, SecondArray, LocalVoxelTable,
 			                       FaceTemplates[f].StaticMeshingData, *SideFaces[f]);
 		}
 	}
@@ -121,9 +129,11 @@ void URLERunDirectionalVoxelMesher::TraverseYDirection(FIndexParams& IndexParams
 }
 
 void URLERunDirectionalVoxelMesher::FaceGeneration(TArray<FRLEVoxelEdit>& VoxelEdits,
-                                                   TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>&
+                                                   TStaticArray<
+	                                                   TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>&
                                                    VirtualFaces,
-                                                   TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>&
+                                                   TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>
+                                                   &
                                                    SideFaces,
                                                    TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>&
                                                    SideMeshers)
@@ -157,7 +167,7 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(TArray<FRLEVoxelEdit>& VoxelE
 		const uint32 X = IndexParams.CurrentMeshingEventIndex / (VoxelLayer);
 		const uint32 Z = ((IndexParams.CurrentMeshingEventIndex / ChunkDimension) % ChunkDimension);
 		uint32 Y = IndexParams.CurrentMeshingEventIndex % ChunkDimension;
-		
+
 		TraverseYDirection(IndexParams, X, Y, Z, SideMeshers, BorderIndexParams);
 	}
 }
@@ -344,7 +354,7 @@ TSharedPtr<TArray<FRLEVoxel>> URLERunDirectionalVoxelMesher::InitializeEdit(FInd
 		IndexParams.MeshingEvents[EMeshingEventIndex::CopyEvent] = {RLEVoxelGrid, Offset, CopyVoxelRunIndex};
 		return NewVoxelGrid;
 	}
-	
+
 	return RLEVoxelGrid;
 }
 
