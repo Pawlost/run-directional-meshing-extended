@@ -53,15 +53,15 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelMo
 	FaceGeneration(VoxelChanges, VirtualFaces, SideFaces, SideMeshers);
 
 	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
-
-
+	
 	{
 #if CPUPROFILERTRACE_ENABLED
 		TRACE_CPUPROFILER_EVENT_SCOPE("Meshing - Directional Greedy Merge");
 #endif
-
-		TArray<FVirtualVoxelFace> FirstArray;
+		
 		constexpr int EstimatedRows = 3;
+		
+		TArray<FVirtualVoxelFace> FirstArray;
 		FirstArray.Reserve(ChunkDimension * EstimatedRows);
 
 		TArray<FVirtualVoxelFace> SecondArray;
@@ -249,7 +249,7 @@ void URLERunDirectionalVoxelMesher::CreateVirtualVoxelFacesInLShape(FIndexParams
 
 			// Front border
 			CreateBorder(IndexParams.SideFaces, SideMeshers, BorderIndexParams, X + 1, Y, Z, LeadingEventVoxel,
-			             IndexParams.IndexSequenceBetweenEvents, EFaceDirection::Front, 0, Y, Z, Z == 0);
+			             IndexParams.IndexSequenceBetweenEvents, EFaceDirection::Front, 0, Y, Z, X == ChunkDimension - 1);
 
 			// Top border
 			CreateBorder(IndexParams.SideFaces, SideMeshers, BorderIndexParams, X, Y, Z + 1, LeadingEventVoxel,
@@ -537,12 +537,14 @@ void URLERunDirectionalVoxelMesher::CreateBorder(
 {
 	if (BorderCondition)
 	{
+		// TODO: pass as parameter
+		constexpr bool ShowBorders = true;
 		auto Mesher = SideMeshers[Direction];
-		if (Mesher != nullptr)
+		if (ShowBorders || Mesher != nullptr)
 		{
 			for (int y = 0; y < IndexInBetweenIntervals; y++)
 			{
-				if (Mesher->IsBorderVoxelEmpty(BorderIndexParams[Direction], BorderX, BorderY + y, BorderZ))
+				if ((ShowBorders && Mesher == nullptr) || Mesher->IsBorderVoxelEmpty(BorderIndexParams[Direction], BorderX, BorderY + y, BorderZ))
 				{
 					auto StaticData = FaceTemplates[Direction].StaticMeshingData;
 					const FVirtualVoxelFace NewFace = StaticData.FaceCreator(
