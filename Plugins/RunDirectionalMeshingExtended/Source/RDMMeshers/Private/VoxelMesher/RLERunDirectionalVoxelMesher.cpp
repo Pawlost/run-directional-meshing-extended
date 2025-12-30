@@ -34,7 +34,7 @@ void URLERunDirectionalVoxelMesher::CompressVoxelModel(TArray<FVoxel>& VoxelGrid
 }
 
 // persistent preallocation must be maintained
-void URLERunDirectionalVoxelMesher::GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
+void URLERunDirectionalVoxelMesher::GenerateMesh(
                                                  TStaticArray<
 	                                                 TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>&
                                                  VirtualFaces,

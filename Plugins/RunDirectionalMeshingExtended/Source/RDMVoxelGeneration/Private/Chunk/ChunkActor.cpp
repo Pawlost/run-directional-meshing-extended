@@ -96,7 +96,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		
 		VoxelMesher->PreallocateArrays(MeshVars.VirtualFaces,SideFaces, MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData);
 
-		VoxelMesher->GenerateMesh(MeshVars.OriginalChunk->VoxelModel, MeshVars.VirtualFaces,
+		VoxelMesher->GenerateMesh(MeshVars.VirtualFaces,
 		                          MeshVars.LocalVoxelTable,
 		                          MeshVars.ChunkMeshData,VoxelEdits, SideFaces,
 		                          SideMeshers, BorderSamples);

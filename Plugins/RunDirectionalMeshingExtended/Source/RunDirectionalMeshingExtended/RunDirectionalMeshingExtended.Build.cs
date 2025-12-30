@@ -25,7 +25,8 @@ public class RunDirectionalMeshingExtended : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "FastNoise", "FastNoiseGenerator", "ProceduralMeshComponent", "RDMVoxelGeneration"
+				// TODO change dependency modules if needed
+				"Core", "FastNoise", "FastNoiseGenerator", "ProceduralMeshComponent", "RDMVoxelGeneration", "RDMChunkSpawners"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -8,9 +8,9 @@ public class VoxelMeshingShowcase : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",  "ProceduralMeshComponent" });
+		PublicDependencyModuleNames.AddRange(new string[] { "RunDirectionalMeshingExtended", "RDMChunkSpawners", "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",  "ProceduralMeshComponent" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  "RunDirectionalMeshingExtended" });
+		PrivateDependencyModuleNames.AddRange(new string[] {   });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

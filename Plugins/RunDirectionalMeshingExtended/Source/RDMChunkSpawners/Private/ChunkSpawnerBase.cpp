@@ -192,6 +192,7 @@ void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
                                        const FIntVector& GridPosition, TSharedFuture<void>* AsyncExecution) const
 {
 	Chunk->GridPosition = GridPosition;
+	checkf(VoxelMesherBlueprint, TEXT("VoxelMesherBlueprint is required but was not set"));
 	Chunk->InitVoxelMesher(VoxelMesherBlueprint, VoxelGenerator);
 
 	if (AsyncExecution != nullptr)

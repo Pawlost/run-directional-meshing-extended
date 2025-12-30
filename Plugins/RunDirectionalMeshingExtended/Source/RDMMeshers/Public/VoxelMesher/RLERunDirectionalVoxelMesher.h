@@ -14,8 +14,7 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(const TStrongObjectPtr<UVoxelModel>& VoxelModel,
-	                          TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
+	virtual void GenerateMesh(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
 	                          TMap<int32, uint32>& LocalVoxelTable,
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 	                          TArray<FRLEVoxelEdit>& VoxelChanges,
