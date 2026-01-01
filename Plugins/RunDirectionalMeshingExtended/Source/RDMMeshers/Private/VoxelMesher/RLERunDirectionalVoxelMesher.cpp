@@ -393,31 +393,31 @@ void URLERunDirectionalVoxelMesher::EditVoxelGrid(FIndexParams& IndexParams)
 			RemainingIndex += CopyVoxel.RunLenght;
 		}
 
-		if (RLEVoxelGrid->Last().Voxel == EditVoxel.Voxel)
+		if (LeadingEvent.VoxelGridPtr->Last().Voxel == EditVoxel.Voxel)
 		{
-			RLEVoxelGrid->Last().RunLenght += EditVoxel.RunLenght;
+			LeadingEvent.VoxelGridPtr->Last().RunLenght += EditVoxel.RunLenght;
 		}
 		else
 		{
-			RLEVoxelGrid->Add(EditVoxel);
+			LeadingEvent.VoxelGridPtr->Add(EditVoxel);
 		}
 
 		RemainingIndex -= EditVoxel.RunLenght;
 
-		if (RLEVoxelGrid->Last().Voxel == CurrentVoxel)
+		if (LeadingEvent.VoxelGridPtr->Last().Voxel == CurrentVoxel)
 		{
-			RLEVoxelGrid->Last().RunLenght += RemainingIndex;
+			LeadingEvent.VoxelGridPtr->Last().RunLenght += RemainingIndex;
 		}
 		else if (RemainingIndex != 0)
 		{
-			RLEVoxelGrid->Add(FRLEVoxel{RemainingIndex, CurrentVoxel});
+			LeadingEvent.VoxelGridPtr->Add(FRLEVoxel{RemainingIndex, CurrentVoxel});
 		}
 
 		if (CopyEvent.VoxelGridPtr->IsValidIndex(CopyEvent.VoxelRunIndex + 1) && (*CopyEvent.VoxelGridPtr)[CopyEvent.
-			VoxelRunIndex + 1].Voxel == RLEVoxelGrid->Last().Voxel)
+			VoxelRunIndex + 1].Voxel == LeadingEvent.VoxelGridPtr->Last().Voxel)
 		{
 			CopyEvent.AdvanceEvent();
-			RLEVoxelGrid->Last().RunLenght += CopyEvent.GetCurrentVoxel().RunLenght;
+			LeadingEvent.VoxelGridPtr->Last().RunLenght += CopyEvent.GetCurrentVoxel().RunLenght;
 		}
 
 		AdvanceEditInterval(IndexParams);

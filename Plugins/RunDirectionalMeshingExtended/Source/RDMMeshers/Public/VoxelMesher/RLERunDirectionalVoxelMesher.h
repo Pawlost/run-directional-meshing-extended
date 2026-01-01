@@ -54,8 +54,7 @@ PRIVATE_MODIFIER:
 
 	void CreateVirtualVoxelFacesInLShape(FIndexParams& IndexParams,
 	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-	TStaticArray<FIndexParams, CHUNK_FACE_COUNT>& BorderIndexParams,	
-	int X, int Y, int Z);
+	TStaticArray<FIndexParams, CHUNK_FACE_COUNT>& BorderIndexParams, int X, int Y, int Z);
 	
 	TSharedPtr<TArray<FRLEVoxel>> InitializeEdit(FIndexParams& IndexParams);
 	void EditVoxelGrid(FIndexParams& IndexParams);

@@ -175,6 +175,23 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_TestFaceGeneration
 	BaseVoxelDataDummy->CalculateVoxelData();
 	// Execute
 	DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
+	auto ChunkDimension = BaseVoxelDataDummy->GetVoxelCountPerVoxelLine();
+	auto VoxelPlane = BaseVoxelDataDummy->GetVoxelCountPerVoxelPlane();
+
+	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
+	{
+		auto FaceArray = VirtualFaces[f];
+
+		SideFaces[f] = MakeShared<TArray<FVirtualVoxelFace>>();
+		SideFaces[f]->Reserve(ChunkDimension);
+		VirtualFaces[f] = MakeShared<TArray<TArray<FVirtualVoxelFace>>>();
+		VirtualFaces[f]->SetNum(ChunkDimension);
+		for (uint32 y = 0; y < ChunkDimension; y++)
+		{
+			(*VirtualFaces[f])[y].Reserve(VoxelPlane);
+		}
+	}
+	
 	DummyRLERunDirectionalVoxelMesher->FaceGeneration(VoxelChanges, VirtualFaces, SideFaces, SideMeshers);
 
 	// Test
@@ -234,15 +251,120 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_YTraversal_NoiseVo
 	IndexParams.MeshingEvents[2].VoxelRunIndex = 0;
 	IndexParams.MeshingEvents[2].VoxelGridPtr = VoxelModelSharedPtr;
 	
-	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
+/*	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
 		SideFaces[f] = MakeShared<TArray<FVirtualVoxelFace>>();
 	}
 	
 	// Execute
 	DummyRLERunDirectionalVoxelMesher->TraverseYDirection(IndexParams, 0, 0, 7, SideMeshers, BorderIndexParams);
+	*/
+	
+	// Test
+	// TODO: add tests
+	
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_FaceGeneration_NoiseVoxelData_Edit,
+	"RDM.RDMMeshersTests.RLERunDirectionalVoxelMesher.Borderless.FaceGeneration.NoiseVoxelData.Edit",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_FaceGeneration_NoiseVoxelData_Edit::RunTest(
+	const FString& Parameters)
+{
+	UDummyRLERunDirectionalVoxelMesher* DummyRLERunDirectionalVoxelMesher = NewObject<UDummyRLERunDirectionalVoxelMesher>();
+	TObjectPtr<UBaseVoxelDataDummy> BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	DummyRLERunDirectionalVoxelMesher->RLEVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
+	DummyRLERunDirectionalVoxelMesher->RLEVoxelGrid->Append(TestData::NoiseRLEVoxelModel);
+
+	TArray<FRLEVoxelEdit> VoxelChanges;
+	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
+	TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
+
+	BaseVoxelDataDummy->CalculateVoxelData();
+	auto ChunkDimension = BaseVoxelDataDummy->GetVoxelCountPerVoxelLine();
+	auto VoxelPlane = BaseVoxelDataDummy->GetVoxelCountPerVoxelPlane();
+	
+	// TODO: replace
+	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
+	{
+		auto FaceArray = VirtualFaces[f];
+
+		SideFaces[f] = MakeShared<TArray<FVirtualVoxelFace>>();
+		SideFaces[f]->Reserve(ChunkDimension);
+		VirtualFaces[f] = MakeShared<TArray<TArray<FVirtualVoxelFace>>>();
+		VirtualFaces[f]->SetNum(ChunkDimension);
+		for (uint32 y = 0; y < ChunkDimension; y++)
+		{
+			(*VirtualFaces[f])[y].Reserve(VoxelPlane);
+		}
+	}
+	
+	VoxelChanges.Emplace(31, FRLEVoxel{1, FVoxel{0}});
+	// Execute
+	DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
+	DummyRLERunDirectionalVoxelMesher->FaceGeneration(VoxelChanges, VirtualFaces, SideFaces, SideMeshers);
 
 	// Test
+	
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_FaceGeneration_NoiseVoxelData_MultiEdit,
+	"RDM.RDMMeshersTests.RLERunDirectionalVoxelMesher.Borderless.FaceGeneration.NoiseVoxelData.MultiEdit",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_FaceGeneration_NoiseVoxelData_MultiEdit::RunTest(
+	const FString& Parameters)
+{
+	UDummyRLERunDirectionalVoxelMesher* DummyRLERunDirectionalVoxelMesher = NewObject<UDummyRLERunDirectionalVoxelMesher>();
+	TObjectPtr<UBaseVoxelDataDummy> BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	DummyRLERunDirectionalVoxelMesher->RLEVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
+	DummyRLERunDirectionalVoxelMesher->RLEVoxelGrid->Append(TestData::NoiseRLEVoxelModel);
+
+	TArray<FRLEVoxelEdit> VoxelChanges;
+	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
+	TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
+
+	BaseVoxelDataDummy->CalculateVoxelData();
+	auto ChunkDimension = BaseVoxelDataDummy->GetVoxelCountPerVoxelLine();
+	auto VoxelPlane = BaseVoxelDataDummy->GetVoxelCountPerVoxelPlane();
+	
+	// TODO: replace
+	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
+	{
+		auto FaceArray = VirtualFaces[f];
+
+		SideFaces[f] = MakeShared<TArray<FVirtualVoxelFace>>();
+		SideFaces[f]->Reserve(ChunkDimension);
+		VirtualFaces[f] = MakeShared<TArray<TArray<FVirtualVoxelFace>>>();
+		VirtualFaces[f]->SetNum(ChunkDimension);
+		for (uint32 y = 0; y < ChunkDimension; y++)
+		{
+			(*VirtualFaces[f])[y].Reserve(VoxelPlane);
+		}
+	}
+	
+	VoxelChanges.Emplace(31, FRLEVoxel{1, FVoxel{0}});
+	
+	// Execute
+	DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
+	DummyRLERunDirectionalVoxelMesher->FaceGeneration(VoxelChanges, VirtualFaces, SideFaces, SideMeshers);
+	
+	VoxelChanges.Emplace(1087, FRLEVoxel{1, FVoxel{0}});
+	VoxelChanges.Emplace(95, FRLEVoxel{1, FVoxel{0}});
+	VoxelChanges.Emplace(62, FRLEVoxel{1, FVoxel{0}});
+	VoxelChanges.Emplace(31, FRLEVoxel{1, FVoxel{0}});
+	DummyRLERunDirectionalVoxelMesher->FaceGeneration(VoxelChanges, VirtualFaces, SideFaces, SideMeshers);
+	// Test
+	
 	return true;
 }
 
