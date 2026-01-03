@@ -10,7 +10,4 @@ class RDMCHUNKSPAWNERS_API APreloadedVoxelCenterAreaChunkSpawner : public AAreaC
 
 protected:
 	virtual void GenerateArea() override;
-
-private:
-	virtual void BeginPlay() override;
 };

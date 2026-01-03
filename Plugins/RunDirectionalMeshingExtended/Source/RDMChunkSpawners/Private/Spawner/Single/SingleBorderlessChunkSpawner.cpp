@@ -15,7 +15,7 @@ void ASingleBorderlessChunkSpawner::StartMeshing(TArray<FRLEVoxelEdit>& VoxelCha
 	SpawnSideChunk(FFaceToDirection::LeftDirection);
 	
 	MesherVars.OriginalChunk->ChunkMeshActor->SetVoxelGenerator(VoxelGenerator);
-	MesherVars.OriginalChunk->ChunkMeshActor->GenerateMesh(MesherVars, VoxelChanges);
+	MesherVars.OriginalChunk->ChunkMeshActor->GenerateMesh(MesherVars, VoxelChanges, ShowBorders);
 }
 
 void ASingleBorderlessChunkSpawner::SpawnSideChunk(const FFaceToDirection& FaceDirection )

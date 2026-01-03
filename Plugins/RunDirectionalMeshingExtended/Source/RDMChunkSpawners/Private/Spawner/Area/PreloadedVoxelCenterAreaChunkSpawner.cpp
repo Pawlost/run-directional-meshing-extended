@@ -82,9 +82,3 @@ void APreloadedVoxelCenterAreaChunkSpawner::GenerateArea()
 		GenerateChunkMesh(MeshVars, VisitedSpawnPosition, VoxelChanges);
 	}
 }
-
-void APreloadedVoxelCenterAreaChunkSpawner::BeginPlay()
-{
-	ShowChunkBorders = true;
-	Super::BeginPlay();
-}

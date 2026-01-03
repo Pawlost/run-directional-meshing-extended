@@ -15,12 +15,6 @@ void ADespawnChunkSpawnerBase::ChangeGridCenterToPosition(const FVector& NewPosi
 	}
 }
 
-void ADespawnChunkSpawnerBase::BeginPlay()
-{
-	ShowChunkBorders = BufferZone == 0;
-	Super::BeginPlay();
-}
-
 void ADespawnChunkSpawnerBase::DespawnChunks()
 {
 	if (DespawnHandle.IsValid() && !DespawnHandle.IsReady())

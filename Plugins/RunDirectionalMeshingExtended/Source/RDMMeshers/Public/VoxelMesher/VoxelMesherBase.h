@@ -5,8 +5,6 @@
 #include "MeshingUtils/ProcMeshSectionVars.h"
 #include "MeshingUtils/RLEVoxelEdit.h"
 #include "Voxel/RLEVoxel.h"
-#include "VoxelModel/BorderChunk.h"
-#include "VoxelModel/RLEVoxelGrid.h"
 #include "VoxelMesherBase.generated.h"
 
 class UBaseVoxelData;
@@ -27,32 +25,6 @@ public:
 	TObjectPtr<UBaseVoxelData> VoxelData;
 	
 	void SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase);
-
-	struct FBorderSamples
-	{
-		TStaticArray<TSharedPtr<TArray<FRLEVoxel>>, CHUNK_FACE_COUNT> BorderSamples;
-		
-		FBorderSamples(uint32 VoxelPlaneSize)
-		{
-			for (int i = 0; i < CHUNK_FACE_COUNT; i++)
-			{
-				BorderSamples[i] = MakeShared<TArray<FRLEVoxel>>();
-				BorderSamples[i]->SetNum(VoxelPlaneSize);
-			}
-		}
-		
-		void AddBorderSample(const uint32 Index, const EFaceDirection FaceDirection, const FRLEVoxel& VoxelSample,
-													const int RunLenght, bool CanSample)
-		{
-			const auto BorderSample = BorderSamples[FaceDirection];
-			if (CanSample)
-			{
-				auto& BorderVoxel = (*BorderSample)[Index];
-				BorderVoxel = VoxelSample;
-				BorderVoxel.RunLenght = RunLenght;
-			}
-		}
-	};
 	
 	struct FMeshingEvent
 	{
@@ -102,14 +74,14 @@ public:
 	};
 
 	/*
-Front = 0,
-Back = 1,
-Right = 2,
-Left = 3,
-Bottom = 4,
-Top = 5
-*/
-	struct FIndexParams
+	Front = 0,
+	Back = 1,
+	Right = 2,
+	Left = 3,
+	Bottom = 4,
+	Top = 5
+	*/
+	struct FVirtualMeshBuilder
 	{
 		// Current event index made of all meshing events that were already processed/traversed.
 		uint32 CurrentMeshingEventIndex = 0;
@@ -140,11 +112,11 @@ Top = 5
 	
 	
 	virtual void GenerateMesh(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
-							  TMap<FVoxel, uint32>& LocalVoxelTable,
+							  TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable,
 							  TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 							  TArray<FRLEVoxelEdit>& VoxelChanges,
 								TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
-							  TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, 6>& SideMeshers, FBorderSamples& BorderSamples) PURE_VIRTUAL(UMesherBase::GenerateMesh)
+							  TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, 6>& SideMeshers, bool ShowBorders) PURE_VIRTUAL(UMesherBase::GenerateMesh)
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) PURE_VIRTUAL(UMesherBase::GenerateMesh);
 
@@ -163,7 +135,7 @@ Top = 5
 	};
 	
 	// TODO: use simplier struct than index params
-	virtual bool IsBorderVoxelEmpty(FIndexParams& IndexParams, int X, int Y, int Z) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return false; );
+	virtual FVoxel GetBorderVoxel(FVirtualMeshBuilder& IndexParams, int X, int Y, int Z) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return FVoxel(); );
 	
 	virtual void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 							TMap<int32, uint32>& BorderLocalVoxelTable, 
@@ -174,9 +146,7 @@ Top = 5
 							
 							
 	void PreallocateArrays(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
-							TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
-						   TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-						   TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData) const;
+							TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces) const;
 	
 protected:
 	struct FVoxelParams
@@ -207,14 +177,13 @@ protected:
 	void UpdateFaceParams(FMeshingDirections& Face, FIntVector ForwardVoxelIndexVector,
 	                      FIntVector ChunkBorderIndexVector, FIntVector PreviousVoxelIndexVector) const;
 
-	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, TMap<FVoxel, uint32>& LocalVoxelTable,
+	void ConvertFaceToProcMesh(TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable,
 	                           const FVirtualVoxelFace& Face,
 	                           int FaceIndex) const;
 
-	void DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
-								TArray<FVirtualVoxelFace>& FirstArray,
+	void DirectionalGreedyMerge(TArray<FVirtualVoxelFace>& FirstArray,
 								TArray<FVirtualVoxelFace>& SecondArray,
-	                            TMap<FVoxel, uint32>& LocalVoxelTable,
+	                            TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable,
 	                            const FStaticMergeData& MergeData,
 	                            TArray<FVirtualVoxelFace>& FaceContainer) const;
 

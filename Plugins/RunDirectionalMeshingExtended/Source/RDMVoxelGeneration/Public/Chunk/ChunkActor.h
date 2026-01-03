@@ -24,7 +24,7 @@ public:
 	void ClearMesh() const;
 	void SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase);
 		
-	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges) const;
+	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges, bool ShowBorders) const;
 protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
@@ -33,6 +33,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 	
-	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
-		const TMap<FVoxel, uint32>& LocalVoxelTable) const;
+	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
+                        	const TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable) const;
 };

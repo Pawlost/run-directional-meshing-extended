@@ -39,32 +39,32 @@ void AChunkActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
-										 TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
-										 const TMap<FVoxel, uint32>& LocalVoxelTable) const
+	const TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable) const
 {
 	for (const auto LocalVoxelType : LocalVoxelTable)
 	{
 		// Voxel tables are necessary to map voxel rows from voxel table to mesh sections of procedural mesh
-		auto SectionId = LocalVoxelType.Value;
+		auto ProcMeshVarsPtr = LocalVoxelType.Value;
 		
 		const auto VoxelRow = VoxelGenerator->GetVoxelTableRow(LocalVoxelType.Key);
 
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, ChunkMeshData, SectionId, VoxelRow]()
+		AsyncTask(ENamedThreads::GameThread, [MeshActor, ProcMeshVarsPtr, VoxelRow]()
 		{
-			MeshActor->ProceduralMeshComponent->SetMaterial(SectionId, VoxelRow.Value.Material);
-			const FProcMeshSectionVars& QuadMeshSection = (*ChunkMeshData)[SectionId];
+			
+			const FProcMeshSectionVars& QuadMeshSection = *ProcMeshVarsPtr;
+			MeshActor->ProceduralMeshComponent->SetMaterial(QuadMeshSection.MeshSectionId, VoxelRow.Value.Material);
 
-			MeshActor->ProceduralMeshComponent->ClearMeshSection(SectionId);
+			MeshActor->ProceduralMeshComponent->ClearMeshSection(QuadMeshSection.MeshSectionId);
 			// Add voxel materials to mesh
 			MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(
-				SectionId, QuadMeshSection.Vertices, QuadMeshSection.Triangles, QuadMeshSection.Normals,
+				QuadMeshSection.MeshSectionId, QuadMeshSection.Vertices, QuadMeshSection.Triangles, QuadMeshSection.Normals,
 				QuadMeshSection.UV0, TArray<FLinearColor>(),
 				QuadMeshSection.Tangents, true);
 		});
 	}
 }
 
-void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits) const
+void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits, bool ShowBorders) const
 {
 	auto& VoxelMesher = MeshVars.OriginalChunk->VoxelMesher;
 	if (VoxelMesher->bEnableVoxelMeshing)
@@ -76,7 +76,6 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 	#endif
 		
 		const uint32 VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
-		UVoxelMesherBase::FBorderSamples BorderSamples(VoxelLayer);
 		
 		// TODO: rewrite this
 		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
@@ -94,14 +93,17 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 			SideFaces[i]->Reserve(VoxelLayer);
 		}
 		
-		VoxelMesher->PreallocateArrays(MeshVars.VirtualFaces,SideFaces, MeshVars.ChunkMeshData, MeshVars.BorderChunkMeshData);
+		VoxelMesher->PreallocateArrays(MeshVars.VirtualFaces,SideFaces);
 
+		
 		VoxelMesher->GenerateMesh(MeshVars.VirtualFaces,
 		                          MeshVars.LocalVoxelTable,
 		                          MeshVars.ChunkMeshData,VoxelEdits, SideFaces,
-		                          SideMeshers, BorderSamples);
+		                          SideMeshers, ShowBorders);
 		
-		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor, MeshVars.ChunkMeshData,
+		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor,
 					   MeshVars.LocalVoxelTable);
+		
+		MeshVars.LocalVoxelTable.Empty();
 	}
 }

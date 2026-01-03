@@ -25,7 +25,6 @@ public:
 	
 protected:
 	TMap<FIntVector, TSharedPtr<FChunk>> ChunkGrid;
-	bool ShowChunkBorders = false;
 	virtual void BeginPlay() override;
 
 	TQueue<TWeakObjectPtr<AChunkActor>, EQueueMode::Mpsc> UnusedActorsPool;
