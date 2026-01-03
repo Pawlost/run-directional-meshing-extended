@@ -40,14 +40,14 @@ void AChunkActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
 										 TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
-										 const TMap<int32, uint32>& LocalVoxelTable) const
+										 const TMap<FVoxel, uint32>& LocalVoxelTable) const
 {
 	for (const auto LocalVoxelType : LocalVoxelTable)
 	{
+		// Voxel tables are necessary to map voxel rows from voxel table to mesh sections of procedural mesh
 		auto SectionId = LocalVoxelType.Value;
-
-		const auto Voxel = FVoxel(LocalVoxelType.Key);
-		const auto VoxelRow = VoxelGenerator->GetVoxelTableRow(Voxel);
+		
+		const auto VoxelRow = VoxelGenerator->GetVoxelTableRow(LocalVoxelType.Key);
 
 		AsyncTask(ENamedThreads::GameThread, [MeshActor, ChunkMeshData, SectionId, VoxelRow]()
 		{

@@ -34,5 +34,5 @@ private:
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 	
 	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor, TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData,
-		const TMap<int32, uint32>& LocalVoxelTable) const;
+		const TMap<FVoxel, uint32>& LocalVoxelTable) const;
 };

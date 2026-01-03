@@ -2,7 +2,6 @@
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
 #include "Voxel/RLEVoxel.h"
-#include "VoxelModel/RLEVoxelGrid.h"
 #include "RLERunDirectionalVoxelMesher.generated.h"
 
 class URLEVoxelGrid;
@@ -15,7 +14,7 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 
 public:
 	virtual void GenerateMesh(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
-	                          TMap<int32, uint32>& LocalVoxelTable,
+	                          TMap<FVoxel, uint32>& LocalVoxelTable,
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 	                          TArray<FRLEVoxelEdit>& VoxelChanges,
 	                          TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,

@@ -13,8 +13,8 @@ struct RDMVOXELGENERATION_API FMesherVariables
 	GENERATED_BODY()
 	
 	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
-	TMap<int32, uint32> LocalVoxelTable;
-	TMap<int32, uint32> BorderLocalVoxelTable;
+	TMap<FVoxel, uint32> LocalVoxelTable;
+	TMap<FVoxel, uint32> BorderLocalVoxelTable;
 
 	TStaticArray<TSharedPtr<FChunk>, CHUNK_FACE_COUNT> SideChunks;
 	TSharedPtr<FChunk> OriginalChunk;

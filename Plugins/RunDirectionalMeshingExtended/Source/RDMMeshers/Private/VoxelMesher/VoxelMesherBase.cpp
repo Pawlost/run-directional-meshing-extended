@@ -133,15 +133,16 @@ void UVoxelMesherBase::PreallocateArrays(
 }
 
 void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
-                                             TMap<int32, uint32>& LocalVoxelTable, const FVirtualVoxelFace& Face,
+                                             TMap<FVoxel, uint32>& LocalVoxelTable, const FVirtualVoxelFace& Face,
                                              const int FaceIndex) const
 {
 	const double VoxelSize = VoxelData->GetVoxelSize();
 
-	const auto VoxelId = Face.Voxel.VoxelId;
+	const auto& Voxel = Face.Voxel;
 	// TODO: remove
-	check(VoxelId != 0);
-	const int32 SectionId = LocalVoxelTable.FindOrAdd(VoxelId, LocalVoxelTable.Num());
+	check(Voxel.VoxelId != 0);
+	
+	const int32 SectionId = LocalVoxelTable.FindOrAdd(Voxel, LocalVoxelTable.Num());
 
 	auto& QuadSection = QuadMeshSectionArray[SectionId];
 	auto [Normal, Tangent] = FaceNormalsAndTangents[FaceIndex];
@@ -181,7 +182,7 @@ void UVoxelMesherBase::ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadM
 void UVoxelMesherBase::DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& ChunkMeshData,
                                               TArray<FVirtualVoxelFace>& FirstArray,
                                               TArray<FVirtualVoxelFace>& SecondArray,
-                                              TMap<int32, uint32>& LocalVoxelTable,
+                                              TMap<FVoxel, uint32>& LocalVoxelTable,
                                               const FStaticMergeData& MergeData,
                                               TArray<FVirtualVoxelFace>& FaceContainer) const
 {
@@ -241,7 +242,9 @@ void UVoxelMesherBase::AddFace(const FStaticMergeData& FaceMeshingData, const FV
                                TArray<FVirtualVoxelFace>& ChunkFaces)
 {
 	// TODO: remove
-	check(NewFace.Voxel.VoxelId != 0);
+	auto VoxelId = NewFace.Voxel.VoxelId;
+	check(VoxelId != 0);
+	
 	// Generate new face with coordinates
 	if (!ChunkFaces.IsEmpty())
 	{

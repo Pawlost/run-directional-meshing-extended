@@ -140,7 +140,7 @@ Top = 5
 	
 	
 	virtual void GenerateMesh(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
-							  TMap<int32, uint32>& LocalVoxelTable,
+							  TMap<FVoxel, uint32>& LocalVoxelTable,
 							  TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 							  TArray<FRLEVoxelEdit>& VoxelChanges,
 								TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
@@ -207,14 +207,14 @@ protected:
 	void UpdateFaceParams(FMeshingDirections& Face, FIntVector ForwardVoxelIndexVector,
 	                      FIntVector ChunkBorderIndexVector, FIntVector PreviousVoxelIndexVector) const;
 
-	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, TMap<int32, uint32>& LocalVoxelTable,
+	void ConvertFaceToProcMesh(TArray<FProcMeshSectionVars>& QuadMeshSectionArray, TMap<FVoxel, uint32>& LocalVoxelTable,
 	                           const FVirtualVoxelFace& Face,
 	                           int FaceIndex) const;
 
 	void DirectionalGreedyMerge(TArray<FProcMeshSectionVars>& QuadMeshSectionArray,
 								TArray<FVirtualVoxelFace>& FirstArray,
 								TArray<FVirtualVoxelFace>& SecondArray,
-	                            TMap<int32, uint32>& LocalVoxelTable,
+	                            TMap<FVoxel, uint32>& LocalVoxelTable,
 	                            const FStaticMergeData& MergeData,
 	                            TArray<FVirtualVoxelFace>& FaceContainer) const;
 

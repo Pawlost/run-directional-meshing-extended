@@ -61,3 +61,10 @@ struct RDMMESHERS_API FVoxel
 		return VoxelId != OtherVoxel.VoxelId;
 	}
 };
+
+// Necessary for using UE TMap
+FORCEINLINE uint32 GetTypeHash(const FVoxel& Key)
+{
+	// Voxel IDs are unique identifiers for voxels.
+	return Key.VoxelId;
+}

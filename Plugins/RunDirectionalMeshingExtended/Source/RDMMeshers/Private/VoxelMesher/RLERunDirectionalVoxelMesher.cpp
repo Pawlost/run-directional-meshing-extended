@@ -1,7 +1,6 @@
 ﻿#include "VoxelMesher/RLERunDirectionalVoxelMesher.h"
 #include "VoxelMesher/RunDirectionalVoxelMesher.h"
 #include "Voxel/RLEVoxel.h"
-#include "VoxelModel/RLEVoxelGrid.h"
 
 void URLERunDirectionalVoxelMesher::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 {
@@ -38,7 +37,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(
                                                  TStaticArray<
 	                                                 TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>&
                                                  VirtualFaces,
-                                                 TMap<int32, uint32>& LocalVoxelTable,
+                                                 TMap<FVoxel, uint32>& LocalVoxelTable,
                                                  TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
                                                  TArray<FRLEVoxelEdit>& VoxelChanges,
                                                  TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>
@@ -122,10 +121,6 @@ void URLERunDirectionalVoxelMesher::TraverseYDirection(FIndexParams& IndexParams
 		             EFaceDirection::Right, X, 0, Z, true);
 	}
 
-	if (IndexParams.EditEnabled)
-	{
-		RLEVoxelGrid = IndexParams.MeshingEvents[LeadingInterval].VoxelGridPtr;
-	}
 }
 
 void URLERunDirectionalVoxelMesher::FaceGeneration(TArray<FRLEVoxelEdit>& VoxelEdits,
@@ -169,6 +164,11 @@ void URLERunDirectionalVoxelMesher::FaceGeneration(TArray<FRLEVoxelEdit>& VoxelE
 		uint32 Y = IndexParams.CurrentMeshingEventIndex % ChunkDimension;
 
 		TraverseYDirection(IndexParams, X, Y, Z, SideMeshers, BorderIndexParams);
+	}
+	
+	if (IndexParams.EditEnabled)
+	{
+		RLEVoxelGrid = IndexParams.MeshingEvents[LeadingInterval].VoxelGridPtr;
 	}
 }
 
@@ -268,8 +268,6 @@ void URLERunDirectionalVoxelMesher::CreateVirtualVoxelFacesInLShape(FIndexParams
 
 		IndexParams.InitialPosition = FIntVector(X, Y, Z);
 
-		// TODO: rewrite transparency
-
 		CreateFace(IndexParams.VirtualFaces, FStaticMergeData::FrontFaceData, IndexParams.InitialPosition,
 		           FollowingXEvent.GetCurrentVoxel(), IndexParams.IndexSequenceBetweenEvents,
 		           X != 0 && !IsFollowingXEmpty && (IsLeadingEmpty || (IsLeadingTransparent && !
@@ -304,7 +302,8 @@ TSharedPtr<TArray<FRLEVoxel>> URLERunDirectionalVoxelMesher::InitializeEdit(FInd
 	if (!IndexParams.VoxelEdits->IsEmpty())
 	{
 		auto NewVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
-		NewVoxelGrid->Reserve(RLEVoxelGrid->Num() + IndexParams.VoxelEdits->Num());
+		constexpr int PreallocationEstimation = 3;
+		NewVoxelGrid->Reserve(RLEVoxelGrid->Num() + IndexParams.VoxelEdits->Num() * PreallocationEstimation);
 		IndexParams.EditEnabled = true;
 
 		auto VoxelEdit = IndexParams.VoxelEdits->Pop();
@@ -494,7 +493,10 @@ void URLERunDirectionalVoxelMesher::CreateSideFace(TArray<TArray<FVirtualVoxelFa
                                                    const int YEnd)
 {
 	const FVirtualVoxelFace NewFace = StaticData.FaceCreator(RLEVoxel.Voxel, InitialPosition, YEnd);
-	check(NewFace.Voxel.VoxelId != 0);
+	
+	// TODO: remove after unit tests are finished
+	auto VoxelId = NewFace.Voxel.VoxelId;
+	check(VoxelId != 0);
 
 	TArray<FVirtualVoxelFace>& PrevFaces = SideFaceData[NewFace.StartVertexDown.Y];
 
