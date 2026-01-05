@@ -7,7 +7,7 @@
 void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase)
 {
 	this->VoxelData = VoxelGeneratorBase;
-	UpdateAllFacesParams();
+	//UpdateAllFacesParams();
 }
 
 const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTangents[] = {
@@ -19,6 +19,7 @@ const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTang
 	{FVector(0.0f, 0.0f, 1.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)} //Top
 };
 
+/*
 void UVoxelMesherBase::UpdateAllFacesParams()
 {
 	const auto ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
@@ -48,7 +49,7 @@ void UVoxelMesherBase::UpdateAllFacesParams()
 	UpdateFaceParams(FaceTemplates[EFaceDirection::Top], FIntVector(0, 0, 1),
 	                 FIntVector(0, 0, 0),
 	                 FIntVector(0, -1, 0));
-}
+}*/
 
 void UVoxelMesherBase::UpdateFaceParams(FMeshingDirections& Face, const FIntVector ForwardVoxelIndexVector,
                                         const FIntVector ChunkBorderIndexVector,
@@ -205,27 +206,4 @@ void UVoxelMesherBase::DirectionalGreedyMerge(TArray<FVirtualVoxelFace>& FirstAr
 		const FVirtualVoxelFace& PopFace = PassiveArray->Pop(EAllowShrinking::No);
 		ConvertFaceToProcMesh(LocalVoxelTable, PopFace, MergeData.FaceDirection);
 	}
-}
-
-void UVoxelMesherBase::AddFace(const FStaticMergeData& FaceMeshingData, const FVirtualVoxelFace& NewFace,
-                               TArray<FVirtualVoxelFace>& ChunkFaces)
-{
-	// TODO: remove
-	auto VoxelId = NewFace.Voxel.VoxelId;
-	check(VoxelId != 0);
-	
-	// Generate new face with coordinates
-	if (!ChunkFaces.IsEmpty())
-	{
-		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
-		FVirtualVoxelFace& PrevFace = ChunkFaces.Last();
-
-		if (FaceMeshingData.RunDirectionFaceMerge(PrevFace, NewFace))
-		{
-			// Return when new face was merged
-			return;
-		}
-	}
-
-	ChunkFaces.Push(NewFace);
 }

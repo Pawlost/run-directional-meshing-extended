@@ -177,21 +177,6 @@ bool FVirtualVoxelFace::MergeFaceUp(FVirtualVoxelFace& PrevFace, const FVirtualV
 	return false;
 }
 
-int FVirtualVoxelFace::GetXLocation(const FIntVector& Location)
-{
-	return Location.X;
-}
-
-int FVirtualVoxelFace::GetYLocation(const FIntVector& Location)
-{
-	return Location.Y;
-}
-
-int FVirtualVoxelFace::GetZLocation(const FIntVector& Location)
-{
-	return Location.Z;
-}
-
 FVector FVirtualVoxelFace::GetFinalStartVertexDown(const double& VoxelSize) const
 {
 	return static_cast<FVector>(StartVertexDown) * VoxelSize;

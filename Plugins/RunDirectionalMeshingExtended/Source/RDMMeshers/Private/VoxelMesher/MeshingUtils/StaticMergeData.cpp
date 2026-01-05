@@ -8,7 +8,6 @@ FStaticMergeData FStaticMergeData:: FrontFaceData = FStaticMergeData(
 	FVirtualVoxelFace::MergeFaceUp,
 	FVirtualVoxelFace::CreateFrontFace,
 	FVirtualVoxelFace::FrontBorderLocation,
-	FVirtualVoxelFace::GetXLocation,
 	FVirtualVoxelFace::HeightConditionZ,
 	FVirtualVoxelFace::MergeFailConditionX
 );
@@ -21,7 +20,6 @@ FStaticMergeData FStaticMergeData::BackFaceData = FStaticMergeData(
 	FVirtualVoxelFace::MergeFaceUp,
 	FVirtualVoxelFace::CreateBackFace,
 	FVirtualVoxelFace::BackBorderLocation,
-	FVirtualVoxelFace::GetXLocation,
 	FVirtualVoxelFace::HeightConditionZ,
 	FVirtualVoxelFace::MergeFailConditionX
 );
@@ -34,7 +32,6 @@ FStaticMergeData FStaticMergeData::RightFaceData = FStaticMergeData(
 	FVirtualVoxelFace::MergeFaceEnd,
 	FVirtualVoxelFace::CreateRightFace,
 	FVirtualVoxelFace::RightBorderLocation,
-	FVirtualVoxelFace::GetYLocation,
 	FVirtualVoxelFace::HeightConditionX,
 	FVirtualVoxelFace::MergeFailConditionRightY
 );
@@ -47,7 +44,6 @@ FStaticMergeData FStaticMergeData::LeftFaceData = FStaticMergeData(
 	FVirtualVoxelFace::MergeFaceStart,
 	FVirtualVoxelFace::CreateLeftFace,
 	FVirtualVoxelFace::LeftBorderLocation,
-	FVirtualVoxelFace::GetYLocation,
 	FVirtualVoxelFace::HeightConditionX,
 	FVirtualVoxelFace::MergeFailConditionLeftY
 );
@@ -60,7 +56,6 @@ FStaticMergeData FStaticMergeData::TopFaceData = FStaticMergeData(
 	FVirtualVoxelFace::MergeFaceUp,
 	FVirtualVoxelFace::CreateTopFace,
 	FVirtualVoxelFace::TopBorderLocation,
-	FVirtualVoxelFace::GetZLocation,
 	FVirtualVoxelFace::HeightConditionX,
 	FVirtualVoxelFace::MergeFailConditionZ
 );
@@ -73,7 +68,6 @@ FStaticMergeData FStaticMergeData::BottomFaceData = FStaticMergeData(
 	FVirtualVoxelFace::MergeFaceUp,
 	FVirtualVoxelFace::CreateBottomFace,
 	FVirtualVoxelFace::BottomBorderLocation,
-	FVirtualVoxelFace::GetZLocation,
 	FVirtualVoxelFace::HeightConditionX,
 	FVirtualVoxelFace::MergeFailConditionZ
 );

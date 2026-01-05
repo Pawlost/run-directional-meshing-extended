@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
-#include "MeshingUtils/MeshingDirections.h"
 #include "RunDirectionalVoxelMesher.generated.h"
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)

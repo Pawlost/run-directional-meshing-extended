@@ -12,7 +12,6 @@ struct FStaticMergeData
 	const TFunctionRef<bool(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace)> GreedyMerge;
 	const TFunctionRef<FVirtualVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;
 	const TFunctionRef<void(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)> BorderLocation;
-	const TFunctionRef<int(FIntVector Location)> GetMainDirection;
 	
 	const TFunctionRef<bool(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)> HeightCondition;
 	const TFunctionRef<bool(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)> MergeFailCondition;

@@ -219,8 +219,8 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_YTraversal_NoiseVo
 	DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
 	BaseVoxelDataDummy->CalculateVoxelData();
 	
-	TStaticArray<UVoxelMesherBase::FVirtualMeshBuilder, CHUNK_FACE_COUNT> BorderIndexParams;
-	UVoxelMesherBase::FVirtualMeshBuilder IndexParams;
+	TStaticArray<UVoxelMesherBase::FVirtualMeshEventPlanner, CHUNK_FACE_COUNT> BorderIndexParams;
+	UVoxelMesherBase::FVirtualMeshEventPlanner IndexParams;
 	
 	TArray<FRLEVoxelEdit> VoxelEdits;
 	IndexParams.VoxelEdits = &VoxelEdits;

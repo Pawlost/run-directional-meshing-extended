@@ -4,6 +4,9 @@
 #include "MeshingUtils/MeshingDirections.h"
 #include "MeshingUtils/ProcMeshSectionVars.h"
 #include "MeshingUtils/RLEVoxelEdit.h"
+#include "MeshingUtils/StaticMergeData.h"
+#include "MeshingUtils/VirtualMeshEventPlanner.h"
+#include "MeshingUtils/VirtualVoxelFace.h"
 #include "Voxel/RLEVoxel.h"
 #include "VoxelMesherBase.generated.h"
 
@@ -20,96 +23,8 @@ public:
 		
 	UPROPERTY(EditAnywhere, Category ="Voxels")
 	bool bEnableVoxelMeshing = true;
-
-	UPROPERTY()
-	TObjectPtr<UBaseVoxelData> VoxelData;
 	
 	void SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase);
-	
-	struct FMeshingEvent
-	{
-		// Voxel sequence (run) to be traversed
-		// If null the end is a chunk dimension, not end of sequence
-		TSharedPtr<TArray<FRLEVoxel>> VoxelGridPtr;
-
-		// Index where event ends
-		uint32 LastEventIndex = 0;
-
-		// Index of an run in a voxel array
-		int32 VoxelRunIndex = 0;
-
-		FORCEINLINE int GetEventIndex() const
-		{
-			return LastEventIndex + (*VoxelGridPtr)[VoxelRunIndex].RunLenght;
-		}
-
-		FORCEINLINE void AdvanceEvent()
-		{
-			LastEventIndex = LastEventIndex + GetCurrentVoxel().RunLenght;
-			VoxelRunIndex++;
-		}
-
-		FORCEINLINE FRLEVoxel& GetCurrentVoxel() const
-		{
-			return (*VoxelGridPtr)[VoxelRunIndex];
-		}
-	};
-	
-	
-	constexpr static int EventIndexCount = 5;
-
-	enum EMeshingEventIndex
-	{
-		LeadingInterval = 0,
-		FollowingXInterval = 1,
-		FollowingZInterval = 2,
-		EditEvent = 3,
-		CopyEvent = 4
-	};
-
-	struct FRLEMeshingData
-	{
-		const FStaticMergeData FaceData;
-		EMeshingEventIndex MeshingEventIndex;
-	};
-
-	/*
-	Front = 0,
-	Back = 1,
-	Right = 2,
-	Left = 3,
-	Bottom = 4,
-	Top = 5
-	*/
-	struct FVirtualMeshBuilder
-	{
-		// Current event index made of all meshing events that were already processed/traversed.
-		uint32 CurrentMeshingEventIndex = 0;
-
-		// After reaching closest end, updates it and sets next voxel interval to next
-		// End is equivalent to event in Discrete Event Simulation 
-		
-		FMeshingEvent MeshingEvents[EventIndexCount];
-		uint32 NextMeshingEventIndex = 0;
-		uint32 IndexSequenceBetweenEvents = 0;
-		FRLEVoxel* PreviousVoxelRun = nullptr;
-
-		uint32 ContinueEditIndex = 0;
-
-		//TODO: rewrite pointer
-		TArray<FRLEVoxelEdit>* VoxelEdits = nullptr;
-		bool EditEnabled = false;
-		FIntVector InitialPosition = FIntVector(0, 0, 0);
-		
-		TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
-		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
-		
-		void TryUpdateNextMeshingEvent(const uint32 EventIndex)
-		{
-			NextMeshingEventIndex = FMath::Min(EventIndex, NextMeshingEventIndex);
-		}
-	};
-	
 	
 	virtual void GenerateMesh(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
 							  TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable,
@@ -119,23 +34,9 @@ public:
 							  TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, 6>& SideMeshers, bool ShowBorders) PURE_VIRTUAL(UMesherBase::GenerateMesh)
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) PURE_VIRTUAL(UMesherBase::GenerateMesh);
-
-	/*
-	Front = 0,
-	Back = 1,
-	Right = 2,
-	Left = 3,
-	Bottom = 4,
-	Top = 5
-	*/
-	FMeshingDirections FaceTemplates[CHUNK_FACE_COUNT] = {
-		FMeshingDirections(FStaticMergeData::FrontFaceData), FMeshingDirections(FStaticMergeData::BackFaceData),
-		FMeshingDirections(FStaticMergeData::RightFaceData), FMeshingDirections(FStaticMergeData::LeftFaceData),
-		FMeshingDirections(FStaticMergeData::BottomFaceData), FMeshingDirections(FStaticMergeData::TopFaceData)
-	};
 	
 	// TODO: use simplier struct than index params
-	virtual FVoxel GetBorderVoxel(FVirtualMeshBuilder& IndexParams, int X, int Y, int Z) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return FVoxel(); );
+	virtual FVoxel GetBorderVoxel(VirtualMeshEventPlanner& IndexParams, FIntVector VoxelPosition) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return FVoxel(); );
 	
 	virtual void BorderGeneration(const TSharedPtr<TArray<FProcMeshSectionVars>>& BorderChunkMeshData,
 							TMap<int32, uint32>& BorderLocalVoxelTable, 
@@ -160,20 +61,10 @@ protected:
 		FVector Normal;
 		FProcMeshTangent Tangent;
 	};
-
-	FORCEINLINE static bool IsMinBorder(const int X)
-	{
-		return X == 0;
-	}
-
-	FORCEINLINE bool IsMaxBorder(const int X) const
-	{
-		return X == VoxelData->GetVoxelCountPerVoxelLine() - 1;
-	}
-
+	
 	static const FNormalsAndTangents FaceNormalsAndTangents[CHUNK_FACE_COUNT];
 
-	void UpdateAllFacesParams();
+	//void UpdateAllFacesParams();
 	void UpdateFaceParams(FMeshingDirections& Face, FIntVector ForwardVoxelIndexVector,
 	                      FIntVector ChunkBorderIndexVector, FIntVector PreviousVoxelIndexVector) const;
 
@@ -186,8 +77,7 @@ protected:
 	                            TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable,
 	                            const FStaticMergeData& MergeData,
 	                            TArray<FVirtualVoxelFace>& FaceContainer) const;
-
-	static void AddFace(const FStaticMergeData& FaceMeshingData, const FVirtualVoxelFace& NewFace,
-	                    TArray<FVirtualVoxelFace>& ChunkFaces);
 	
+	UPROPERTY()
+	TObjectPtr<UBaseVoxelData> VoxelData;
 };

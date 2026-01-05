@@ -2,7 +2,6 @@
 #include "CoreMinimal.h"
 #include "Voxel/Voxel.h"
 
-
 /**
  * Struct representing single voxel face. Inside helper struct not intended to be used with Unreal Engine.
  */
@@ -59,10 +58,6 @@ struct RDMMESHERS_API FVirtualVoxelFace
 	static bool MergeFaceStart(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace);
 	static bool MergeFaceUp(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace);
 	
-	static int GetXLocation(const FIntVector& Location);
-	static int GetYLocation(const FIntVector& Location);
-	static int GetZLocation(const FIntVector& Location);
-
 	FVector GetFinalStartVertexDown(const double& VoxelSize) const;
 	FVector GetFinalStartVertexUp(const double& VoxelSize) const;
 	FVector GetFinalEndVertexDown(const double& VoxelSize) const;
