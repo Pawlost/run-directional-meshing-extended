@@ -39,9 +39,9 @@ void AChunkActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
-	const TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable) const
+	const FVoxelMeshContainer& LocalVoxelTable) const
 {
-	for (const auto LocalVoxelType : LocalVoxelTable)
+	for (const auto LocalVoxelType : LocalVoxelTable.VoxelTable)
 	{
 		// Voxel tables are necessary to map voxel rows from voxel table to mesh sections of procedural mesh
 		auto ProcMeshVarsPtr = LocalVoxelType.Value;
@@ -97,13 +97,13 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 
 		
 		VoxelMesher->GenerateMesh(MeshVars.VirtualFaces,
-		                          MeshVars.LocalVoxelTable,
+		                          MeshVars.MeshContainer,
 		                          MeshVars.ChunkMeshData,VoxelEdits, SideFaces,
 		                          SideMeshers, ShowBorders);
 		
 		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor,
-					   MeshVars.LocalVoxelTable);
+					   MeshVars.MeshContainer);
 		
-		MeshVars.LocalVoxelTable.Empty();
+		MeshVars.MeshContainer.Empty();
 	}
 }

@@ -219,8 +219,8 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_YTraversal_NoiseVo
 	DummyRLERunDirectionalVoxelMesher->SetVoxelGenerator(BaseVoxelDataDummy);
 	BaseVoxelDataDummy->CalculateVoxelData();
 	
-	TStaticArray<UVoxelMesherBase::FVirtualMeshEventPlanner, CHUNK_FACE_COUNT> BorderIndexParams;
-	UVoxelMesherBase::FVirtualMeshEventPlanner IndexParams;
+//	TStaticArray<UVoxelMesherBase::FVirtualMeshEventPlanner, CHUNK_FACE_COUNT> BorderIndexParams;
+/*	UVoxelMesherBase::FVirtualMeshEventPlanner IndexParams;
 	
 	TArray<FRLEVoxelEdit> VoxelEdits;
 	IndexParams.VoxelEdits = &VoxelEdits;
@@ -246,7 +246,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_YTraversal_NoiseVo
 	IndexParams.MeshingEvents[2].LastEventIndex = 32;
 	IndexParams.MeshingEvents[2].VoxelRunIndex = 0;
 	IndexParams.MeshingEvents[2].VoxelGridPtr = VoxelModelSharedPtr;
-	
+		
 /*	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
 		SideFaces[f] = MakeShared<TArray<FVirtualVoxelFace>>();

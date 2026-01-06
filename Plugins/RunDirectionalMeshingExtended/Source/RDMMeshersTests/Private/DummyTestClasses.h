@@ -12,10 +12,10 @@ public:
 class UDummyRLERunDirectionalVoxelMesher : public URLERunDirectionalVoxelMesher
 {
 public:
-	using URLERunDirectionalVoxelMesher::AdvanceEditInterval;
-	using URLERunDirectionalVoxelMesher::AdvanceAllMeshingEvents;
-	using URLERunDirectionalVoxelMesher::FaceGeneration;
+	//using URLERunDirectionalVoxelMesher::AdvanceEditInterval;
+	//using URLERunDirectionalVoxelMesher::AdvanceAllMeshingEvents;
+	//using URLERunDirectionalVoxelMesher::FaceGeneration;
 	using URLERunDirectionalVoxelMesher::RLEVoxelGrid;
-	using URLERunDirectionalVoxelMesher::TraverseYDirection;
+	//using URLERunDirectionalVoxelMesher::TraverseYDirection;
 };
 

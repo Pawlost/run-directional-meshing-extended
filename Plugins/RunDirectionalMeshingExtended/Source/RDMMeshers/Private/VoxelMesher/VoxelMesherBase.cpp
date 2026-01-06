@@ -1,23 +1,11 @@
 ﻿#include "VoxelMesher/VoxelMesherBase.h"
-
 #include "BaseVoxelData.h"
-#include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
-#include "VoxelModel/VoxelGrid.h"
 
 void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase)
 {
 	this->VoxelData = VoxelGeneratorBase;
 	//UpdateAllFacesParams();
 }
-
-const UVoxelMesherBase::FNormalsAndTangents UVoxelMesherBase::FaceNormalsAndTangents[] = {
-	{FVector(1.0f, 0.0f, 0.0f), FProcMeshTangent(0.0, 1.0, 0.0)}, //Front
-	{FVector(-1.0f, 0.0f, 0.0f), FProcMeshTangent(0.0, 1.0, 0.0)}, //Back
-	{FVector(0.0f, 1.0f, 0.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)}, // Right 
-	{FVector(0.0f, -1.0f, 0.0f), FProcMeshTangent(1.0, 0.0, 0.0)}, // Left
-	{FVector(0.0f, 0.0f, -1.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)}, //Bottom
-	{FVector(0.0f, 0.0f, 1.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)} //Top
-};
 
 /*
 void UVoxelMesherBase::UpdateAllFacesParams()
@@ -93,117 +81,5 @@ void UVoxelMesherBase::PreallocateArrays(
 		{
 			(*VirtualFaces[f])[y].Reserve(ChunkLayer);
 		}
-	}
-}
-
-void UVoxelMesherBase::ConvertFaceToProcMesh(TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable, const FVirtualVoxelFace& Face,
-                                             const int FaceIndex) const
-{
-	const double VoxelSize = VoxelData->GetVoxelSize();
-
-	const auto& Voxel = Face.Voxel;
-	// TODO: remove
-	check(Voxel.VoxelId != 0);
-
-	const TSharedPtr<FProcMeshSectionVars>* ProcMeshVars = LocalVoxelTable.Find(Voxel);
-
-	if (!ProcMeshVars)
-	{
-		ProcMeshVars = &LocalVoxelTable.Add(Voxel, MakeShared<FProcMeshSectionVars>(VoxelData->GetVoxelCountPerChunk(), LocalVoxelTable.Num()));
-	}
-	
-	auto& QuadSection = **ProcMeshVars;
-	auto [Normal, Tangent] = FaceNormalsAndTangents[FaceIndex];
-	auto& TriangleIndex = QuadSection.GlobalTriangleIndex;
-
-	// Create quad from 2 triangles
-	QuadSection.Vertices.Push(Face.GetFinalStartVertexDown(VoxelSize));
-	QuadSection.Vertices.Push(Face.GetFinalEndVertexDown(VoxelSize));
-	QuadSection.Vertices.Push(Face.GetFinalEndVertexUp(VoxelSize));
-	QuadSection.Vertices.Push(Face.GetFinalStartVertexUp(VoxelSize));
-
-	QuadSection.Triangles.Push(TriangleIndex);
-	QuadSection.Triangles.Push(TriangleIndex + 1);
-	QuadSection.Triangles.Push(TriangleIndex + 2);
-	QuadSection.Triangles.Push(TriangleIndex + 2);
-	QuadSection.Triangles.Push(TriangleIndex + 3);
-	QuadSection.Triangles.Push(TriangleIndex);
-
-	QuadSection.Normals.Push(Normal);
-	QuadSection.Normals.Push(Normal);
-	QuadSection.Normals.Push(Normal);
-	QuadSection.Normals.Push(Normal);
-
-	QuadSection.Tangents.Push(Tangent);
-	QuadSection.Tangents.Push(Tangent);
-	QuadSection.Tangents.Push(Tangent);
-	QuadSection.Tangents.Push(Tangent);
-
-	QuadSection.UV0.Push(FVector2D(0, 0));
-	QuadSection.UV0.Push(FVector2D(1, 0));
-	QuadSection.UV0.Push(FVector2D(1, 1));
-	QuadSection.UV0.Push(FVector2D(0, 1));
-
-	TriangleIndex += 4;
-}
-
-void UVoxelMesherBase::DirectionalGreedyMerge(TArray<FVirtualVoxelFace>& FirstArray,
-                                              TArray<FVirtualVoxelFace>& SecondArray,
-                                              TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable,
-                                              const FStaticMergeData& MergeData,
-                                              TArray<FVirtualVoxelFace>& FaceContainer) const
-{
-	TArray<FVirtualVoxelFace>* ActiveArray = &FirstArray;
-	TArray<FVirtualVoxelFace>* PassiveArray = &SecondArray;
-
-	// Iterate from last face
-	for (int32 i = FaceContainer.Num() - 1; i >= 0; i--)
-	{
-		FVirtualVoxelFace PrevFace = FaceContainer.Pop(EAllowShrinking::No);
-
-		if (ActiveArray->IsEmpty() || MergeData.HeightCondition(ActiveArray->Top(), PrevFace))
-		{
-			ActiveArray->Push(PrevFace);
-		}
-		else
-		{
-			while (!ActiveArray->IsEmpty())
-			{
-				const FVirtualVoxelFace& PopFace = ActiveArray->Pop(EAllowShrinking::No);
-				if (!MergeData.MergeFailCondition(PopFace, PrevFace))
-				{
-					// Attempt greedy merge
-					if (MergeData.GreedyMerge(PrevFace, PopFace))
-					{
-						PassiveArray->Append(*ActiveArray);
-						ActiveArray->Reset();
-					}
-					else
-					{
-						PassiveArray->Push(PopFace);
-					}
-				}
-				else
-				{
-					ConvertFaceToProcMesh(LocalVoxelTable, PopFace, MergeData.FaceDirection);
-				}
-			}
-			
-			PassiveArray->Push(PrevFace);
-		}
-
-		Swap(PassiveArray, ActiveArray);
-	}
-
-	while (!ActiveArray->IsEmpty())
-	{
-		const FVirtualVoxelFace& PopFace = ActiveArray->Pop(EAllowShrinking::No);
-		ConvertFaceToProcMesh(LocalVoxelTable, PopFace, MergeData.FaceDirection);
-	}
-
-	while (!PassiveArray->IsEmpty())
-	{
-		const FVirtualVoxelFace& PopFace = PassiveArray->Pop(EAllowShrinking::No);
-		ConvertFaceToProcMesh(LocalVoxelTable, PopFace, MergeData.FaceDirection);
 	}
 }

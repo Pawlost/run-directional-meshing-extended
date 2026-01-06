@@ -37,82 +37,46 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(
                                                  TStaticArray<
 	                                                 TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>&
                                                  VirtualFaces,
-                                                 TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable,
+                                                 FVoxelMeshContainer& MeshContainer,
                                                  TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-                                                 TArray<FRLEVoxelEdit>& VoxelChanges,
+                                                 TArray<FRLEVoxelEdit>& VoxelEdits,
                                                  TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>
                                                  SideFaces,
                                                  TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>&
                                                  SideMeshers, bool ShowBorders)
 {
+	// This scope may start in a parallel task
+	
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RLE RunDirectionalMeshing generation")
 #endif
-
-	FaceGeneration(VoxelChanges, VirtualFaces, SideFaces, SideMeshers, ShowBorders);
-
-	const uint32 ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
 	
-	{
-#if CPUPROFILERTRACE_ENABLED
-		TRACE_CPUPROFILER_EVENT_SCOPE("Meshing - Directional Greedy Merge");
-#endif
-		
-		constexpr int EstimatedRows = 3;
-		
-		//TODO: keep allocations persistent
-		TArray<FVirtualVoxelFace> FirstArray;
-		FirstArray.Reserve(ChunkDimension * EstimatedRows);
-
-		TArray<FVirtualVoxelFace> SecondArray;
-		SecondArray.Reserve(ChunkDimension * EstimatedRows);
-
-		for (int f = 0; f < CHUNK_FACE_COUNT; f++)
-		{
-			for (uint32 y = 0; y < ChunkDimension; y++)
-			{
-				DirectionalGreedyMerge(FirstArray, SecondArray, LocalVoxelTable,
-				                       FaceTemplates[f].StaticMeshingData, (*VirtualFaces[f])[y]);
-			}
-
-			DirectionalGreedyMerge(FirstArray, SecondArray, LocalVoxelTable,
-			                       FaceTemplates[f].StaticMeshingData, *SideFaces[f]);
-		}
-	}
-}
-
-
-void URLERunDirectionalVoxelMesher::FaceGeneration(TArray<FRLEVoxelEdit>& VoxelEdits,
-                                                   TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
-                                                   TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
-                                                   TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers, bool ShowBorders)
-{
-#if CPUPROFILERTRACE_ENABLED
-	TRACE_CPUPROFILER_EVENT_SCOPE("RLE Meshing - RunDirectionalMeshing from RLECompression generation")
-#endif
-
-
 	const uint32 MaxVoxelsInChunk = VoxelData->GetVoxelCountPerChunk();
 	const uint32 VoxelLine = VoxelData->GetVoxelCountPerVoxelLine();
 	const uint32 VoxelPlane = VoxelData->GetVoxelCountPerVoxelPlane();
 
-	VirtualMeshEventPlanner EventPlanner(VoxelLine, VoxelPlane, MaxVoxelsInChunk, VirtualFaces, SideFaces, ShowBorders);
+	// Keeps all variables local inside the task scope
+	FVirtualMeshEventPlanner EventPlanner(VoxelLine, VoxelPlane, MaxVoxelsInChunk, ShowBorders);
 	
 
 	EventPlanner.InitializeIntervals(RLEVoxelGrid, VoxelEdits);
 	
-	TStaticArray<VirtualMeshEventPlanner, CHUNK_FACE_COUNT> BorderIndexParams;
+	TStaticArray<FVirtualMeshEventPlanner, CHUNK_FACE_COUNT> BorderIndexParams;
 
-	EventPlanner.GenerateVirtualFaces();
+	EventPlanner.GenerateVirtualFaces(SideMeshers, BorderIndexParams, VoxelEdits);
 	
 	if (EventPlanner.IsEditEnabled())
 	{
-		RLEVoxelGrid =  EventPlanner.GetMainVoxelGridPtr();
+		RLEVoxelGrid = EventPlanner.GetMainVoxelGridPtr();
 	}
+	
+	EventPlanner.DirectionalGreedyMerge(MeshContainer, VoxelData->VoxelSize);
 }
 
-FVoxel URLERunDirectionalVoxelMesher::GetBorderVoxel(VirtualMeshEventPlanner& IndexParams, int X, int Y, int Z)
+FVoxel URLERunDirectionalVoxelMesher::GetBorderVoxel(FVirtualMeshEventPlanner& IndexParams, FIntVector VoxelPosition)
 {
+	
+	/*
 	const uint32 MaxChunkVoxelSequence = VoxelData->GetVoxelCountPerChunk();
 
 	auto& VoxelGridPtr = IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval].VoxelGridPtr;
@@ -132,4 +96,6 @@ FVoxel URLERunDirectionalVoxelMesher::GetBorderVoxel(VirtualMeshEventPlanner& In
 	}
 
 	return IndexParams.MeshingEvents[LeadingInterval].GetCurrentVoxel().Voxel;
+*/
+	return FVoxel();
 }

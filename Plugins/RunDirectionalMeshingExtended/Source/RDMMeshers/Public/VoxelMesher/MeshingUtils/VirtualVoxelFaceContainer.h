@@ -1,8 +1,11 @@
 ﻿#pragma once
+#include "CoreMinimal.h"
 #include "MeshingDirections.h"
 
+struct FVoxelMeshContainer;
+
 struct FVirtualVoxelFaceContainer
-{
+{	
 	/*
 	Front = 0,
 	Back = 1,
@@ -11,21 +14,25 @@ struct FVirtualVoxelFaceContainer
 	Bottom = 4,
 	Top = 5
 	*/
-	FMeshingDirections FaceTemplates[CHUNK_FACE_COUNT] = {
-		FMeshingDirections(FStaticMergeData::FrontFaceData), FMeshingDirections(FStaticMergeData::BackFaceData),
-		FMeshingDirections(FStaticMergeData::RightFaceData), FMeshingDirections(FStaticMergeData::LeftFaceData),
-		FMeshingDirections(FStaticMergeData::BottomFaceData), FMeshingDirections(FStaticMergeData::TopFaceData)
+	FStaticMergeData MeshingDataArray[CHUNK_FACE_COUNT] = {
+		FStaticMergeData::FrontFaceData, FStaticMergeData::BackFaceData,
+		FStaticMergeData::RightFaceData, FStaticMergeData::LeftFaceData,
+		FStaticMergeData::BottomFaceData, FStaticMergeData::TopFaceData
 	};
 	
 	void AddFace(const int FaceIndex, const FVoxel Voxel, const FIntVector& Position,
-		const int Lenght) const;
+		const int Lenght);
 	
-	FVirtualVoxelFaceContainer();
+	FVirtualVoxelFaceContainer(){};
 	explicit FVirtualVoxelFaceContainer(uint32 VoxelPlane);
 	
 	void CreateSideFace(const EFaceDirection FaceDirection,
 		const FIntVector& VoxelPosition, const FVoxel& Voxel, const int YPosition);
 	
+	void DirectionalGreedyMergeForVoxelPlane(
+		TArray<FVirtualVoxelFace>& FirstArray, TArray<FVirtualVoxelFace>& SecondArray, FVoxelMeshContainer& VoxelMeshContainer,
+		 const EFaceDirection FaceDirection, const double VoxelSize, const int MaxVoxelsInChunk);
+	
 private:
-	TSharedPtr<TArray<FVirtualVoxelFace>> VirtualVoxelFaces;
+	TArray<FVirtualVoxelFace> VirtualVoxelFaces;
 };

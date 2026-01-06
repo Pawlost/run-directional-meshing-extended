@@ -15,7 +15,7 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 
 public:
 	virtual void GenerateMesh(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
-	                          TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>>& LocalVoxelTable,
+								FVoxelMeshContainer& MeshContainer,
 	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
 	                          TArray<FRLEVoxelEdit>& VoxelChanges,
 	                          TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
@@ -23,14 +23,11 @@ public:
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
 
-	virtual FVoxel GetBorderVoxel(VirtualMeshEventPlanner& IndexParams, FIntVector VoxelPosition) override;
+	virtual FVoxel GetBorderVoxel(FVirtualMeshEventPlanner& IndexParams, FIntVector VoxelPosition) override;
 
 PRIVATE_MODIFIER:
 
-	void FaceGeneration(TArray<FRLEVoxelEdit>& VoxelEdits,
-	                    TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
-	                    TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces,
-	                    TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers, bool ShowBorders);
-
 	TSharedPtr<TArray<FRLEVoxel>> RLEVoxelGrid;
+	
+	static TQueue<TSharedPtr<FVirtualMeshEventPlanner>, EQueueMode::Mpsc> UnusedMeshersPool;
 };
