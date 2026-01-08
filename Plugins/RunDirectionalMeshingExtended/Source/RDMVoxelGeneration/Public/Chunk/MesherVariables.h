@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include "Chunk/Chunk.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
-#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
-#include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
 #include "MesherVariables.generated.h"
 
 class AChunkSpawnerBase;
@@ -11,8 +9,6 @@ USTRUCT()
 struct RDMVOXELGENERATION_API FMesherVariables
 {
 	GENERATED_BODY()
-	
-	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 	FVoxelMeshContainer MeshContainer;
 
 	TStaticArray<TSharedPtr<FChunk>, CHUNK_FACE_COUNT> SideChunks;
@@ -23,7 +19,4 @@ struct RDMVOXELGENERATION_API FMesherVariables
 
 	bool WorldTransform = false;
 	bool ShowBorders = false;
-	
-	TSharedPtr<TArray<FProcMeshSectionVars>> ChunkMeshData;
-	TSharedPtr<TArray<FProcMeshSectionVars>> BorderChunkMeshData;
 };

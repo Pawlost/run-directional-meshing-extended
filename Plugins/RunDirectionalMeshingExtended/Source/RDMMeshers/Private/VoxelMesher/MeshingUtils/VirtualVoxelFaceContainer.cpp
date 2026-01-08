@@ -2,6 +2,12 @@
 
 #include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
 
+FStaticMergeData FVirtualVoxelFaceContainer::MeshingDataArray[] = {
+	FStaticMergeData::FrontFaceData, FStaticMergeData::BackFaceData,
+	FStaticMergeData::RightFaceData, FStaticMergeData::LeftFaceData,
+	FStaticMergeData::BottomFaceData, FStaticMergeData::TopFaceData
+};
+
 FVirtualVoxelFaceContainer::FVirtualVoxelFaceContainer(uint32 VoxelPlane)
 {
 	VirtualVoxelFaces.Reserve(VoxelPlane);
@@ -92,9 +98,8 @@ void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
 			}
 			
 			PassiveArray->Push(PrevFace);
+			Swap(PassiveArray, ActiveArray);
 		}
-
-		Swap(PassiveArray, ActiveArray);
 	}
 
 	while (!ActiveArray->IsEmpty())

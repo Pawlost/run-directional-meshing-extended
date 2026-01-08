@@ -75,31 +75,19 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		TRACE_CPUPROFILER_EVENT_SCOPE("Total - Mesh generation - RDM Meshing")
 	#endif
 		
-		const uint32 VoxelLayer = VoxelGenerator->GetVoxelCountPerVoxelPlane();
-		
-		// TODO: rewrite this
-		TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+		FBorderParams BorderParams;
 		
 		for (int i = 0; i < CHUNK_FACE_COUNT; i++)
 		{
 			auto& SideChunk= MeshVars.SideChunks[i];
 			if (SideChunk != nullptr)
 			{
-				SideMeshers[i] = TStrongObjectPtr<UVoxelMesherBase>(SideChunk->VoxelMesher);
+				BorderParams.SideMeshers[i] = TStrongObjectPtr<UVoxelMesherBase>(SideChunk->VoxelMesher);
 			}
-			
-			SideFaces[i] = MakeShared<TArray<FVirtualVoxelFace>>();
-			SideFaces[i]->Reserve(VoxelLayer);
 		}
 		
-		VoxelMesher->PreallocateArrays(MeshVars.VirtualFaces,SideFaces);
-
-		
-		VoxelMesher->GenerateMesh(MeshVars.VirtualFaces,
-		                          MeshVars.MeshContainer,
-		                          MeshVars.ChunkMeshData,VoxelEdits, SideFaces,
-		                          SideMeshers, ShowBorders);
+		VoxelMesher->GenerateMesh(MeshVars.MeshContainer, BorderParams,
+		                          VoxelEdits, ShowBorders);
 		
 		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor,
 					   MeshVars.MeshContainer);

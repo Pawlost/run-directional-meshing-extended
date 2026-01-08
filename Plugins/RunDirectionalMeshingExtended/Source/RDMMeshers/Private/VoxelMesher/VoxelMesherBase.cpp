@@ -47,39 +47,3 @@ void UVoxelMesherBase::UpdateFaceParams(FMeshingDirections& Face, const FIntVect
 	Face.PreviousVoxelIndex = VoxelData->CalculateVoxelIndex(PreviousVoxelIndexVector);
 	Face.ChunkBorderIndex = VoxelData->CalculateVoxelIndex(ChunkBorderIndexVector);
 }
-
-void UVoxelMesherBase::PreallocateArrays(
-	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT>& VirtualFaces,
-	TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT>& SideFaces) const
-{
-#if CPUPROFILERTRACE_ENABLED
-	TRACE_CPUPROFILER_EVENT_SCOPE("Mesh generation preallocation")
-#endif
-
-	auto ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
-	auto ChunkLayer = VoxelData->GetVoxelCountPerVoxelPlane();
-	
-	for (uint8 f = 0; f < CHUNK_FACE_COUNT; f++)
-	{
-		auto FaceArray = VirtualFaces[f];
-
-		SideFaces[f] = MakeShared<TArray<FVirtualVoxelFace>>();
-		SideFaces[f]->Reserve(ChunkLayer);
-
-		if (FaceArray == nullptr || !FaceArray.IsValid())
-		{
-			VirtualFaces[f] = MakeShared<TArray<TArray<FVirtualVoxelFace>>>();
-		}
-		else
-		{
-			// If array was pulled from a pool, just empty it 
-			VirtualFaces[f]->Reset();
-		}
-
-		VirtualFaces[f]->SetNum(ChunkDimension);
-		for (uint32 y = 0; y < ChunkDimension; y++)
-		{
-			(*VirtualFaces[f])[y].Reserve(ChunkLayer);
-		}
-	}
-}

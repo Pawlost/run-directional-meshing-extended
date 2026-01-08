@@ -10,15 +10,15 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 
 bool FRDMMeshersTests_BaseVoxelData_VoxelLineNumber::RunTest(const FString& Parameters)
 {
-	// Prepare
+	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
 	constexpr int NumberOfVoxels = 32;
 	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
 	
-	// Execute
+	// Act
 	BaseVoxelDataDummy->CalculateVoxelData();
 	
-	// Test
+	// Assert
 	TestEqual("Voxel line should be set by VoxelCountPerChunkDimension member variable",
 		BaseVoxelDataDummy->GetVoxelCountPerVoxelLine(), NumberOfVoxels);
 	

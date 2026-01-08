@@ -14,16 +14,12 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, 6>& VirtualFaces,
-								FVoxelMeshContainer& MeshContainer,
-	                          TSharedPtr<TArray<FProcMeshSectionVars>>& ChunkMeshData,
-	                          TArray<FRLEVoxelEdit>& VoxelChanges,
-	                          TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces,
-	                          TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, 6>& SideMeshers, bool ShowBorders) override;
+	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
+	                          TArray<FRLEVoxelEdit>& VoxelChanges, bool ShowBorders) override;
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
 
-	virtual FVoxel GetBorderVoxel(FVirtualMeshEventPlanner& IndexParams, FIntVector VoxelPosition) override;
+	virtual FVoxel GetBorderVoxel(FSimpleVirtualVoxelFace& IndexParams, FIntVector VoxelPosition) override;
 
 PRIVATE_MODIFIER:
 

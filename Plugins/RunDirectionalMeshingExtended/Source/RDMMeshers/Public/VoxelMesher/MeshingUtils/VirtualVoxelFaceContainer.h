@@ -14,11 +14,7 @@ struct FVirtualVoxelFaceContainer
 	Bottom = 4,
 	Top = 5
 	*/
-	FStaticMergeData MeshingDataArray[CHUNK_FACE_COUNT] = {
-		FStaticMergeData::FrontFaceData, FStaticMergeData::BackFaceData,
-		FStaticMergeData::RightFaceData, FStaticMergeData::LeftFaceData,
-		FStaticMergeData::BottomFaceData, FStaticMergeData::TopFaceData
-	};
+	static FStaticMergeData MeshingDataArray[CHUNK_FACE_COUNT];
 	
 	void AddFace(const int FaceIndex, const FVoxel Voxel, const FIntVector& Position,
 		const int Lenght);

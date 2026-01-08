@@ -5,6 +5,7 @@
 #include "VirtualVoxelFaceContainer.h"
 #include "Voxel/RLEVoxel.h"
 
+struct FVirtualMeshEventPlanner;
 class UVoxelMesherBase;
 
 struct FMeshingEvent
@@ -52,10 +53,16 @@ struct FRLEMeshingData
 	const FStaticMergeData FaceData;
 	EMeshingEventIndex MeshingEventIndex;
 };
-	
-class SimpleVirtualVoxelFace
+
+struct FSimpleVirtualVoxelFace
 {
 	
+};
+	
+struct FBorderParams
+{
+	TStaticArray<FSimpleVirtualVoxelFace, CHUNK_FACE_COUNT> BorderIndexParams;
+	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
 };
 
 /*
@@ -69,21 +76,16 @@ Top = 5
 struct FVirtualMeshEventPlanner
 {
 public:
-	FVirtualMeshEventPlanner()
-	{
-	}
 	
 	FVirtualMeshEventPlanner(const uint32 VoxelLine,
-	const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels, bool ShowBorders);
+		const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels, bool ShowBorders);
 	
 	void AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits);
 	void TryUpdateNextMeshingEvent(const uint32 EventIndex);
 	
 	void InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid, TArray<FRLEVoxelEdit>& VoxelEdits);
 	
-	void GenerateVirtualFaces(TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-													   TStaticArray<FVirtualMeshEventPlanner, CHUNK_FACE_COUNT>& BorderIndexParams,
-													   TArray<FRLEVoxelEdit>& VoxelEdits);
+	void GenerateVirtualFaces(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits);
 	
 	FORCEINLINE bool IsEditEnabled() const
 	{
@@ -95,13 +97,9 @@ public:
 		return MeshingEvents[EMeshingEventIndex::LeadingInterval].VoxelGridPtr;
 	}
 	
-	void CreateVirtualVoxelFacesInLShape(
-TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-TStaticArray<FVirtualMeshEventPlanner, CHUNK_FACE_COUNT>& BorderIndexParams);
+	void CreateVirtualVoxelFacesInLShape(FBorderParams& BorderParameters);
 	
-	void TraverseYDirection(TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-													   TStaticArray<FVirtualMeshEventPlanner, CHUNK_FACE_COUNT>& BorderIndexParams,
-													   TArray<FRLEVoxelEdit>& VoxelEdits);
+	void TraverseYDirection(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits);
 
 	void CreateFace(const EFaceDirection FaceIndex, const FRLEVoxel& RLEVoxel, const int YEnd, const bool CanGenerate, int VoxelPlanePosition);
 
@@ -114,10 +112,8 @@ TStaticArray<FVirtualMeshEventPlanner, CHUNK_FACE_COUNT>& BorderIndexParams);
 	
 	void EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits);
 	
-	void CreateBorder(
-		TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT>& SideMeshers,
-		TStaticArray<FVirtualMeshEventPlanner, CHUNK_FACE_COUNT>& BorderIndexParams,
-		FIntVector VoxelPosition,
+	void CreateBorder(FBorderParams& BorderParameters,
+		FIntVector VoxelPosition, uint32 YEnd,
 		 const FRLEVoxel& CurrentVoxelSample,
 		EFaceDirection Direction,
 		FIntVector SideChunkBorderPosition, bool BorderCondition);
@@ -143,6 +139,8 @@ private:
 	FIntVector PreviousPosition = FIntVector(0, 0, 0);
 		
 	TStaticArray<TArray<FVirtualVoxelFaceContainer>, CHUNK_FACE_COUNT> VirtualFaces;
+	
+	// TODO: rewrite side faces
 	TStaticArray<FVirtualVoxelFaceContainer, CHUNK_FACE_COUNT> SideFaces;
 	
 	const uint32 VoxelLine = 0;
