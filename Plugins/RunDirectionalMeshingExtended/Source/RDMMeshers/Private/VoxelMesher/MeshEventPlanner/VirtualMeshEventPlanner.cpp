@@ -1,4 +1,4 @@
-﻿#include "VoxelMesher/MeshingUtils/VirtualMeshEventPlanner.h"
+﻿#include "VoxelMesher/MeshEventPlanner/VirtualMeshEventPlanner.h"
 #include "VoxelMesher/VoxelMesherBase.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
 
@@ -20,11 +20,6 @@ void FVirtualMeshEventPlanner::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelE
 		constexpr int Offset = 1;
 		EditEvent.LastEventIndex = MaxVoxelsInChunk + Offset;
 	}
-}
-
-void FVirtualMeshEventPlanner::TryUpdateNextMeshingEvent(const uint32 EventIndex)
-{
-	NextMeshingEventIndex = FMath::Min(EventIndex, NextMeshingEventIndex);
 }
 
 FVirtualMeshEventPlanner::FVirtualMeshEventPlanner(const uint32 VoxelLine,
@@ -262,24 +257,6 @@ void FVirtualMeshEventPlanner::CreateFace(
 	}
 }
 
-bool FVirtualMeshEventPlanner::AdvanceMeshingEvent(const EMeshingEventIndex IntervalFlagIndex)
-{
-	bool AdvanceInterval = false;
-	auto& Interval = MeshingEvents[IntervalFlagIndex];
-	int IntervalEventIndex = Interval.GetEventIndex();
-	if (IntervalEventIndex == CurrentMeshingEventIndex)
-	{
-		// Advance interval in chunk voxel sequence
-		Interval.AdvanceEvent();
-		AdvanceInterval = true;
-	}
-
-	IntervalEventIndex = Interval.GetEventIndex();
-	TryUpdateNextMeshingEvent(IntervalEventIndex);
-
-	return AdvanceInterval;
-}
-
 void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	auto& CopyEvent = MeshingEvents[EMeshingEventIndex::CopyEvent];
@@ -376,27 +353,29 @@ void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters,
 		{
 			if (!CanGenerate && Mesher != nullptr) 
 			{
-				SideChunkBorderPosition.Y++;
 				auto BorderVoxel = Mesher->GetBorderVoxel(BorderParameters.BorderIndexParams[Direction], SideChunkBorderPosition);
+
 				CanGenerate = BorderVoxel.IsEmptyVoxel() || (BorderVoxel.IsTransparent() && !CurrentVoxel.IsTransparent());
 			}
-				
+			SideChunkBorderPosition.Y++;
+			
 			if (CanGenerate)
 			{
 				// If checking intervals is implement run may be larger than 1
 				constexpr int RunLenght = 1;
 				SideFaces[Direction].AddFace(Direction, CurrentVoxel, VoxelPosition, RunLenght);
-				VoxelPosition.Y += 1;
 			}
+			VoxelPosition.Y += 1;
+			
 		}
 	}
 }
 
 void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 {
-	if (AdvanceMeshingEvent(EMeshingEventIndex::LeadingInterval))
+	auto& LeadingMeshingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
+	if (AdvanceMeshingEvent(LeadingMeshingEvent))
 	{
-		const auto& LeadingMeshingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
 		auto& LeadingMeshingEventVoxel = LeadingMeshingEvent.GetCurrentVoxel();
 
 		// Left
@@ -421,8 +400,8 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 	// Calculate index
 	// Smallest interval should always be increase of Y dimension
 
-	AdvanceMeshingEvent(EMeshingEventIndex::FollowingXInterval);
-	AdvanceMeshingEvent(EMeshingEventIndex::FollowingZInterval);
+	AdvanceMeshingEvent(MeshingEvents[EMeshingEventIndex::FollowingXInterval]);
+	AdvanceMeshingEvent(MeshingEvents[EMeshingEventIndex::FollowingZInterval]);
 }
 
 void FVirtualMeshEventPlanner::DirectionalGreedyMerge(FVoxelMeshContainer& VoxelMeshContainer,

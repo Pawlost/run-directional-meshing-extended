@@ -1,10 +1,11 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "BaseVoxelData.h"
+#include "MeshEventPlanner/BorderVirtualMeshEventPlanner.h"
+#include "MeshEventPlanner/VirtualMeshEventPlanner.h"
 #include "MeshingUtils/MeshingDirections.h"
 #include "MeshingUtils/RLEVoxelEdit.h"
-#include "MeshingUtils/VirtualMeshEventPlanner.h"
-#include "Voxel/RLEVoxel.h"
+#include "MeshingUtils/VoxelMeshContainer.h"
 #include "VoxelMesherBase.generated.h"
 
 class UBaseVoxelData;
@@ -27,7 +28,7 @@ public:
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) PURE_VIRTUAL(UMesherBase::GenerateMesh);
 	
-	virtual FVoxel GetBorderVoxel(FSimpleVirtualVoxelFace& IndexParams, FIntVector VoxelPosition) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return FVoxel(); );
+	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& IndexParams, const FIntVector& BorderVoxelPosition) PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return FVoxel(); );
 
 protected:
 	struct FVoxelParams

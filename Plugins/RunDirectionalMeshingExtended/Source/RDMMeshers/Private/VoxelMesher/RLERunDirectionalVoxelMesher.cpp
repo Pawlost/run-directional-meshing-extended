@@ -59,28 +59,27 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FVoxelMeshContainer& MeshContai
 	EventPlanner.DirectionalGreedyMerge(MeshContainer, VoxelData->VoxelSize);
 }
 
-FVoxel URLERunDirectionalVoxelMesher::GetBorderVoxel(FSimpleVirtualVoxelFace& IndexParams, FIntVector VoxelPosition)
+FVoxel URLERunDirectionalVoxelMesher::GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition)
 {
-	/*
 	const uint32 MaxChunkVoxelSequence = VoxelData->GetVoxelCountPerChunk();
 
-	auto& VoxelGridPtr = IndexParams.MeshingEvents[EMeshingEventIndex::LeadingInterval].VoxelGridPtr;
+	auto& VoxelGridPtr = BorderMeshingEventPlanner.BorderMeshingEvent.VoxelGridPtr;
 	if (VoxelGridPtr == nullptr)
 	{
 		VoxelGridPtr = RLEVoxelGrid;
 	}
 
-	uint32 NextIndex = VoxelData->CalculateVoxelIndex(X, Y, Z);
+	uint32 NextIndex = VoxelData->CalculateVoxelIndex(BorderVoxelPosition);
+	
+	auto& BorderMeshingEvent = BorderMeshingEventPlanner.BorderMeshingEvent;
 
-	while (IndexParams.CurrentMeshingEventIndex < NextIndex)
+	while (BorderMeshingEventPlanner.CurrentMeshingEventIndex < NextIndex)
 	{
-		IndexParams.CurrentMeshingEventIndex = IndexParams.NextMeshingEventIndex;
-		IndexParams.NextMeshingEventIndex = MaxChunkVoxelSequence;
-		AdvanceMeshingEvent(IndexParams, EMeshingEventIndex::LeadingInterval);
-		IndexParams.TryUpdateNextMeshingEvent(NextIndex);
+		BorderMeshingEventPlanner.CurrentMeshingEventIndex = BorderMeshingEventPlanner.NextMeshingEventIndex;
+		BorderMeshingEventPlanner.NextMeshingEventIndex = MaxChunkVoxelSequence;
+		BorderMeshingEventPlanner.AdvanceMeshingEvent(BorderMeshingEvent);
+		BorderMeshingEventPlanner.TryUpdateNextMeshingEvent(NextIndex);
 	}
 
-	return IndexParams.MeshingEvents[LeadingInterval].GetCurrentVoxel().Voxel;
-*/
-	return FVoxel();
+	return BorderMeshingEvent.GetCurrentVoxel().Voxel;
 }

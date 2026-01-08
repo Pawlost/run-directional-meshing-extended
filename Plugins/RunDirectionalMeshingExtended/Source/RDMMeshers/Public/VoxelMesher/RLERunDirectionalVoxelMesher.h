@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "VoxelMesherBase.h"
-#include "MeshingUtils/VirtualMeshEventPlanner.h"
+#include "MeshEventPlanner/VirtualMeshEventPlanner.h"
+#include "MeshingUtils/VoxelMeshContainer.h"
 #include "Voxel/RLEVoxel.h"
 #include "RLERunDirectionalVoxelMesher.generated.h"
 
@@ -19,7 +20,7 @@ public:
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
 
-	virtual FVoxel GetBorderVoxel(FSimpleVirtualVoxelFace& IndexParams, FIntVector VoxelPosition) override;
+	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition) override;
 
 PRIVATE_MODIFIER:
 
