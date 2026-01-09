@@ -1,4 +1,4 @@
-﻿#include "VoxelMesher/MeshEventPlanner/VirtualMeshEventPlanner.h"
+﻿#include "VoxelMesher/MeshEventPlanner/VirtualMeshEventPlannerBase.h"
 
 void FVirtualMeshEventPlannerBase::TryUpdateNextMeshingEvent(const uint32 EventIndex)
 {
