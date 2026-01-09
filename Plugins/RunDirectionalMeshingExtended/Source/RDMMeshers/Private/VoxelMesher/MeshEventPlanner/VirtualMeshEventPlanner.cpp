@@ -120,7 +120,7 @@ void FVirtualMeshEventPlanner::GenerateVirtualFaces(FBorderParams& BorderParamet
 		// TODO: try to rewrite using substraction
 		CurrentVoxelPosition = FIntVector(
 			CurrentMeshingEventIndex / (VoxelPlane), 
-			CurrentMeshingEventIndex % VoxelLine ,
+			CurrentMeshingEventIndex % VoxelLine,
 			((CurrentMeshingEventIndex / VoxelLine) % VoxelLine));
 		TraverseYDirection( BorderParameters, VoxelEdits);
 	}
@@ -137,6 +137,7 @@ void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameter
 		// Edit Interval
 		if (EditEnabled)
 		{
+			// TODO: check edit
 			EditVoxelGrid(VoxelEdits);
 		}
 
@@ -253,7 +254,7 @@ void FVirtualMeshEventPlanner::CreateFace(
 {
 	if (CanGenerate)
 	{
-		VirtualFaces[FaceIndex][VoxelPlanePosition].AddFace(FaceIndex, RLEVoxel.Voxel, CurrentVoxelPosition, YEnd);
+		VirtualFaces[FaceIndex][VoxelPlanePosition].AddNewVirtualFace(FaceIndex, RLEVoxel.Voxel, CurrentVoxelPosition, YEnd);
 	}
 }
 
@@ -363,10 +364,9 @@ void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters,
 			{
 				// If checking intervals is implement run may be larger than 1
 				constexpr int RunLenght = 1;
-				SideFaces[Direction].AddFace(Direction, CurrentVoxel, VoxelPosition, RunLenght);
+				VirtualFaces[Direction][0].AddNewVirtualFace(Direction, CurrentVoxel, VoxelPosition, RunLenght);
 			}
-			VoxelPosition.Y += 1;
-			
+			VoxelPosition.Y ++;
 		}
 	}
 }
@@ -382,18 +382,17 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 		if ((PreviousVoxelRun->Voxel.IsEmptyVoxel() || PreviousVoxelRun->Voxel.IsTransparent()
 			&& !LeadingMeshingEventVoxel.IsVoxelEmpty()) && CurrentVoxelPosition.Y != 0)
 		{
-		// TODO rewrite voxel plane index
-			VirtualFaces[EFaceDirection::Left][0].CreateSideFace(EFaceDirection::Left,
-						   CurrentVoxelPosition,
-						   LeadingMeshingEventVoxel.Voxel, IndexSequenceBetweenEvents);
+			VirtualFaces[EFaceDirection::Left][CurrentVoxelPosition.Y].AddNewVirtualFace(EFaceDirection::Left,
+						   LeadingMeshingEventVoxel.Voxel, CurrentVoxelPosition, IndexSequenceBetweenEvents);
 		}
 
 		// Right
+		int VoxelPlaneIndex = PreviousPosition.Y + IndexSequenceBetweenEvents;
 		if (!PreviousVoxelRun->IsVoxelEmpty() && (LeadingMeshingEventVoxel.Voxel.IsEmptyVoxel() ||
-				LeadingMeshingEventVoxel.Voxel.IsTransparent()) && PreviousPosition.Y + IndexSequenceBetweenEvents != VoxelLine) 
+				LeadingMeshingEventVoxel.Voxel.IsTransparent()) && VoxelPlaneIndex != VoxelLine) 
 		{
-			VirtualFaces[EFaceDirection::Right][0].CreateSideFace(EFaceDirection::Right,
-						   PreviousPosition, PreviousVoxelRun->Voxel, IndexSequenceBetweenEvents + 1);
+			VirtualFaces[EFaceDirection::Right][VoxelPlaneIndex].AddNewVirtualFace(EFaceDirection::Right,
+						    PreviousVoxelRun->Voxel, PreviousPosition, IndexSequenceBetweenEvents + 1);
 		}
 	}
 
@@ -417,7 +416,5 @@ void FVirtualMeshEventPlanner::DirectionalGreedyMerge(FVoxelMeshContainer& Voxel
 		{
 			VirtualFaces[f][y].DirectionalGreedyMergeForVoxelPlane(FirstArray, SecondArray, VoxelMeshContainer, static_cast<EFaceDirection>(f), VoxelSize, MaxVoxelsInChunk);
 		}
-
-		SideFaces[f].DirectionalGreedyMergeForVoxelPlane(FirstArray, SecondArray, VoxelMeshContainer, static_cast<EFaceDirection>(f), VoxelSize, MaxVoxelsInChunk);
 	}
 }

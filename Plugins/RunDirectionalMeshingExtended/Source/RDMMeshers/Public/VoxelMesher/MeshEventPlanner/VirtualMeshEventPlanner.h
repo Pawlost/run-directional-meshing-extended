@@ -84,9 +84,6 @@ private:
 		
 	TStaticArray<TArray<FVirtualVoxelFaceContainer>, CHUNK_FACE_COUNT> VirtualFaces;
 	
-	// TODO: rewrite side faces
-	TStaticArray<FVirtualVoxelFaceContainer, CHUNK_FACE_COUNT> SideFaces;
-	
 	const uint32 VoxelLine = 0;
 	const uint32 VoxelPlane = 0;
 	const uint32 MaxVoxelsInChunk = 0;
