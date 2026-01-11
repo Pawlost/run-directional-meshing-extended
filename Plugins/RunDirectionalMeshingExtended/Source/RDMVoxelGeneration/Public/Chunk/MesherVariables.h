@@ -18,5 +18,6 @@ struct RDMVOXELGENERATION_API FMesherVariables
 	TWeakObjectPtr<AActor> SpawnerPtr = nullptr;
 
 	bool WorldTransform = false;
-	bool ShowBorders = false;
+	// TODO: rewrite or remove
+	EBorderVisualizationOption ShowBorders;
 };

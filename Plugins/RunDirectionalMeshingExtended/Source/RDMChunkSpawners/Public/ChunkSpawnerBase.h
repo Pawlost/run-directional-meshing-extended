@@ -28,7 +28,7 @@ public:
 	FIntVector CenterGridPosition;
 	
 	UPROPERTY(EditAnywhere)
-	bool ShowBorders = true;
+	EBorderVisualizationOption BorderVisualization = EBorderVisualizationOption::None;
 	
 	UFUNCTION(BlueprintCallable)
 	double GetHighestElevationAtLocation(const FVector& Location) const;

@@ -24,7 +24,7 @@ public:
 	void ClearMesh() const;
 	void SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase);
 		
-	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges, bool ShowBorders) const;
+	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges, EBorderVisualizationOption BorderVisualization) const;
 protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	

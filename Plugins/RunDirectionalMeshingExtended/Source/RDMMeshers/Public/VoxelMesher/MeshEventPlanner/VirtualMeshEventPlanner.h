@@ -3,6 +3,7 @@
 #include "MeshingEvent.h"
 #include "VirtualMeshEventPlannerBase.h"
 #include "Voxel/RLEVoxel.h"
+#include "VoxelMesher/MeshingUtils/BorderVisualizationOption.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
@@ -28,9 +29,11 @@ Top = 5
 struct FVirtualMeshEventPlanner : FVirtualMeshEventPlannerBase
 {
 public:
-	
 	FVirtualMeshEventPlanner(const uint32 VoxelLine,
-		const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels, bool ShowBorders);
+		const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels);
+	
+	void UpdateInternalState(const EBorderVisualizationOption BorderVisualization, const uint32 VoxelLineParam, const uint32 VoxelPlaneParam,
+	const uint32 MaxVoxelsInChunkParam);
 	
 	void AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits);
 	
@@ -65,30 +68,31 @@ public:
 		 const FRLEVoxel& CurrentVoxelSample,
 		EFaceDirection Direction,
 		FIntVector SideChunkBorderPosition, bool BorderCondition);
+	
+	void InternalReset();
 
 private:
-	bool ShowBorders = false;
 
 	// After reaching closest end, updates it and sets next voxel interval to next
 	// End is equivalent to event in Discrete Event Simulation 
 		
 	FMeshingEvent MeshingEvents[EventIndexCount];
+	
 	uint32 IndexSequenceBetweenEvents = 0;
 	FRLEVoxel* PreviousVoxelRun = nullptr;
-	
 	FIntVector CurrentVoxelPosition = FIntVector(0, 0, 0);
-
 	uint32 ContinueEditIndex = 0;
 	bool EditEnabled = false;
 	FIntVector PreviousPosition = FIntVector(0, 0, 0);
 		
 	TStaticArray<TArray<FVirtualVoxelFaceContainer>, CHUNK_FACE_COUNT> VirtualFaces;
 	
-	const uint32 VoxelLine = 0;
-	const uint32 VoxelPlane = 0;
-	const uint32 MaxVoxelsInChunk = 0;
+	uint32 VoxelLine = 0;
+	uint32 VoxelPlane = 0;
+	uint32 MaxVoxelsInChunk = 0;
+	EBorderVisualizationOption BorderVisualization = EBorderVisualizationOption::None;
 	
-	TArray<FVirtualVoxelFace> FirstArray;
-	TArray<FVirtualVoxelFace> SecondArray;
+	TArray<FVirtualVoxelFace> FirstDirectionalMeshingHelperArray;
+	TArray<FVirtualVoxelFace> SecondDirectionalMeshingHelperArray;
 };
 	

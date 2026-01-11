@@ -91,7 +91,7 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 
 	MesherVars.SpawnerPtr = this;
 	MesherVars.OriginalChunk = Chunk;
-	MesherVars.ShowBorders = ShowBorders;
+	MesherVars.ShowBorders = BorderVisualization;
 	MesherVars.WorldTransform = UseWorldCenter;
 
 	AddChunksFromGrid(MesherVars, FFaceToDirection::TopDirection);
@@ -124,7 +124,7 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 
 	//Mesh could be spawned on a Async Thread similarly to voxel models but it is not done so to showcase real time speed of mesh generation (requirement for bachelor thesis)
 	MesherVars.OriginalChunk->ChunkMeshActor->SetVoxelGenerator(VoxelGenerator);
-	MesherVars.OriginalChunk->ChunkMeshActor->GenerateMesh(MesherVars, VoxelEdits, ShowBorders);
+	MesherVars.OriginalChunk->ChunkMeshActor->GenerateMesh(MesherVars, VoxelEdits, BorderVisualization);
 
 	EnqueueChunkActor(Chunk->ChunkMeshActor);
 	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)

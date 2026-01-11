@@ -16,15 +16,13 @@ class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
 
 public:
 	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
-	                          TArray<FRLEVoxelEdit>& VoxelChanges, bool ShowBorders) override;
+	                          TArray<FRLEVoxelEdit>& VoxelChanges, EBorderVisualizationOption BorderVisualization) override;
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
 
 	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition) override;
 
 PRIVATE_MODIFIER:
-
+	FCriticalSection CriticalSection;
 	TSharedPtr<TArray<FRLEVoxel>> RLEVoxelGrid;
-	
-	static TQueue<TSharedPtr<FVirtualMeshEventPlanner>, EQueueMode::Mpsc> UnusedMeshersPool;
 };

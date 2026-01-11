@@ -23,14 +23,14 @@ void FVirtualMeshEventPlanner::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelE
 }
 
 FVirtualMeshEventPlanner::FVirtualMeshEventPlanner(const uint32 VoxelLine,
-	const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels, bool ShowBorders)
-	: ShowBorders(ShowBorders), VoxelLine(VoxelLine), VoxelPlane(VoxelPlane), MaxVoxelsInChunk(MaxNumberOfVoxels)
+                                                   const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels)
+	: VoxelLine(VoxelLine), VoxelPlane(VoxelPlane), MaxVoxelsInChunk(MaxNumberOfVoxels)
 {
 	constexpr int EstimatedRows = 3;
-		
-	FirstArray.Reserve(VoxelLine * EstimatedRows);
-	SecondArray.Reserve(VoxelLine * EstimatedRows);
-	
+
+	FirstDirectionalMeshingHelperArray.Reserve(VoxelLine * EstimatedRows);
+	SecondDirectionalMeshingHelperArray.Reserve(VoxelLine * EstimatedRows);
+
 	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
 		for (uint32 y = 0; y < VoxelLine; y++)
@@ -40,8 +40,20 @@ FVirtualMeshEventPlanner::FVirtualMeshEventPlanner(const uint32 VoxelLine,
 	}
 }
 
-void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid, 
-	TArray<FRLEVoxelEdit>& VoxelEdits)
+void FVirtualMeshEventPlanner::UpdateInternalState(const EBorderVisualizationOption BorderVisualizationParam,
+                                                   const uint32 VoxelLineParam, const uint32 VoxelPlaneParam,
+                                                   const uint32 MaxVoxelsInChunkParam)
+{
+	BorderVisualization = BorderVisualizationParam;
+	VoxelLine = VoxelLineParam;
+	VoxelPlane = VoxelPlaneParam;
+	MaxVoxelsInChunk = MaxVoxelsInChunkParam;
+
+	InternalReset();
+}
+
+void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid,
+                                                   TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	TSharedPtr<TArray<FRLEVoxel>> MainVoxelGrid;
 	// Set first run to trigger first condition in while loop
@@ -51,24 +63,24 @@ void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>
 		constexpr int PreallocationEstimation = 3;
 		NewVoxelGrid->Reserve(RLEVoxelGrid->Num() + VoxelEdits.Num() * PreallocationEstimation);
 		EditEnabled = true;
-    
+
 		auto VoxelEdit = VoxelEdits.Pop();
 		int CopyVoxelRunIndex = -1;
 		TSharedPtr<TArray<FRLEVoxel>> EditEventArray = MakeShared<TArray<FRLEVoxel>>();
-    
+
 		EditEventArray->Push(VoxelEdit.EditVoxel);
 		MeshingEvents[EMeshingEventIndex::EditEvent] = {EditEventArray, VoxelEdit.EditEventIndex, 0};
-    
+
 		CopyVoxelRunIndex++;
 		auto CopyVoxel = (*RLEVoxelGrid)[CopyVoxelRunIndex];
 		uint32 Offset = 0;
 		// First voxel in a chunk
-    
+
 		// TODO: fix and create test for this
 		if (VoxelEdit.EditEventIndex == 0)
 		{
 			NewVoxelGrid->Add(VoxelEdit.EditVoxel);
-    
+
 			uint32 RemainingIndex = CopyVoxel.RunLenght;
 			while (VoxelEdit.EditVoxel.RunLenght > RemainingIndex)
 			{
@@ -77,11 +89,11 @@ void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>
 				CopyVoxel = (*RLEVoxelGrid)[CopyVoxelRunIndex];
 				RemainingIndex += CopyVoxel.RunLenght;
 			}
-    
+
 			AdvanceEditInterval(VoxelEdits);
-    
+
 			CopyVoxel.RunLenght = RemainingIndex - VoxelEdit.EditVoxel.RunLenght;
-    
+
 			if (NewVoxelGrid->Last().Voxel == CopyVoxel.Voxel)
 			{
 				NewVoxelGrid->Last().RunLenght += CopyVoxel.RunLenght;
@@ -95,10 +107,11 @@ void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>
 		{
 			NewVoxelGrid->Add(CopyVoxel);
 		}
-    
+
 		MeshingEvents[EMeshingEventIndex::CopyEvent] = {RLEVoxelGrid, Offset, CopyVoxelRunIndex};
 		MainVoxelGrid = NewVoxelGrid;
-	}else
+	}
+	else
 	{
 		MainVoxelGrid = RLEVoxelGrid;
 	}
@@ -110,19 +123,19 @@ void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>
 
 void FVirtualMeshEventPlanner::GenerateVirtualFaces(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
 {
-	#if CPUPROFILERTRACE_ENABLED
-    	TRACE_CPUPROFILER_EVENT_SCOPE("RLE Meshing - RunDirectionalMeshing from RLECompression generation")
-    #endif
-	
+#if CPUPROFILERTRACE_ENABLED
+	TRACE_CPUPROFILER_EVENT_SCOPE("RLE Meshing - RunDirectionalMeshing from RLECompression generation")
+#endif
+
 	// Traverse through voxel grid
 	while (CurrentMeshingEventIndex < MaxVoxelsInChunk)
 	{
 		// TODO: try to rewrite using substraction
 		CurrentVoxelPosition = FIntVector(
-			CurrentMeshingEventIndex / (VoxelPlane), 
+			CurrentMeshingEventIndex / (VoxelPlane),
 			CurrentMeshingEventIndex % VoxelLine,
 			((CurrentMeshingEventIndex / VoxelLine) % VoxelLine));
-		TraverseYDirection( BorderParameters, VoxelEdits);
+		TraverseYDirection(BorderParameters, VoxelEdits);
 	}
 }
 
@@ -137,7 +150,6 @@ void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameter
 		// Edit Interval
 		if (EditEnabled)
 		{
-			// TODO: check edit
 			EditVoxelGrid(VoxelEdits);
 		}
 
@@ -156,7 +168,8 @@ void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameter
 	if (!PreviousVoxelRun->IsVoxelEmpty())
 	{
 		// Right Border
-		CreateBorder(BorderParameters, CurrentVoxelPosition,1, *PreviousVoxelRun, EFaceDirection::Right, FIntVector(CurrentVoxelPosition.X, 0, CurrentVoxelPosition.Z), true);
+		CreateBorder(BorderParameters, CurrentVoxelPosition, 1, *PreviousVoxelRun, EFaceDirection::Right,
+		             FIntVector(CurrentVoxelPosition.X, 0, CurrentVoxelPosition.Z), true);
 	}
 }
 
@@ -190,34 +203,35 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 			// Left border
 			FIntVector BorderVoxelPosition = CurrentVoxelPosition;;
 			BorderVoxelPosition.Y = VoxelLine - 1;
-			
-			CreateBorder(BorderParameters, CurrentVoxelPosition, 1, LeadingEventVoxel, 
+
+			CreateBorder(BorderParameters, CurrentVoxelPosition, 1, LeadingEventVoxel,
 			             EFaceDirection::Left, BorderVoxelPosition, CurrentVoxelPosition.Y == 0);
 
 			// Front border
 			BorderVoxelPosition = CurrentVoxelPosition;;
 			BorderVoxelPosition.X = 0;
-			CreateBorder(BorderParameters, CurrentVoxelPosition + FIntVector(1,0,0), IndexSequenceBetweenEvents, LeadingEventVoxel, EFaceDirection::Front, 
-				BorderVoxelPosition, CurrentVoxelPosition.X == VoxelLine - 1);
+			CreateBorder(BorderParameters, CurrentVoxelPosition + FIntVector(1, 0, 0), IndexSequenceBetweenEvents,
+			             LeadingEventVoxel, EFaceDirection::Front,
+			             BorderVoxelPosition, CurrentVoxelPosition.X == VoxelLine - 1);
 
 			// Top border
-			BorderVoxelPosition = CurrentVoxelPosition;;
+			BorderVoxelPosition = CurrentVoxelPosition;
 			BorderVoxelPosition.Z = 0;
-			CreateBorder( BorderParameters, CurrentVoxelPosition + FIntVector(0,0,1), IndexSequenceBetweenEvents, LeadingEventVoxel,
-			             EFaceDirection::Top, BorderVoxelPosition, CurrentVoxelPosition.Z == VoxelLine - 1);
+			CreateBorder(BorderParameters, CurrentVoxelPosition + FIntVector(0, 0, 1), IndexSequenceBetweenEvents,
+			             LeadingEventVoxel, EFaceDirection::Top, 
+			             BorderVoxelPosition, CurrentVoxelPosition.Z + 1 == VoxelLine);
 
 			// Bottom border
-			BorderVoxelPosition = CurrentVoxelPosition;;
-			BorderVoxelPosition.Z =  VoxelLine - 1;
-			CreateBorder(BorderParameters, CurrentVoxelPosition, IndexSequenceBetweenEvents, LeadingEventVoxel, 
-			              EFaceDirection::Bottom, BorderVoxelPosition, CurrentVoxelPosition.Z == 0);
+			BorderVoxelPosition = CurrentVoxelPosition;
+			BorderVoxelPosition.Z = VoxelLine - 1;
+			CreateBorder(BorderParameters, CurrentVoxelPosition, IndexSequenceBetweenEvents, LeadingEventVoxel,
+			             EFaceDirection::Bottom, BorderVoxelPosition, CurrentVoxelPosition.Z == 0);
 
 			//Back borders
-			BorderVoxelPosition = CurrentVoxelPosition;;
-			BorderVoxelPosition.X =  VoxelLine - 1;
+			BorderVoxelPosition = CurrentVoxelPosition;
+			BorderVoxelPosition.X = VoxelLine - 1;
 			CreateBorder(BorderParameters, CurrentVoxelPosition, IndexSequenceBetweenEvents, LeadingEventVoxel,
-			            EFaceDirection::Back, BorderVoxelPosition, CurrentVoxelPosition.X == 0);
-			
+			             EFaceDirection::Back, BorderVoxelPosition, CurrentVoxelPosition.X == 0);
 		}
 
 		PreviousPosition = CurrentVoxelPosition;
@@ -232,7 +246,7 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 		           CurrentVoxelPosition.Z != 0 && !IsFollowingZEmpty && (IsLeadingEmpty || (IsLeadingTransparent && !
 			           IsFollowingZTransparent)), CurrentVoxelPosition.Z);
 
-		CreateFace( EFaceDirection::Back,
+		CreateFace(EFaceDirection::Back,
 		           LeadingEventVoxel, IndexSequenceBetweenEvents,
 		           CurrentVoxelPosition.X != 0 && !IsLeadingEmpty && (IsFollowingXEmpty || (!IsLeadingTransparent &&
 			           IsFollowingXTransparent)), CurrentVoxelPosition.X);
@@ -250,11 +264,13 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 }
 
 void FVirtualMeshEventPlanner::CreateFace(
-	const EFaceDirection FaceIndex, const FRLEVoxel& RLEVoxel, const int YEnd, const bool CanGenerate, int VoxelPlanePosition)
+	const EFaceDirection FaceIndex, const FRLEVoxel& RLEVoxel, const int YEnd, const bool CanGenerate,
+	int VoxelPlanePosition)
 {
 	if (CanGenerate)
 	{
-		VirtualFaces[FaceIndex][VoxelPlanePosition].AddNewVirtualFace(FaceIndex, RLEVoxel.Voxel, CurrentVoxelPosition, YEnd);
+		VirtualFaces[FaceIndex][VoxelPlanePosition].AddNewVirtualFace(FaceIndex, RLEVoxel.Voxel, CurrentVoxelPosition,
+		                                                              YEnd);
 	}
 }
 
@@ -337,38 +353,54 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 }
 
 void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters,
-	FIntVector VoxelPosition, uint32 YEnd,
-	 const FRLEVoxel& CurrentVoxelSample,
-	EFaceDirection Direction,
-	FIntVector SideChunkBorderPosition, bool BorderCondition)
+                                            FIntVector VoxelPosition, uint32 YEnd,
+                                            const FRLEVoxel& CurrentVoxelSample,
+                                            EFaceDirection Direction,
+                                            FIntVector SideChunkBorderPosition, bool BorderCondition)
 {
 	if (BorderCondition)
 	{
 		auto Mesher = BorderParameters.SideMeshers[Direction];
-		
-		bool CanGenerate = ShowBorders && Mesher == nullptr;
+
 		auto& CurrentVoxel = CurrentVoxelSample.Voxel;
-		
+
 		// This for loop may be removed in the future if someone will implement interval checking in between borders
 		for (uint32 y = 0; y < YEnd; y++)
 		{
-			if (!CanGenerate && Mesher != nullptr) 
-			{
-				auto BorderVoxel = Mesher->GetBorderVoxel(BorderParameters.BorderIndexParams[Direction], SideChunkBorderPosition);
+			bool CanGenerate = BorderVisualization == EBorderVisualizationOption::All || BorderVisualization ==
+				EBorderVisualizationOption::OnlyOuterBorders && Mesher == nullptr;
 
-				CanGenerate = BorderVoxel.IsEmptyVoxel() || (BorderVoxel.IsTransparent() && !CurrentVoxel.IsTransparent());
+			if (!CanGenerate && Mesher != nullptr)
+			{
+				auto BorderVoxel = Mesher->GetBorderVoxel(BorderParameters.BorderIndexParams[Direction],
+				                                          SideChunkBorderPosition);
+
+				CanGenerate = BorderVoxel.IsEmptyVoxel() || (BorderVoxel.IsTransparent() && !CurrentVoxel.
+					IsTransparent());
 			}
 			SideChunkBorderPosition.Y++;
-			
+
 			if (CanGenerate)
 			{
 				// If checking intervals is implement run may be larger than 1
 				constexpr int RunLenght = 1;
 				VirtualFaces[Direction][0].AddNewVirtualFace(Direction, CurrentVoxel, VoxelPosition, RunLenght);
 			}
-			VoxelPosition.Y ++;
+			VoxelPosition.Y++;
 		}
 	}
+}
+
+void FVirtualMeshEventPlanner::InternalReset()
+{
+	Reset();
+
+	IndexSequenceBetweenEvents = 0;
+	PreviousVoxelRun = nullptr;
+	CurrentVoxelPosition = FIntVector(0, 0, 0);
+	ContinueEditIndex = 0;
+	EditEnabled = false;
+	PreviousPosition = FIntVector(0, 0, 0);
 }
 
 void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
@@ -383,16 +415,16 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 			&& !LeadingMeshingEventVoxel.IsVoxelEmpty()) && CurrentVoxelPosition.Y != 0)
 		{
 			VirtualFaces[EFaceDirection::Left][CurrentVoxelPosition.Y].AddNewVirtualFace(EFaceDirection::Left,
-						   LeadingMeshingEventVoxel.Voxel, CurrentVoxelPosition, IndexSequenceBetweenEvents);
+				LeadingMeshingEventVoxel.Voxel, CurrentVoxelPosition, IndexSequenceBetweenEvents);
 		}
 
 		// Right
 		int VoxelPlaneIndex = PreviousPosition.Y + IndexSequenceBetweenEvents;
 		if (!PreviousVoxelRun->IsVoxelEmpty() && (LeadingMeshingEventVoxel.Voxel.IsEmptyVoxel() ||
-				LeadingMeshingEventVoxel.Voxel.IsTransparent()) && VoxelPlaneIndex != VoxelLine) 
+			LeadingMeshingEventVoxel.Voxel.IsTransparent()) && VoxelPlaneIndex != VoxelLine)
 		{
 			VirtualFaces[EFaceDirection::Right][VoxelPlaneIndex].AddNewVirtualFace(EFaceDirection::Right,
-						    PreviousVoxelRun->Voxel, PreviousPosition, IndexSequenceBetweenEvents + 1);
+				PreviousVoxelRun->Voxel, PreviousPosition, IndexSequenceBetweenEvents + 1);
 		}
 	}
 
@@ -404,17 +436,20 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 }
 
 void FVirtualMeshEventPlanner::DirectionalGreedyMerge(FVoxelMeshContainer& VoxelMeshContainer,
-	const double VoxelSize)
+                                                      const double VoxelSize)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Meshing - Directional Greedy Merge");
 #endif
-	
+
 	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
 	{
 		for (uint32 y = 0; y < VoxelLine; y++)
 		{
-			VirtualFaces[f][y].DirectionalGreedyMergeForVoxelPlane(FirstArray, SecondArray, VoxelMeshContainer, static_cast<EFaceDirection>(f), VoxelSize, MaxVoxelsInChunk);
+			VirtualFaces[f][y].DirectionalGreedyMergeForVoxelPlane(FirstDirectionalMeshingHelperArray,
+			                                                       SecondDirectionalMeshingHelperArray,
+			                                                       VoxelMeshContainer, static_cast<EFaceDirection>(f),
+			                                                       VoxelSize, MaxVoxelsInChunk);
 		}
 	}
 }

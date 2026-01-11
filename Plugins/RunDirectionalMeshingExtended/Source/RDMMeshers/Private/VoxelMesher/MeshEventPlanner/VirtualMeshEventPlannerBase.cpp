@@ -5,6 +5,12 @@ void FVirtualMeshEventPlannerBase::TryUpdateNextMeshingEvent(const uint32 EventI
 	NextMeshingEventIndex = FMath::Min(EventIndex, NextMeshingEventIndex);
 }
 
+void FVirtualMeshEventPlannerBase::Reset()
+{
+	CurrentMeshingEventIndex = 0;
+	NextMeshingEventIndex = 0;
+}
+
 bool FVirtualMeshEventPlannerBase::AdvanceMeshingEvent(FMeshingEvent& MeshingEvent)
 {
 	bool EventAdvanced = false;

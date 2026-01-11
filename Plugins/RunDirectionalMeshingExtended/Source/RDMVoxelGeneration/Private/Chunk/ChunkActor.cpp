@@ -64,7 +64,7 @@ void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
 	}
 }
 
-void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits, bool ShowBorders) const
+void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits,  EBorderVisualizationOption BorderVisualization) const
 {
 	auto& VoxelMesher = MeshVars.OriginalChunk->VoxelMesher;
 	if (VoxelMesher->bEnableVoxelMeshing)
@@ -87,7 +87,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		}
 		
 		VoxelMesher->GenerateMesh(MeshVars.MeshContainer, BorderParams,
-		                          VoxelEdits, ShowBorders);
+		                          VoxelEdits, BorderVisualization);
 		
 		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor,
 					   MeshVars.MeshContainer);
