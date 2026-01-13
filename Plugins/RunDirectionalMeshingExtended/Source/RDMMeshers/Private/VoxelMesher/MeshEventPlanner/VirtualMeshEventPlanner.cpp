@@ -130,11 +130,12 @@ void FVirtualMeshEventPlanner::GenerateVirtualFaces(FBorderParams& BorderParamet
 	// Traverse through voxel grid
 	while (CurrentMeshingEventIndex < MaxVoxelsInChunk)
 	{
-		// TODO: try to rewrite using substraction
-		CurrentVoxelPosition = FIntVector(
-			CurrentMeshingEventIndex / (VoxelPlane),
-			CurrentMeshingEventIndex % VoxelLine,
-			((CurrentMeshingEventIndex / VoxelLine) % VoxelLine));
+		CurrentVoxelPosition.X = CurrentMeshingEventIndex / (VoxelPlane);
+		const int PosX = CurrentVoxelPosition.X * VoxelPlane;
+		CurrentVoxelPosition.Z = (CurrentMeshingEventIndex - PosX) / VoxelLine;
+		const int PosZ = CurrentVoxelPosition.Z * VoxelLine;
+		CurrentVoxelPosition.Y = CurrentMeshingEventIndex - PosX - PosZ;
+		
 		TraverseYDirection(BorderParameters, VoxelEdits);
 	}
 }
