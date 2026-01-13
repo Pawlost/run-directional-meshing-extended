@@ -1,5 +1,4 @@
 ﻿#include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
-
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 
 const FVoxelMeshContainer::FNormalsAndTangents FVoxelMeshContainer::FaceNormalsAndTangents[] = {
@@ -12,7 +11,7 @@ const FVoxelMeshContainer::FNormalsAndTangents FVoxelMeshContainer::FaceNormalsA
 };
 
 void FVoxelMeshContainer::AddVirtualFaceToMesh(const FVirtualVoxelFace& Face, const EFaceDirection FaceIndex,
-	const double VoxelSize, int MaxNumberVoxels)
+                                               const double VoxelSize, int MaxNumberVoxels)
 {
 	const auto& Voxel = Face.Voxel;
 	// TODO: remove
@@ -25,7 +24,7 @@ void FVoxelMeshContainer::AddVirtualFaceToMesh(const FVirtualVoxelFace& Face, co
 		auto NewSection = MakeShared<FProcMeshSectionVars>(MaxNumberVoxels, VoxelTable.Num());
 		ProcMeshVars = &VoxelTable.Add(Voxel, NewSection);
 	}
-	
+
 	auto& QuadSection = **ProcMeshVars;
 	auto [Normal, Tangent] = FaceNormalsAndTangents[FaceIndex];
 	auto& TriangleIndex = QuadSection.GlobalTriangleIndex;

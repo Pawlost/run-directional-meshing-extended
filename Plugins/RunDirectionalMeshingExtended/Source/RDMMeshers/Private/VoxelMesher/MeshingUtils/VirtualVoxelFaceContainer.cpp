@@ -1,5 +1,4 @@
 ﻿#include "VoxelMesher/MeshingUtils//VirtualVoxelFaceContainer.h"
-
 #include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
 
 FStaticMergeData FVirtualVoxelFaceContainer::MeshingDataArray[] = {
@@ -14,17 +13,17 @@ FVirtualVoxelFaceContainer::FVirtualVoxelFaceContainer(uint32 VoxelPlane)
 }
 
 void FVirtualVoxelFaceContainer::AddNewVirtualFace(const int FaceIndex, const FVoxel Voxel, const FIntVector& Position,
-	const int Lenght)
+                                                   const int Lenght)
 {
 	auto& MeshingData = MeshingDataArray[FaceIndex];
 	const FVirtualVoxelFace NewFace = MeshingData.FaceCreator(Voxel, Position, Lenght);
-	
+
 	// TODO: remove after unit tests
 	auto VoxelId = NewFace.Voxel.VoxelId;
 	check(VoxelId != 0);
-	
+
 	// Generate new face with coordinates
-	if (VirtualVoxelFaces.IsEmpty() || !MeshingData.RunDirectionFaceMerge( VirtualVoxelFaces.Last(), NewFace))
+	if (VirtualVoxelFaces.IsEmpty() || !MeshingData.RunDirectionFaceMerge(VirtualVoxelFaces.Last(), NewFace))
 	{
 		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
 		// Return when new face was merged
@@ -33,12 +32,13 @@ void FVirtualVoxelFaceContainer::AddNewVirtualFace(const int FaceIndex, const FV
 }
 
 void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
-	TArray<FVirtualVoxelFace>& FirstArray, TArray<FVirtualVoxelFace>& SecondArray, FVoxelMeshContainer& VoxelMeshContainer,
-	 const EFaceDirection FaceDirection, const double VoxelSize, const int MaxVoxelsInChunk)
+	TArray<FVirtualVoxelFace>& FirstArray, TArray<FVirtualVoxelFace>& SecondArray,
+	FVoxelMeshContainer& VoxelMeshContainer,
+	const EFaceDirection FaceDirection, const double VoxelSize, const int MaxVoxelsInChunk)
 {
 	TArray<FVirtualVoxelFace>* ActiveArray = &FirstArray;
 	TArray<FVirtualVoxelFace>* PassiveArray = &SecondArray;
-	
+
 	auto& MeshingData = MeshingDataArray[FaceDirection];
 
 	// Iterate from last face
@@ -73,7 +73,7 @@ void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
 					VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
 				}
 			}
-			
+
 			PassiveArray->Push(PrevFace);
 			Swap(PassiveArray, ActiveArray);
 		}

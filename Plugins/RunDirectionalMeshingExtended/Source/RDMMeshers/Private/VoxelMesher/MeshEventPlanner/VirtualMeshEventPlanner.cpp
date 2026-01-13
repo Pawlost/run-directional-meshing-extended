@@ -6,19 +6,15 @@ void FVirtualMeshEventPlanner::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelE
 {
 	auto& EditEvent = MeshingEvents[EMeshingEventIndex::EditEvent];
 
+	constexpr int Offset = 1;
+	EditEvent.LastEventIndex = MaxVoxelsInChunk + Offset;
+
 	if (!VoxelEdits.IsEmpty())
 	{
-		auto VoxelEdit = VoxelEdits.Pop();
-		EditEvent.LastEventIndex = VoxelEdit.EditEventIndex;
-		// TODO: rewrite empty
+		const auto& [EditEventIndex, EditVoxel] = VoxelEdits.Pop(EAllowShrinking::No);
+		EditEvent.LastEventIndex = EditEventIndex;
 		// must remain empty because only one edit can be active at time
-		EditEvent.VoxelGridPtr->Empty();
-		EditEvent.VoxelGridPtr->Push(VoxelEdit.EditVoxel);
-	}
-	else
-	{
-		constexpr int Offset = 1;
-		EditEvent.LastEventIndex = MaxVoxelsInChunk + Offset;
+		(*EditEvent.VoxelGridPtr)[0] = EditVoxel;
 	}
 }
 
@@ -135,7 +131,7 @@ void FVirtualMeshEventPlanner::GenerateVirtualFaces(FBorderParams& BorderParamet
 		CurrentVoxelPosition.Z = (CurrentMeshingEventIndex - PosX) / VoxelLine;
 		const int PosZ = CurrentVoxelPosition.Z * VoxelLine;
 		CurrentVoxelPosition.Y = CurrentMeshingEventIndex - PosX - PosZ;
-		
+
 		TraverseYDirection(BorderParameters, VoxelEdits);
 	}
 }
@@ -219,7 +215,7 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 			BorderVoxelPosition = CurrentVoxelPosition;
 			BorderVoxelPosition.Z = 0;
 			CreateBorder(BorderParameters, CurrentVoxelPosition + FIntVector(0, 0, 1), IndexSequenceBetweenEvents,
-			             LeadingEventVoxel, EFaceDirection::Top, 
+			             LeadingEventVoxel, EFaceDirection::Top,
 			             BorderVoxelPosition, CurrentVoxelPosition.Z + 1 == VoxelLine);
 
 			// Bottom border
