@@ -2,7 +2,7 @@
 
 #include "Chunk/Chunk.h"
 #include "Noise/NoiseSurfaceGenerator.h"
-#include "VoxelMesher/VoxelMesherBase.h"
+#include "VoxelMesher/VirtualChunk.h"
 
 void UNoiseVoxelGridGenerator::BeginPlay()
 {

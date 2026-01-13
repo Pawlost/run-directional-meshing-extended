@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "MesherVariables.h"
 #include "ProceduralMeshComponent.h"
-#include "VoxelMesher/VoxelMesherBase.h"
+#include "VoxelMesher/VirtualChunk.h"
 #include "ChunkActor.generated.h"
 
 class UVoxelGeneratorBase;

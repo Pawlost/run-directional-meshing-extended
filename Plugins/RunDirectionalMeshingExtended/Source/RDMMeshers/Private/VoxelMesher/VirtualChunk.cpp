@@ -1,7 +1,7 @@
-﻿#include "VoxelMesher/VoxelMesherBase.h"
+﻿#include "VoxelMesher/VirtualChunk.h"
 #include "BaseVoxelData.h"
 
-void UVoxelMesherBase::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase)
+void UVirtualChunk::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase)
 {
 	this->VoxelData = VoxelGeneratorBase;
 	//UpdateAllFacesParams();
@@ -39,7 +39,7 @@ void UVoxelMesherBase::UpdateAllFacesParams()
 	                 FIntVector(0, -1, 0));
 }*/
 
-void UVoxelMesherBase::UpdateFaceParams(FMeshingDirections& Face, const FIntVector ForwardVoxelIndexVector,
+void UVirtualChunk::UpdateFaceParams(FMeshingDirections& Face, const FIntVector ForwardVoxelIndexVector,
                                         const FIntVector ChunkBorderIndexVector,
                                         const FIntVector PreviousVoxelIndexVector) const
 {

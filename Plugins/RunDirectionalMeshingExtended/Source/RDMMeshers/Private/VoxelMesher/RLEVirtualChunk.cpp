@@ -1,10 +1,10 @@
-﻿#include "VoxelMesher/RLERunDirectionalVoxelMesher.h"
+﻿#include "VoxelMesher/RLEVirtualChunk.h"
 #include "VoxelMesher/RunDirectionalVoxelMesher.h"
 #include "Voxel/RLEVoxel.h"
 
 static TArray<TSharedPtr<FVirtualMeshEventPlanner>> UnusedMeshersPool;
 
-void URLERunDirectionalVoxelMesher::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
+void URLEVirtualChunk::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("RLE compression generation")
@@ -35,7 +35,7 @@ void URLERunDirectionalVoxelMesher::CompressVoxelModel(TArray<FVoxel>& VoxelGrid
 }
 
 // persistent preallocation must be maintained
-void URLERunDirectionalVoxelMesher::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
+void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
                                                  TArray<FRLEVoxelEdit>& VoxelEdits, EBorderVisualizationOption BorderVisualization)
 {
 	// This scope may start in a parallel task
@@ -81,7 +81,7 @@ void URLERunDirectionalVoxelMesher::GenerateMesh(FVoxelMeshContainer& MeshContai
 	}
 }
 
-FVoxel URLERunDirectionalVoxelMesher::GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition)
+FVoxel URLEVirtualChunk::GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition)
 {
 	const uint32 MaxChunkVoxelSequence = VoxelData->GetVoxelCountPerChunk();
 

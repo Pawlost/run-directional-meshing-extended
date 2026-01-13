@@ -1,5 +1,5 @@
 ﻿#include "VoxelMesher/MeshEventPlanner/VirtualMeshEventPlanner.h"
-#include "VoxelMesher/VoxelMesherBase.h"
+#include "VoxelMesher/VirtualChunk.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
 
 void FVirtualMeshEventPlanner::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits)

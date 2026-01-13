@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "VoxelMesher/RLERunDirectionalVoxelMesher.h"
-#include "VoxelMesher/VoxelMesherBase.h"
+#include "VoxelMesher/RLEVirtualChunk.h"
+#include "VoxelMesher/VirtualChunk.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 #include "VoxelModel/RLEVoxelGrid.h"
@@ -31,15 +31,15 @@ struct RDMVOXELGENERATION_API FChunk
 	bool bIsActive = false;
 	
 	UPROPERTY()
-	TObjectPtr<UVoxelMesherBase> VoxelMesher;
+	TObjectPtr<UVirtualChunk> VoxelMesher;
 	
-	void InitVoxelMesher(const TSubclassOf<UVoxelMesherBase>& VoxelMesherBlueprint, const TObjectPtr<UBaseVoxelData>&  BaseVoxelData)
+	void InitVoxelMesher(const TSubclassOf<UVirtualChunk>& VoxelMesherBlueprint, const TObjectPtr<UBaseVoxelData>&  BaseVoxelData)
 	{
 		checkf(VoxelMesherBlueprint, TEXT("Mesher blueprint must be set"));
 		if (VoxelMesherBlueprint)
 		{
 			// Register mesher
-			VoxelMesher = NewObject<URLERunDirectionalVoxelMesher>(VoxelMesherBlueprint);
+			VoxelMesher = NewObject<URLEVirtualChunk>(VoxelMesherBlueprint);
 			VoxelMesher->SetVoxelGenerator(BaseVoxelData);
 		}
 	}

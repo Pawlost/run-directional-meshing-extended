@@ -1,7 +1,7 @@
 ﻿#include "VoxelGeneratorBase.h"
 
 #include "Chunk/MesherVariables.h"
-#include "VoxelMesher/VoxelMesherBase.h"
+#include "VoxelMesher/VirtualChunk.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 

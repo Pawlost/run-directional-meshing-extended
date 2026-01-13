@@ -1,7 +1,7 @@
 #include "DatasetGenerators/SphereVoxelGenerator.h"
 
 #include "DatasetGenerators/ChessboardVoxelGenerator.h"
-#include "VoxelMesher/VoxelMesherBase.h"
+#include "VoxelMesher/VirtualChunk.h"
 
 void USphereVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {

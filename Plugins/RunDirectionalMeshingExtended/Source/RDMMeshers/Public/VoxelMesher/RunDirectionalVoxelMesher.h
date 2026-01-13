@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "VoxelMesherBase.h"
+#include "VirtualChunk.h"
 #include "RunDirectionalVoxelMesher.generated.h"
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)
-class RDMMESHERS_API URunDirectionalVoxelMesher : public UVoxelMesherBase
+class RDMMESHERS_API URunDirectionalVoxelMesher : public UVirtualChunk
 {
 	GENERATED_BODY()
 

@@ -1,5 +1,5 @@
 ﻿#include "Single/SingleVoxelGenerator.h"
-#include "VoxelMesher/VoxelMesherBase.h"
+#include "VoxelMesher/VirtualChunk.h"
 
 void USingleVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {

@@ -82,7 +82,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 			auto& SideChunk= MeshVars.SideChunks[i];
 			if (SideChunk != nullptr)
 			{
-				BorderParams.SideMeshers[i] = TStrongObjectPtr<UVoxelMesherBase>(SideChunk->VoxelMesher);
+				BorderParams.SideMeshers[i] = TStrongObjectPtr<UVirtualChunk>(SideChunk->VoxelMesher);
 			}
 		}
 		

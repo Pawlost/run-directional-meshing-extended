@@ -5,14 +5,14 @@
 #include "MeshEventPlanner/VirtualMeshEventPlanner.h"
 #include "MeshingUtils/MeshingDirections.h"
 #include "MeshingUtils/RLEVoxelEdit.h"
-#include "VoxelMesherBase.generated.h"
+#include "VirtualChunk.generated.h"
 
 class UBaseVoxelData;
 /**
   * @brief Base class for components that convert voxel models into a mesh.
   */
 UCLASS(Abstract, Blueprintable)
-class RDMMESHERS_API UVoxelMesherBase : public UActorComponent
+class RDMMESHERS_API UVirtualChunk : public UActorComponent
 {
 	GENERATED_BODY()
 

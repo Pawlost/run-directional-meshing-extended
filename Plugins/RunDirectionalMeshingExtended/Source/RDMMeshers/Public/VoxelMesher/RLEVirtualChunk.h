@@ -1,16 +1,16 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "VoxelMesherBase.h"
+#include "VirtualChunk.h"
 #include "MeshEventPlanner/VirtualMeshEventPlanner.h"
 #include "MeshingUtils/VoxelMeshContainer.h"
 #include "Voxel/RLEVoxel.h"
-#include "RLERunDirectionalVoxelMesher.generated.h"
+#include "RLEVirtualChunk.generated.h"
 
 class URLEVoxelGrid;
 struct FChunkParams;
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)
-class RDMMESHERS_API URLERunDirectionalVoxelMesher : public UVoxelMesherBase
+class RDMMESHERS_API URLEVirtualChunk : public UVirtualChunk
 {
 	GENERATED_BODY()
 

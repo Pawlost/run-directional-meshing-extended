@@ -1,7 +1,7 @@
 ﻿#include "DummyTestClasses.h"
 #include "TestData.h"
 #include "Misc/AutomationTest.h"
-#include "VoxelMesher/RLERunDirectionalVoxelMesher.h"
+#include "VoxelMesher/RLEVirtualChunk.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FRDMMeshersTests_RLERunDirectionalVoxelMesher_TestValidVoxelSequenceAfterMeshing,
@@ -164,7 +164,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_TestFaceGeneration
 	DummyRLERunDirectionalVoxelMesher->RLEVoxelGrid->Append(TestData::NoiseRLEVoxelModel);
 
 	TArray<FRLEVoxelEdit> VoxelChanges;
-	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+	TStaticArray<TStrongObjectPtr<UVirtualChunk>, CHUNK_FACE_COUNT> SideMeshers;
 	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 	TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
 
@@ -212,7 +212,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_YTraversal_NoiseVo
 	DummyRLERunDirectionalVoxelMesher->RLEVoxelGrid->Append(TestData::NoiseRLEVoxelModel);
 
 	TArray<FRLEVoxelEdit> VoxelChanges;
-	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+	TStaticArray<TStrongObjectPtr<UVirtualChunk>, CHUNK_FACE_COUNT> SideMeshers;
 	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 	TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
 	
@@ -277,7 +277,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_FaceGeneration_Noi
 	DummyRLERunDirectionalVoxelMesher->RLEVoxelGrid->Append(TestData::NoiseRLEVoxelModel);
 
 	TArray<FRLEVoxelEdit> VoxelChanges;
-	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+	TStaticArray<TStrongObjectPtr<UVirtualChunk>, CHUNK_FACE_COUNT> SideMeshers;
 	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 	TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
 
@@ -325,7 +325,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_FaceGeneration_Noi
 	DummyRLERunDirectionalVoxelMesher->RLEVoxelGrid->Append(TestData::NoiseRLEVoxelModel);
 
 	TArray<FRLEVoxelEdit> VoxelChanges;
-	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+	TStaticArray<TStrongObjectPtr<UVirtualChunk>, CHUNK_FACE_COUNT> SideMeshers;
 	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
 	TStaticArray<TSharedPtr<TArray<FVirtualVoxelFace>>, CHUNK_FACE_COUNT> SideFaces;
 

@@ -10,12 +10,12 @@
 #include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
 
 struct FVirtualMeshEventPlanner;
-class UVoxelMesherBase;
+class UVirtualChunk;
 
 struct FBorderParams
 {
 	TStaticArray<FBorderVirtualMeshEventPlanner, CHUNK_FACE_COUNT> BorderIndexParams;
-	TStaticArray<TStrongObjectPtr<UVoxelMesherBase>, CHUNK_FACE_COUNT> SideMeshers;
+	TStaticArray<TStrongObjectPtr<UVirtualChunk>, CHUNK_FACE_COUNT> SideMeshers;
 };
 
 /*

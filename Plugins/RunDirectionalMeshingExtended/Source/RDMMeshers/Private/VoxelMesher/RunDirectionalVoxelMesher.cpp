@@ -6,7 +6,7 @@ void URunDirectionalVoxelMesher::GenerateMesh(FMesherVariables& MeshVars, TArray
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RunDirectionalMeshing generation")
 #endif
 
-	const auto VoxelGridPtr = Cast<UVoxelGrid>(MeshVars.ChunkParams.OriginalChunk->VoxelModel.Get());
+	const auto VoxelGridPtr = Cast<UVoxelGrid>(MesshVars.ChunkParams.OriginalChunk->VoxelModel.Get());
 
 	if (VoxelGridPtr == nullptr)
 	{
