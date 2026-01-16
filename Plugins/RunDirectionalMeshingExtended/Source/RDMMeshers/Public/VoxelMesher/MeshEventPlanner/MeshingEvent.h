@@ -38,12 +38,17 @@ struct FMeshingEvent
 
 	FORCEINLINE void AdvanceEvent()
 	{
-		LastEventIndex = LastEventIndex + GetCurrentVoxel().RunLenght;
+		LastEventIndex = LastEventIndex + GetCurrentRLEVoxel().RunLenght;
 		VoxelRunIndex++;
 	}
 
-	FORCEINLINE FRLEVoxel& GetCurrentVoxel() const
+	FORCEINLINE FRLEVoxel& GetCurrentRLEVoxel() const
 	{
 		return (*VoxelGridPtr)[VoxelRunIndex];
+	}
+	
+	FORCEINLINE FVoxel& GetCurrentVoxel() const
+	{
+		return GetCurrentRLEVoxel().Voxel;
 	}
 };

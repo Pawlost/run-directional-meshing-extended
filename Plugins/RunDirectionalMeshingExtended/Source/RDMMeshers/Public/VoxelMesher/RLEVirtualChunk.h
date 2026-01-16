@@ -23,6 +23,7 @@ public:
 	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition) override;
 
 PRIVATE_MODIFIER:
-	FCriticalSection CriticalSection;
+	FCriticalSection MesherCriticalSection;
+	FCriticalSection GridCriticalSection;
 	TSharedPtr<TArray<FRLEVoxel>> RLEVoxelGrid;
 };

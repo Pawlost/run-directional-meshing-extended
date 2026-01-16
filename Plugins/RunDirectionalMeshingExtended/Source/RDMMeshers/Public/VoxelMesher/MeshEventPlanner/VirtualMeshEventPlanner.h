@@ -54,12 +54,10 @@ public:
 	void CreateVirtualVoxelFacesInLShape(FBorderParams& BorderParameters);
 	
 	void TraverseYDirection(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits);
-
-	void CreateFace(const EFaceDirection FaceIndex, const FRLEVoxel& RLEVoxel, const int YEnd, const bool CanGenerate, int VoxelPlanePosition);
-
+	
 	void AdvanceAllMeshingEvents();
 	
-	void DirectionalGreedyMerge(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize);
+	void ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize);
 	
 	void EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits);
 	
@@ -80,19 +78,11 @@ private:
 	
 	uint32 IndexSequenceBetweenEvents = 0;
 	FRLEVoxel* PreviousVoxelRun = nullptr;
-	FIntVector CurrentVoxelPosition = FIntVector(0, 0, 0);
 	uint32 ContinueEditIndex = 0;
 	bool EditEnabled = false;
 	FIntVector PreviousPosition = FIntVector(0, 0, 0);
 		
-	TStaticArray<TArray<FVirtualVoxelFaceContainer>, CHUNK_FACE_COUNT> VirtualFaces;
-	
-	uint32 VoxelLine = 0;
-	uint32 VoxelPlane = 0;
-	uint32 MaxVoxelsInChunk = 0;
+	TArray<FVirtualVoxelFaceContainer> VirtualFaces;
 	EBorderVisualizationOption BorderVisualization = EBorderVisualizationOption::None;
-	
-	TArray<FVirtualVoxelFace> FirstDirectionalMeshingHelperArray;
-	TArray<FVirtualVoxelFace> SecondDirectionalMeshingHelperArray;
 };
 	

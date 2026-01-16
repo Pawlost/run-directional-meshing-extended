@@ -2,20 +2,20 @@
 
 void FVirtualMeshEventPlannerBase::TryUpdateNextMeshingEvent(const uint32 EventIndex)
 {
-	NextMeshingEventIndex = FMath::Min(EventIndex, NextMeshingEventIndex);
+	NextVoxelIndex = FMath::Min(EventIndex, NextVoxelIndex);
 }
 
 void FVirtualMeshEventPlannerBase::Reset()
 {
-	CurrentMeshingEventIndex = 0;
-	NextMeshingEventIndex = 0;
+	CurrentVoxelIndex = 0;
+	NextVoxelIndex = 0;
 }
 
 bool FVirtualMeshEventPlannerBase::AdvanceMeshingEvent(FMeshingEvent& MeshingEvent)
 {
 	bool EventAdvanced = false;
 	int IntervalEventIndex = MeshingEvent.GetEventIndex();
-	if (IntervalEventIndex == CurrentMeshingEventIndex)
+	if (IntervalEventIndex == CurrentVoxelIndex)
 	{
 		// Advance interval in chunk voxel sequence
 		MeshingEvent.AdvanceEvent();

@@ -47,9 +47,10 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderP
 	const uint32 MaxVoxelsInChunk = VoxelData->GetVoxelCountPerChunk();
 	const uint32 VoxelLine = VoxelData->GetVoxelCountPerVoxelLine();
 	const uint32 VoxelPlane = VoxelData->GetVoxelCountPerVoxelPlane();
+	
 	TSharedPtr<FVirtualMeshEventPlanner> EventPlanner;
 	{
-		FScopeLock Lock(&CriticalSection);
+		FScopeLock Lock(&MesherCriticalSection);
 		if (!UnusedMeshersPool.IsEmpty())
 		{
 			EventPlanner = UnusedMeshersPool.Pop();
@@ -61,18 +62,25 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderP
 
 	EventPlanner->UpdateInternalState(BorderVisualization, VoxelLine, VoxelPlane, MaxVoxelsInChunk);
 	// Keeps all variables local inside the task scope
-	EventPlanner->InitializeIntervals(RLEVoxelGrid, VoxelEdits);
+	TSharedPtr<TArray<FRLEVoxel>> VoxelGridCopy;
+	{
+		FScopeLock Lock(&GridCriticalSection);
+		VoxelGridCopy = RLEVoxelGrid;
+	}
+	
+	EventPlanner->InitializeIntervals(VoxelGridCopy, VoxelEdits);
 	EventPlanner->GenerateVirtualFaces(BorderParameters, VoxelEdits);
 	
 	if (EventPlanner->IsEditEnabled())
 	{
+		FScopeLock Lock(&GridCriticalSection);
 		RLEVoxelGrid = EventPlanner->GetMainVoxelGridPtr();
 	}
 	
-	EventPlanner->DirectionalGreedyMerge(MeshContainer, VoxelData->VoxelSize);
+	EventPlanner->ConvertVirtualFacesToMesh(MeshContainer, VoxelData->VoxelSize);
 	
 	{
-		FScopeLock Lock(&CriticalSection);
+		FScopeLock Lock(&MesherCriticalSection);
 		constexpr int MAX_NUMBER_OF_MESHERS = 20;
 		if (UnusedMeshersPool.Num() < MAX_NUMBER_OF_MESHERS)
 		{
@@ -94,13 +102,13 @@ FVoxel URLEVirtualChunk::GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMe
 	const uint32 NextIndex = VoxelData->CalculateVoxelIndex(BorderVoxelPosition);
 	auto& BorderMeshingEvent = BorderMeshingEventPlanner.BorderMeshingEvent;
 
-	while (BorderMeshingEventPlanner.CurrentMeshingEventIndex < NextIndex)
+	while (BorderMeshingEventPlanner.CurrentVoxelIndex < NextIndex)
 	{
-		BorderMeshingEventPlanner.CurrentMeshingEventIndex = BorderMeshingEventPlanner.NextMeshingEventIndex;
-		BorderMeshingEventPlanner.NextMeshingEventIndex = MaxChunkVoxelSequence;
+		BorderMeshingEventPlanner.CurrentVoxelIndex = BorderMeshingEventPlanner.NextVoxelIndex;
+		BorderMeshingEventPlanner.NextVoxelIndex = MaxChunkVoxelSequence;
 		BorderMeshingEventPlanner.AdvanceMeshingEvent(BorderMeshingEvent);
 		BorderMeshingEventPlanner.TryUpdateNextMeshingEvent(NextIndex);
 	}
 
-	return BorderMeshingEvent.GetCurrentVoxel().Voxel;
+	return BorderMeshingEvent.GetCurrentVoxel();
 }

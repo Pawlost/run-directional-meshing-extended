@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "MeshingDirections.h"
+#include "StaticMergeData.h"
 
 struct FVoxelMeshContainer;
 
@@ -16,7 +16,7 @@ struct FVirtualVoxelFaceContainer
 	*/
 	static FStaticMergeData MeshingDataArray[CHUNK_FACE_COUNT];
 	
-	void AddNewVirtualFace(const int FaceIndex, const FVoxel Voxel, const FIntVector& Position,
+	void AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel, const FIntVector& Position,
 		const int Lenght);
 	
 	FVirtualVoxelFaceContainer(){};
@@ -26,5 +26,5 @@ struct FVirtualVoxelFaceContainer
 		TArray<FVirtualVoxelFace>& FirstArray, TArray<FVirtualVoxelFace>& SecondArray, FVoxelMeshContainer& VoxelMeshContainer,
 		 const EFaceDirection FaceDirection, const double VoxelSize, const int MaxVoxelsInChunk);
 	
-	TArray<FVirtualVoxelFace> VirtualVoxelFaces;
+	TStaticArray<TArray<FVirtualVoxelFace>, CHUNK_FACE_COUNT>  VirtualVoxelFaces;
 };

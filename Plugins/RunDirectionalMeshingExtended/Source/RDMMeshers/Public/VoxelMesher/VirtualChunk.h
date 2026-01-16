@@ -3,7 +3,6 @@
 #include "BaseVoxelData.h"
 #include "MeshEventPlanner/BorderVirtualMeshEventPlanner.h"
 #include "MeshEventPlanner/VirtualMeshEventPlanner.h"
-#include "MeshingUtils/MeshingDirections.h"
 #include "MeshingUtils/RLEVoxelEdit.h"
 #include "VirtualChunk.generated.h"
 
@@ -24,24 +23,14 @@ public:
 
 	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
 	                          TArray<FRLEVoxelEdit>& VoxelChanges,
-	                          EBorderVisualizationOption BorderVisualization) PURE_VIRTUAL(UMesherBase::GenerateMesh)
+	                          EBorderVisualizationOption BorderVisualization) PURE_VIRTUAL(UVirtualChunk::GenerateMesh)
 
-	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) PURE_VIRTUAL(UMesherBase::GenerateMesh);
+	virtual void CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid) PURE_VIRTUAL(UVirtualChunk::NewVoxelGrid);
 
 	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& IndexParams, const FIntVector& BorderVoxelPosition)
 	PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return FVoxel(););
 
 protected:
-	struct FVoxelParams
-	{
-		FVoxel CurrentVoxel;
-		FIntVector FacePosition;
-	};
-
-	//void UpdateAllFacesParams();
-	void UpdateFaceParams(FMeshingDirections& Face, FIntVector ForwardVoxelIndexVector,
-	                      FIntVector ChunkBorderIndexVector, FIntVector PreviousVoxelIndexVector) const;
-
 
 	UPROPERTY()
 	TObjectPtr<UBaseVoxelData> VoxelData;

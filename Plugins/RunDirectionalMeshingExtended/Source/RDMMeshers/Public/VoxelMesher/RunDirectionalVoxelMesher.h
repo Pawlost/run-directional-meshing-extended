@@ -8,43 +8,18 @@ class RDMMESHERS_API URunDirectionalVoxelMesher : public UVirtualChunk
 {
 	GENERATED_BODY()
 
-private:
+public:
+	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& IndexParams, const FIntVector& BorderVoxelPosition) override;
+	virtual void CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid) override;
 	
-	struct FBorderVoxelIndexParams
-	{
-		int32 SideChunkVoxelIndex;
-		FStaticMergeData StaticData;
-		FVoxelParams VoxelParams;
-	};
-	
-	struct FInnerVoxelIndexParams
-	{
-		int32 ForwardVoxelIndex;
-		int32 PreviousVoxelIndex;
-		FVoxelParams VoxelParams;
-	};
+	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
+						  TArray<FRLEVoxelEdit>& VoxelChanges,
+						  EBorderVisualizationOption BorderVisualization) override;
 
-	// static bool IsBorderVoxelVisible(const FBorderVoxelIndexParams& FaceData, const FChunkParams& ChunkStruct);
-	// static bool IsVoxelVisible(const UVoxelGrid& VoxelGridObject, const FInnerVoxelIndexParams& FaceData);
+	// void CheckBorderX(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
+	// void CheckBorderY(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
+	// void CheckBorderZ(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
 	//
-	// void IncrementRun(int X, int Y, int Z, 
-	//                   const FMeshingDirections& FaceTemplate, const FMeshingDirections& ReversedFaceTemplate,
-	//                   const FMesherVariables& MeshVars, const UVoxelGrid& VoxelGridObject) const;
-	//
-	// static void CheckVoxelNeighborhood(const UVoxelGrid& VoxelGridObject, const FMeshingDirections& FaceTemplate,
-	// 					const int32& Index, const FVoxelParams& VoxelParams,
-	//                     const TSharedPtr<TArray<FVirtualVoxelFace>>& ChunkFaces);
-	//
-	//
-	// void FaceGeneration(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars) const;
-	//
-	// void ChangeVoxelId(const UVoxelGrid& VoxelGridObject, TMap<int32, uint32>& VoxelTable,
-	//                    const FVoxelEdit& VoxelChange) const;
-	//
-	// void IncrementBorderRun(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars,
-	//                         const FMeshingDirections& FaceTemplate, const FIntVector& Position, int BorderIndex) const;
-	// //
-	// // void CheckBorderX(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
-	// // void CheckBorderY(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
-	// // void CheckBorderZ(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
+	FCriticalSection CriticalSection;
+	TSharedPtr<TArray<FVoxel>> VoxelGridPtr;
 };

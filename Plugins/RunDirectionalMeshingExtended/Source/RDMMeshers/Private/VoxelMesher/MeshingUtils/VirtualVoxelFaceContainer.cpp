@@ -9,10 +9,13 @@ FStaticMergeData FVirtualVoxelFaceContainer::MeshingDataArray[] = {
 
 FVirtualVoxelFaceContainer::FVirtualVoxelFaceContainer(uint32 VoxelPlane)
 {
-	VirtualVoxelFaces.Reserve(VoxelPlane);
+	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
+	{
+		VirtualVoxelFaces[f].Reserve(VoxelPlane);	
+	}
 }
 
-void FVirtualVoxelFaceContainer::AddNewVirtualFace(const int FaceIndex, const FVoxel Voxel, const FIntVector& Position,
+void FVirtualVoxelFaceContainer::AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel, const FIntVector& Position,
                                                    const int Lenght)
 {
 	auto& MeshingData = MeshingDataArray[FaceIndex];
@@ -23,11 +26,11 @@ void FVirtualVoxelFaceContainer::AddNewVirtualFace(const int FaceIndex, const FV
 	check(VoxelId != 0);
 
 	// Generate new face with coordinates
-	if (VirtualVoxelFaces.IsEmpty() || !MeshingData.RunDirectionFaceMerge(VirtualVoxelFaces.Last(), NewFace))
+	if (VirtualVoxelFaces[FaceIndex].IsEmpty() || !MeshingData.RunDirectionFaceMerge(VirtualVoxelFaces[FaceIndex].Last(), NewFace))
 	{
 		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
 		// Return when new face was merged
-		VirtualVoxelFaces.Push(NewFace);
+		VirtualVoxelFaces[FaceIndex].Push(NewFace);
 	}
 }
 
@@ -42,9 +45,9 @@ void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
 	auto& MeshingData = MeshingDataArray[FaceDirection];
 
 	// Iterate from last face
-	for (int32 i = VirtualVoxelFaces.Num() - 1; i >= 0; i--)
+	for (int32 i = VirtualVoxelFaces[FaceDirection].Num() - 1; i >= 0; i--)
 	{
-		FVirtualVoxelFace PrevFace = VirtualVoxelFaces.Pop(EAllowShrinking::No);
+		FVirtualVoxelFace PrevFace = VirtualVoxelFaces[FaceDirection].Pop(EAllowShrinking::No);
 
 		if (ActiveArray->IsEmpty() || MeshingData.HeightCondition(ActiveArray->Top(), PrevFace))
 		{

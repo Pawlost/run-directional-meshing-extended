@@ -20,19 +20,11 @@ void FVirtualMeshEventPlanner::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelE
 
 FVirtualMeshEventPlanner::FVirtualMeshEventPlanner(const uint32 VoxelLine,
                                                    const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels)
-	: VoxelLine(VoxelLine), VoxelPlane(VoxelPlane), MaxVoxelsInChunk(MaxNumberOfVoxels)
+	: FVirtualMeshEventPlannerBase(VoxelLine, VoxelPlane, MaxNumberOfVoxels)
 {
-	constexpr int EstimatedRows = 3;
-
-	FirstDirectionalMeshingHelperArray.Reserve(VoxelLine * EstimatedRows);
-	SecondDirectionalMeshingHelperArray.Reserve(VoxelLine * EstimatedRows);
-
-	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
+	for (uint32 y = 0; y < VoxelLine; y++)
 	{
-		for (uint32 y = 0; y < VoxelLine; y++)
-		{
-			VirtualFaces[f].Emplace(VoxelPlane);
-		}
+		VirtualFaces.Emplace(VoxelPlane);
 	}
 }
 
@@ -124,13 +116,9 @@ void FVirtualMeshEventPlanner::GenerateVirtualFaces(FBorderParams& BorderParamet
 #endif
 
 	// Traverse through voxel grid
-	while (CurrentMeshingEventIndex < MaxVoxelsInChunk)
+	while (CurrentVoxelIndex < MaxVoxelsInChunk)
 	{
-		CurrentVoxelPosition.X = CurrentMeshingEventIndex / (VoxelPlane);
-		const int PosX = CurrentVoxelPosition.X * VoxelPlane;
-		CurrentVoxelPosition.Z = (CurrentMeshingEventIndex - PosX) / VoxelLine;
-		const int PosZ = CurrentVoxelPosition.Z * VoxelLine;
-		CurrentVoxelPosition.Y = CurrentMeshingEventIndex - PosX - PosZ;
+		UpdatePositionFromIndex();
 
 		TraverseYDirection(BorderParameters, VoxelEdits);
 	}
@@ -142,7 +130,7 @@ void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameter
 	do
 	{
 		// Reset interval flag
-		NextMeshingEventIndex = MaxVoxelsInChunk;
+		NextVoxelIndex = MaxVoxelsInChunk;
 
 		// Edit Interval
 		if (EditEnabled)
@@ -155,10 +143,10 @@ void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameter
 		CreateVirtualVoxelFacesInLShape(BorderParameters);
 
 		// Meshing event was finished
-		CurrentMeshingEventIndex = NextMeshingEventIndex;
+		CurrentVoxelIndex = NextVoxelIndex;
 		CurrentVoxelPosition.Y += IndexSequenceBetweenEvents;
 
-		PreviousVoxelRun = &MeshingEvents[EMeshingEventIndex::LeadingInterval].GetCurrentVoxel();
+		PreviousVoxelRun = &MeshingEvents[EMeshingEventIndex::LeadingInterval].GetCurrentRLEVoxel();
 	}
 	while (static_cast<uint32>(CurrentVoxelPosition.Y) < VoxelLine);
 
@@ -179,9 +167,9 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 
 	// Sample interval
 	// Move interval one step ahead if at the run end
-	bool IsLeadingEmpty = LeadingEvent.GetCurrentVoxel().IsVoxelEmpty();
-	bool IsFollowingXEmpty = FollowingXEvent.GetCurrentVoxel().IsVoxelEmpty();
-	bool IsFollowingZEmpty = FollowingZEvent.GetCurrentVoxel().IsVoxelEmpty();
+	bool IsLeadingEmpty = LeadingEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
+	bool IsFollowingXEmpty = FollowingXEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
+	bool IsFollowingZEmpty = FollowingZEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
 
 	// Generate culled faces
 	if (!IsLeadingEmpty || !IsFollowingXEmpty || !IsFollowingZEmpty)
@@ -190,11 +178,11 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 		bool IsFollowingXTransparent = FollowingXEvent.GetCurrentVoxel().IsTransparent();
 		bool IsFollowingZTransparent = FollowingZEvent.GetCurrentVoxel().IsTransparent();
 
-		const uint32 MaxYSequence = (VoxelLine - CurrentVoxelPosition.Y) + CurrentMeshingEventIndex;
+		const uint32 MaxYSequence = (VoxelLine - CurrentVoxelPosition.Y) + CurrentVoxelIndex;
 		TryUpdateNextMeshingEvent(MaxYSequence);
-		IndexSequenceBetweenEvents = NextMeshingEventIndex - CurrentMeshingEventIndex;
+		IndexSequenceBetweenEvents = NextVoxelIndex - CurrentVoxelIndex;
 
-		auto& LeadingEventVoxel = LeadingEvent.GetCurrentVoxel();
+		auto& LeadingEventVoxel = LeadingEvent.GetCurrentRLEVoxel();
 		if (!IsLeadingEmpty)
 		{
 			// Left border
@@ -233,41 +221,38 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 
 		PreviousPosition = CurrentVoxelPosition;
 
-		CreateFace(EFaceDirection::Front,
-		           FollowingXEvent.GetCurrentVoxel(), IndexSequenceBetweenEvents,
-		           CurrentVoxelPosition.X != 0 && !IsFollowingXEmpty && (IsLeadingEmpty || (IsLeadingTransparent && !
-			           IsFollowingXTransparent)), CurrentVoxelPosition.X);
-
-		CreateFace(EFaceDirection::Top,
-		           FollowingZEvent.GetCurrentVoxel(), IndexSequenceBetweenEvents,
-		           CurrentVoxelPosition.Z != 0 && !IsFollowingZEmpty && (IsLeadingEmpty || (IsLeadingTransparent && !
-			           IsFollowingZTransparent)), CurrentVoxelPosition.Z);
-
-		CreateFace(EFaceDirection::Back,
-		           LeadingEventVoxel, IndexSequenceBetweenEvents,
-		           CurrentVoxelPosition.X != 0 && !IsLeadingEmpty && (IsFollowingXEmpty || (!IsLeadingTransparent &&
-			           IsFollowingXTransparent)), CurrentVoxelPosition.X);
-
-		CreateFace(EFaceDirection::Bottom,
-		           LeadingEventVoxel, IndexSequenceBetweenEvents,
-		           CurrentVoxelPosition.Z != 0 && !IsLeadingEmpty && (IsFollowingZEmpty || (!IsLeadingTransparent &&
-			           IsFollowingZTransparent)), CurrentVoxelPosition.Z);
+		if (CurrentVoxelPosition.X != 0 && !IsFollowingXEmpty && (IsLeadingEmpty || (IsLeadingTransparent && !
+					   IsFollowingXTransparent)))
+			{
+			VirtualFaces[CurrentVoxelPosition.X].AddNewVirtualFace(EFaceDirection::Front, FollowingXEvent.GetCurrentVoxel(), 
+				CurrentVoxelPosition, IndexSequenceBetweenEvents);
+		}
+		
+		if (CurrentVoxelPosition.Z != 0 && !IsFollowingZEmpty && (IsLeadingEmpty || (IsLeadingTransparent && !
+					   IsFollowingZTransparent)))
+		{
+			VirtualFaces[CurrentVoxelPosition.Z].AddNewVirtualFace(EFaceDirection::Top, FollowingZEvent.GetCurrentVoxel(), 
+				CurrentVoxelPosition, IndexSequenceBetweenEvents);
+		}
+		
+		if (CurrentVoxelPosition.X != 0 && !IsLeadingEmpty && (IsFollowingXEmpty || (!IsLeadingTransparent &&
+					   IsFollowingXTransparent)))
+		{
+			VirtualFaces[CurrentVoxelPosition.X].AddNewVirtualFace(EFaceDirection::Back, LeadingEventVoxel.Voxel, 
+				CurrentVoxelPosition, IndexSequenceBetweenEvents);
+		}
+		
+		if (CurrentVoxelPosition.Z != 0 && !IsLeadingEmpty && (IsFollowingZEmpty || (!IsLeadingTransparent &&
+					   IsFollowingZTransparent)))
+		{
+			VirtualFaces[CurrentVoxelPosition.Z].AddNewVirtualFace(EFaceDirection::Bottom, LeadingEventVoxel.Voxel, 
+				CurrentVoxelPosition, IndexSequenceBetweenEvents);
+		}
 	}
 	else
 	{
 		// Skip large empty sequences
-		IndexSequenceBetweenEvents = NextMeshingEventIndex - CurrentMeshingEventIndex;
-	}
-}
-
-void FVirtualMeshEventPlanner::CreateFace(
-	const EFaceDirection FaceIndex, const FRLEVoxel& RLEVoxel, const int YEnd, const bool CanGenerate,
-	int VoxelPlanePosition)
-{
-	if (CanGenerate)
-	{
-		VirtualFaces[FaceIndex][VoxelPlanePosition].AddNewVirtualFace(FaceIndex, RLEVoxel.Voxel, CurrentVoxelPosition,
-		                                                              YEnd);
+		IndexSequenceBetweenEvents = NextVoxelIndex - CurrentVoxelIndex;
 	}
 }
 
@@ -277,7 +262,7 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 	auto& EditEvent = MeshingEvents[EMeshingEventIndex::EditEvent];
 	auto& LeadingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
 
-	if (EditEvent.LastEventIndex == CurrentMeshingEventIndex)
+	if (EditEvent.LastEventIndex == CurrentVoxelIndex)
 	{
 		FVoxel CurrentVoxel;
 		uint32 RemainingIndex;
@@ -286,22 +271,22 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 		if (EditEvent.LastEventIndex == LeadingEvent.GetEventIndex())
 		{
 			CopyEvent.AdvanceEvent();
-			CopyVoxel = CopyEvent.GetCurrentVoxel();
+			CopyVoxel = CopyEvent.GetCurrentRLEVoxel();
 			CurrentVoxel = CopyVoxel.Voxel;
 			RemainingIndex = CopyVoxel.RunLenght;
 		}
 		else
 		{
-			RemainingIndex = LeadingEvent.GetEventIndex() - CurrentMeshingEventIndex;
-			LeadingEvent.GetCurrentVoxel().RunLenght -= RemainingIndex;
-			CurrentVoxel = CopyEvent.GetCurrentVoxel().Voxel;
+			RemainingIndex = LeadingEvent.GetEventIndex() - CurrentVoxelIndex;
+			LeadingEvent.GetCurrentRLEVoxel().RunLenght -= RemainingIndex;
+			CurrentVoxel = CopyEvent.GetCurrentVoxel();
 		}
 
-		auto& EditVoxel = EditEvent.GetCurrentVoxel();
+		auto& EditVoxel = EditEvent.GetCurrentRLEVoxel();
 		while (EditVoxel.RunLenght > RemainingIndex)
 		{
 			CopyEvent.AdvanceEvent();
-			CopyVoxel = CopyEvent.GetCurrentVoxel();
+			CopyVoxel = CopyEvent.GetCurrentRLEVoxel();
 			CurrentVoxel = CopyVoxel.Voxel;
 			RemainingIndex += CopyVoxel.RunLenght;
 		}
@@ -330,7 +315,7 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 			VoxelRunIndex + 1].Voxel == LeadingEvent.VoxelGridPtr->Last().Voxel)
 		{
 			CopyEvent.AdvanceEvent();
-			LeadingEvent.VoxelGridPtr->Last().RunLenght += CopyEvent.GetCurrentVoxel().RunLenght;
+			LeadingEvent.VoxelGridPtr->Last().RunLenght += CopyEvent.GetCurrentRLEVoxel().RunLenght;
 		}
 
 		AdvanceEditInterval(VoxelEdits);
@@ -338,10 +323,10 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 	else
 	{
 		int CopyEventIndex = CopyEvent.GetEventIndex();
-		if (CopyEventIndex == CurrentMeshingEventIndex)
+		if (CopyEventIndex == CurrentVoxelIndex)
 		{
 			CopyEvent.AdvanceEvent();
-			LeadingEvent.VoxelGridPtr->Add(CopyEvent.GetCurrentVoxel());
+			LeadingEvent.VoxelGridPtr->Add(CopyEvent.GetCurrentRLEVoxel());
 		}
 	}
 
@@ -381,7 +366,7 @@ void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters,
 			{
 				// If checking intervals is implement run may be larger than 1
 				constexpr int RunLenght = 1;
-				VirtualFaces[Direction][0].AddNewVirtualFace(Direction, CurrentVoxel, VoxelPosition, RunLenght);
+				VirtualFaces[0].AddNewVirtualFace(Direction, CurrentVoxel, VoxelPosition, RunLenght);
 			}
 			VoxelPosition.Y++;
 		}
@@ -409,18 +394,18 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 
 		// Left
 		if ((PreviousVoxelRun->Voxel.IsEmptyVoxel() || PreviousVoxelRun->Voxel.IsTransparent()
-			&& !LeadingMeshingEventVoxel.IsVoxelEmpty()) && CurrentVoxelPosition.Y != 0)
+			&& !LeadingMeshingEventVoxel.IsEmptyVoxel()) && CurrentVoxelPosition.Y != 0)
 		{
-			VirtualFaces[EFaceDirection::Left][CurrentVoxelPosition.Y].AddNewVirtualFace(EFaceDirection::Left,
-				LeadingMeshingEventVoxel.Voxel, CurrentVoxelPosition, IndexSequenceBetweenEvents);
+			VirtualFaces[CurrentVoxelPosition.Y].AddNewVirtualFace(EFaceDirection::Left,
+				LeadingMeshingEventVoxel, CurrentVoxelPosition, IndexSequenceBetweenEvents);
 		}
 
 		// Right
 		int VoxelPlaneIndex = PreviousPosition.Y + IndexSequenceBetweenEvents;
-		if (!PreviousVoxelRun->IsVoxelEmpty() && (LeadingMeshingEventVoxel.Voxel.IsEmptyVoxel() ||
-			LeadingMeshingEventVoxel.Voxel.IsTransparent()) && VoxelPlaneIndex != VoxelLine)
+		if (!PreviousVoxelRun->IsVoxelEmpty() && (LeadingMeshingEventVoxel.IsEmptyVoxel() ||
+			LeadingMeshingEventVoxel.IsTransparent()) && VoxelPlaneIndex != VoxelLine)
 		{
-			VirtualFaces[EFaceDirection::Right][VoxelPlaneIndex].AddNewVirtualFace(EFaceDirection::Right,
+			VirtualFaces[VoxelPlaneIndex].AddNewVirtualFace(EFaceDirection::Right,
 				PreviousVoxelRun->Voxel, PreviousPosition, IndexSequenceBetweenEvents + 1);
 		}
 	}
@@ -432,7 +417,7 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 	AdvanceMeshingEvent(MeshingEvents[EMeshingEventIndex::FollowingZInterval]);
 }
 
-void FVirtualMeshEventPlanner::DirectionalGreedyMerge(FVoxelMeshContainer& VoxelMeshContainer,
+void FVirtualMeshEventPlanner::ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer,
                                                       const double VoxelSize)
 {
 #if CPUPROFILERTRACE_ENABLED
@@ -443,7 +428,7 @@ void FVirtualMeshEventPlanner::DirectionalGreedyMerge(FVoxelMeshContainer& Voxel
 	{
 		for (uint32 y = 0; y < VoxelLine; y++)
 		{
-			VirtualFaces[f][y].DirectionalGreedyMergeForVoxelPlane(FirstDirectionalMeshingHelperArray,
+			VirtualFaces[y].DirectionalGreedyMergeForVoxelPlane(FirstDirectionalMeshingHelperArray,
 			                                                       SecondDirectionalMeshingHelperArray,
 			                                                       VoxelMeshContainer, static_cast<EFaceDirection>(f),
 			                                                       VoxelSize, MaxVoxelsInChunk);
