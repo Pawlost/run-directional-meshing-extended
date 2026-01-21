@@ -7,14 +7,14 @@ void ACenterAreaChunkSpawner::GenerateArea()
 	auto InitialCenter = CenterGridPosition;
 	// Visited position will create with every change of grid center
 	TSet<FIntVector> VisitedSpawnPositions;
-	VisitedSpawnPositions.Reserve(SpawnZone * SpawnZone * SpawnZone * CHUNK_FACE_COUNT);
+	VisitedSpawnPositions.Reserve(SpawnZone * SpawnZone * SpawnZone * VOXEL_FACE_COUNT);
 	TQueue<FIntVector> SpawnPositionsArray;
 	SpawnPositionsArray.Enqueue(InitialCenter);
 	SpawnChunk(InitialCenter);
 	TArray<TSharedFuture<void>> Tasks;
 	Tasks.Reserve(LowerThreadLimit);
 
-	TTuple<FFaceToDirection, int32> Directions[CHUNK_FACE_COUNT] = {
+	TTuple<FFaceToDirection, int32> Directions[VOXEL_FACE_COUNT] = {
 		TTuple<FFaceToDirection, int32>(FFaceToDirection::FrontDirection, SpawnZone),
 		TTuple<FFaceToDirection, int32>(FFaceToDirection::RightDirection, SpawnZone),
 		TTuple<FFaceToDirection, int32>(FFaceToDirection::LeftDirection, SpawnZone),
@@ -40,7 +40,7 @@ void ACenterAreaChunkSpawner::GenerateArea()
 			WaitForAllTasks(Tasks);
 		}
 
-		for (uint8 s = 0; s < CHUNK_FACE_COUNT; s++)
+		for (uint8 s = 0; s < VOXEL_FACE_COUNT; s++)
 		{
 			auto Direction = Directions[s];
 

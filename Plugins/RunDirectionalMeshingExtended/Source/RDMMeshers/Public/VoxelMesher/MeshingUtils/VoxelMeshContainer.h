@@ -18,7 +18,7 @@ struct FVoxelMeshContainer
 		FProcMeshTangent Tangent;
 	};
 	
-	static const FNormalsAndTangents FaceNormalsAndTangents[CHUNK_FACE_COUNT];
+	static const FNormalsAndTangents FaceNormalsAndTangents[VOXEL_FACE_COUNT];
 	
 	TMap<FVoxel, TSharedPtr<FProcMeshSectionVars>> VoxelTable;
 	

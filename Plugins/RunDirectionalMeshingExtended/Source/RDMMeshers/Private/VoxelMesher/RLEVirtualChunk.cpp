@@ -1,5 +1,5 @@
 ﻿#include "VoxelMesher/RLEVirtualChunk.h"
-#include "VoxelMesher/RunDirectionalVoxelMesher.h"
+#include "VoxelMesher/BasicVirtualChunk.h"
 #include "Voxel/RLEVoxel.h"
 
 static TArray<TSharedPtr<FVirtualMeshEventPlanner>> UnusedMeshersPool;
@@ -44,9 +44,9 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderP
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RLE RunDirectionalMeshing generation")
 #endif
 	
-	const uint32 MaxVoxelsInChunk = VoxelData->GetVoxelCountPerChunk();
-	const uint32 VoxelLine = VoxelData->GetVoxelCountPerVoxelLine();
-	const uint32 VoxelPlane = VoxelData->GetVoxelCountPerVoxelPlane();
+	const uint32 MaxVoxelsInChunk = VoxelData->GetMaxVoxelsInChunk();
+	const uint32 VoxelLine = VoxelData->GetVoxelLine();
+	const uint32 VoxelPlane = VoxelData->GetVoxelPlane();
 	
 	TSharedPtr<FVirtualMeshEventPlanner> EventPlanner;
 	{
@@ -91,7 +91,7 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderP
 
 FVoxel URLEVirtualChunk::GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition)
 {
-	const uint32 MaxChunkVoxelSequence = VoxelData->GetVoxelCountPerChunk();
+	const uint32 MaxChunkVoxelSequence = VoxelData->GetMaxVoxelsInChunk();
 
 	auto& VoxelGridPtr = BorderMeshingEventPlanner.BorderMeshingEvent.VoxelGridPtr;
 	if (VoxelGridPtr == nullptr)
@@ -102,9 +102,9 @@ FVoxel URLEVirtualChunk::GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMe
 	const uint32 NextIndex = VoxelData->CalculateVoxelIndex(BorderVoxelPosition);
 	auto& BorderMeshingEvent = BorderMeshingEventPlanner.BorderMeshingEvent;
 
-	while (BorderMeshingEventPlanner.CurrentVoxelIndex < NextIndex)
+	while (BorderMeshingEventPlanner.GetVoxelIndex() < NextIndex)
 	{
-		BorderMeshingEventPlanner.CurrentVoxelIndex = BorderMeshingEventPlanner.NextVoxelIndex;
+		BorderMeshingEventPlanner.SetVoxelIndex(BorderMeshingEventPlanner.NextVoxelIndex);
 		BorderMeshingEventPlanner.NextVoxelIndex = MaxChunkVoxelSequence;
 		BorderMeshingEventPlanner.AdvanceMeshingEvent(BorderMeshingEvent);
 		BorderMeshingEventPlanner.TryUpdateNextMeshingEvent(NextIndex);

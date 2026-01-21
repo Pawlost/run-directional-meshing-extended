@@ -5,9 +5,9 @@
 void UFractionFillVoxelGridGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
-	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
+	const auto ChunkDimension = GetVoxelLine();
 
-	VoxelModel.SetNum(GetVoxelCountPerChunk());
+	VoxelModel.SetNum(GetMaxVoxelsInChunk());
 
 	for (uint32 x = 0; x < ChunkDimension / XFraction; x++)
 	{

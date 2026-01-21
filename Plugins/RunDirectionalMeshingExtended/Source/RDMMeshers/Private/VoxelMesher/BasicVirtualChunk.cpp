@@ -1,18 +1,21 @@
-﻿#include "VoxelMesher/RunDirectionalVoxelMesher.h"
+﻿#include "VoxelMesher/BasicVirtualChunk.h"
+#include "VoxelMesher/MeshEventPlanner/BasicRDMVirtualMesher.h"
 
-FVoxel URunDirectionalVoxelMesher::GetBorderVoxel(FBorderVirtualMeshEventPlanner& IndexParams,
-	const FIntVector& BorderVoxelPosition)
+static TArray<TSharedPtr<FBasicRDMVirtualMesher>> UnusedMeshersPool;
+
+FVoxel UBasicVirtualChunk::GetBorderVoxel(FBorderVirtualMeshEventPlanner& IndexParams,
+                                                  const FIntVector& BorderVoxelPosition)
 {
 	const auto VoxelIndex = VoxelData->CalculateVoxelIndex(BorderVoxelPosition);
-	return (*VoxelGridPtr)[VoxelIndex];
+	return (*BasicVoxelGridPtr)[VoxelIndex];
 }
 
-void URunDirectionalVoxelMesher::CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid)
+void UBasicVirtualChunk::CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid)
 {
-	this->VoxelGridPtr = MakeShared<TArray<FVoxel>>(NewVoxelGrid);
+	this->BasicVoxelGridPtr = MakeShared<TArray<FVoxel>>(NewVoxelGrid);
 }
 
-void URunDirectionalVoxelMesher::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
+void UBasicVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
                                               TArray<FRLEVoxelEdit>& VoxelChanges, EBorderVisualizationOption BorderVisualization)
 {
 #if CPUPROFILERTRACE_ENABLED
@@ -29,7 +32,7 @@ void URunDirectionalVoxelMesher::GenerateMesh(FVoxelMeshContainer& MeshContainer
 			const auto& [EditEventIndex, EditVoxel] = VoxelChanges.Pop(EAllowShrinking::No);
 			for (uint32 i = 0 ; i < EditVoxel.RunLenght; i++)
 			{
-				(*VoxelGridPtr)[EditEventIndex + i] = EditVoxel.Voxel;
+				(*BasicVoxelGridPtr)[EditEventIndex + i] = EditVoxel.Voxel;
 			}
 		}
 	}
@@ -37,8 +40,7 @@ void URunDirectionalVoxelMesher::GenerateMesh(FVoxelMeshContainer& MeshContainer
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Meshing - RunDirectionalMeshing from VoxelGrid generation")
 #endif
-
-	const auto ChunkDimension = VoxelData->GetVoxelCountPerVoxelLine();
+	
 /*
 	for (uint32 z = 0; z < ChunkDimension; z++)
 	{
@@ -48,8 +50,45 @@ void URunDirectionalVoxelMesher::GenerateMesh(FVoxelMeshContainer& MeshContainer
 			CheckBorderY(VoxelGridObject, MeshVars, y, z);
 			CheckBorderZ(VoxelGridObject, MeshVars, y, z);
 		}
+	}*/
+	
+	
+	// This scope may start in a parallel task
+	
+#if CPUPROFILERTRACE_ENABLED
+	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RLE RunDirectionalMeshing generation")
+#endif
+	
+	const uint32 MaxVoxelsInChunk = VoxelData->GetMaxVoxelsInChunk();
+	const uint32 VoxelLine = VoxelData->GetVoxelLine();
+	const uint32 VoxelPlane = VoxelData->GetVoxelPlane();
+	
+	TSharedPtr<FBasicRDMVirtualMesher> EventPlanner;
+	{
+		FScopeLock Lock(&MesherCriticalSection);
+		if (!UnusedMeshersPool.IsEmpty())
+		{
+			EventPlanner = UnusedMeshersPool.Pop();
+		}else
+		{
+			EventPlanner = MakeShared<FBasicRDMVirtualMesher>(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
+		}
 	}
-
+	
+	EventPlanner->VoxelGrid = BasicVoxelGridPtr;
+	
+	EventPlanner->GenerateVirtualFaces(BorderParameters);
+	EventPlanner->ConvertVirtualFacesToMesh(MeshContainer, VoxelData->VoxelSize);
+	
+	{
+		FScopeLock Lock(&MesherCriticalSection);
+		constexpr int MAX_NUMBER_OF_MESHERS = 20;
+		if (UnusedMeshersPool.Num() < MAX_NUMBER_OF_MESHERS)
+		{
+			UnusedMeshersPool.Push(EventPlanner);
+		}
+	}
+	/*
 	// Iterate through merged faces
 	for (uint8 FaceIndex = 0; FaceIndex < CHUNK_FACE_COUNT; FaceIndex++)
 	{

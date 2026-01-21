@@ -35,17 +35,17 @@ double UBaseVoxelData::GetVoxelSize() const
 	return VoxelSize;
 }
 
-uint32 UBaseVoxelData::GetVoxelCountPerVoxelLine() const
+uint32 UBaseVoxelData::GetVoxelLine() const
 {
 	return VoxelCountPerChunkDimension;
 }
 
-uint32 UBaseVoxelData::GetVoxelCountPerVoxelPlane() const
+uint32 UBaseVoxelData::GetVoxelPlane() const
 {
 	return VoxelCountYZ;
 }
 
-uint32 UBaseVoxelData::GetVoxelCountPerChunk() const
+uint32 UBaseVoxelData::GetMaxVoxelsInChunk() const
 {
 	return VoxelCountXYZ;
 }

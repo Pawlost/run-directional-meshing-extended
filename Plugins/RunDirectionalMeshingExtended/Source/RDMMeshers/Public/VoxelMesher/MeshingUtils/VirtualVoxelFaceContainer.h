@@ -5,26 +5,31 @@
 struct FVoxelMeshContainer;
 
 struct FVirtualVoxelFaceContainer
-{	
+{
+	void AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel, const FIntVector& Position,
+	                       const int Lenght);
+
+	FVirtualVoxelFaceContainer()
+	{
+	};
+	explicit FVirtualVoxelFaceContainer(uint32 VoxelPlane);
+
+	void DirectionalGreedyMergeForVoxelPlane(
+		TArray<FVirtualVoxelFace>& FirstArray, TArray<FVirtualVoxelFace>& SecondArray,
+		FVoxelMeshContainer& VoxelMeshContainer,
+		const EFaceDirection FaceDirection, const double VoxelSize, const int MaxVoxelsInChunk);
+
+private:
+	
 	/*
 	Front = 0,
 	Back = 1,
 	Right = 2,
 	Left = 3,
-	Bottom = 4,
-	Top = 5
+	Top = 4,
+	Bottom = 5,
 	*/
-	static FStaticMergeData MeshingDataArray[CHUNK_FACE_COUNT];
+	static const FStaticMergeData MeshingDataArray[VOXEL_FACE_COUNT];
 	
-	void AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel, const FIntVector& Position,
-		const int Lenght);
-	
-	FVirtualVoxelFaceContainer(){};
-	explicit FVirtualVoxelFaceContainer(uint32 VoxelPlane);
-	
-	void DirectionalGreedyMergeForVoxelPlane(
-		TArray<FVirtualVoxelFace>& FirstArray, TArray<FVirtualVoxelFace>& SecondArray, FVoxelMeshContainer& VoxelMeshContainer,
-		 const EFaceDirection FaceDirection, const double VoxelSize, const int MaxVoxelsInChunk);
-	
-	TStaticArray<TArray<FVirtualVoxelFace>, CHUNK_FACE_COUNT>  VirtualVoxelFaces;
+	TStaticArray<TArray<FVirtualVoxelFace>, VOXEL_FACE_COUNT> VirtualVoxelFaces;
 };

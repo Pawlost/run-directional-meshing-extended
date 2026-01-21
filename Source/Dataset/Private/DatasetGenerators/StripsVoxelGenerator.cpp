@@ -16,10 +16,10 @@ uint32 UStripsVoxelGenerator::CalculateStripSize(const float ChunkDimension, con
 void UStripsVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
-	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
+	const auto ChunkDimension = GetVoxelLine();
 
 	TArray<FVoxel> VoxelGrid;
-	VoxelGrid.SetNum(GetVoxelCountPerChunk());
+	VoxelGrid.SetNum(GetMaxVoxelsInChunk());
 
 	const uint32 StripSizeX = CalculateStripSize(ChunkDimension, XGapCount);
 	const uint32 StripSizeY = CalculateStripSize(ChunkDimension, YGapCount); 

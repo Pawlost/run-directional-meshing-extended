@@ -102,9 +102,9 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	AddChunksFromGrid(MesherVars, FFaceToDirection::BackDirection);
 
 	DequeueChunkActor(Chunk->ChunkMeshActor);
-	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
+	for (int f = 0; f < VOXEL_FACE_COUNT; ++f)
 	{
-		DequeueChunkActor(Chunk->BorderChunkMeshActor[i]);
+		DequeueChunkActor(Chunk->BorderChunkMeshActor[f]);
 	}
 
 	auto Spawner = MakeShared<FMesherVariables>(MesherVars);
@@ -127,9 +127,9 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 	MesherVars.OriginalChunk->ChunkMeshActor->GenerateMesh(MesherVars, VoxelEdits, BorderVisualization);
 
 	EnqueueChunkActor(Chunk->ChunkMeshActor);
-	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
+	for (int f = 0; f < VOXEL_FACE_COUNT; f++)
 	{
-		EnqueueChunkActor(Chunk->BorderChunkMeshActor[i]);
+		EnqueueChunkActor(Chunk->BorderChunkMeshActor[f]);
 	}
 
 	for (auto SideChunk : MesherVars.SideChunks)

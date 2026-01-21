@@ -36,7 +36,7 @@ void AChunkSpawnerBase::SpawnChunkActors(const TSharedRef<FMesherVariables>& Spa
 	const auto Chunk = Spawner->OriginalChunk;
 	SpawnAndMoveChunkActor(Spawner, Chunk->ChunkMeshActor);
 	
-	for (int i = 0; i < CHUNK_FACE_COUNT; ++i)
+	for (int i = 0; i < VOXEL_FACE_COUNT; ++i)
 	{
 		SpawnAndMoveChunkActor(Spawner, Chunk->BorderChunkMeshActor[i]);
 	}
@@ -193,8 +193,15 @@ void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
 {
 	Chunk->GridPosition = GridPosition;
 	checkf(VoxelMesherBlueprint, TEXT("VoxelMesherBlueprint is required but was not set"));
-	Chunk->InitVoxelMesher(VoxelMesherBlueprint, VoxelGenerator);
-
+	
+	checkf(VoxelMesherBlueprint, TEXT("Mesher blueprint must be set"));
+	if (VoxelMesherBlueprint)
+	{
+		// Register mesher
+		Chunk->VoxelMesher = NewObject<UVirtualChunk>(GetGameInstance(), VoxelMesherBlueprint);
+		Chunk->VoxelMesher->SetVoxelGenerator(VoxelGenerator);
+	}
+	
 	if (AsyncExecution != nullptr)
 	{
 		// Generate voxels on async thread if promise is expected
@@ -289,7 +296,7 @@ void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit
 {
 	const auto ChunkPosition = GetChunkGridPositionFromGlobalPosition(FVector(GlobalVoxelPosition));
 	const FIntVector VoxelPosition = FIntVector(
-		GlobalVoxelPosition - (ChunkPosition * VoxelGenerator->GetVoxelCountPerVoxelLine()));
+		GlobalVoxelPosition - (ChunkPosition * VoxelGenerator->GetVoxelLine()));
 
 	const FVoxelChange Modification(VoxelType, VoxelPosition);
 	auto& VoxelModifications = OutChunkEdit.FindOrAdd(ChunkPosition);
@@ -298,7 +305,7 @@ void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit
 
 FIntVector AChunkSpawnerBase::GetChunkGridPositionFromGlobalPosition(const FVector& GlobalPosition) const
 {
-	const auto ImpreciseChunkPosition = GlobalPosition / VoxelGenerator->GetVoxelCountPerVoxelLine();
+	const auto ImpreciseChunkPosition = GlobalPosition / VoxelGenerator->GetVoxelLine();
 	// Floor is used to adjust negative numbers
 	return FIntVector(FMath::Floor(ImpreciseChunkPosition.X), FMath::Floor(ImpreciseChunkPosition.Y),
 	                  FMath::Floor(ImpreciseChunkPosition.Z));
@@ -306,7 +313,7 @@ FIntVector AChunkSpawnerBase::GetChunkGridPositionFromGlobalPosition(const FVect
 
 bool AChunkSpawnerBase::CheckVoxelBoundary(const FIntVector& VoxelPosition) const
 {
-	const int ChunkDimensions = VoxelGenerator->GetVoxelCountPerVoxelLine();
+	const int ChunkDimensions = VoxelGenerator->GetVoxelLine();
 	return VoxelPosition.X < 0 || VoxelPosition.Y < 0 || VoxelPosition.Z < 0 ||
 		VoxelPosition.X >= ChunkDimensions || VoxelPosition.Y >= ChunkDimensions || VoxelPosition.Z >= ChunkDimensions;
 }

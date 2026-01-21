@@ -1,15 +1,15 @@
 ﻿#include "VoxelMesher/MeshingUtils//VirtualVoxelFaceContainer.h"
 #include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
 
-FStaticMergeData FVirtualVoxelFaceContainer::MeshingDataArray[] = {
+const FStaticMergeData FVirtualVoxelFaceContainer::MeshingDataArray[] = {
 	FStaticMergeData::FrontFaceData, FStaticMergeData::BackFaceData,
 	FStaticMergeData::RightFaceData, FStaticMergeData::LeftFaceData,
-	FStaticMergeData::BottomFaceData, FStaticMergeData::TopFaceData
+	FStaticMergeData::TopFaceData, FStaticMergeData::BottomFaceData
 };
 
 FVirtualVoxelFaceContainer::FVirtualVoxelFaceContainer(uint32 VoxelPlane)
 {
-	for (int f = 0; f < CHUNK_FACE_COUNT; f++)
+	for (int f = 0; f < VOXEL_FACE_COUNT; f++)
 	{
 		VirtualVoxelFaces[f].Reserve(VoxelPlane);	
 	}
@@ -49,7 +49,7 @@ void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
 	{
 		FVirtualVoxelFace PrevFace = VirtualVoxelFaces[FaceDirection].Pop(EAllowShrinking::No);
 
-		if (ActiveArray->IsEmpty() || MeshingData.HeightCondition(ActiveArray->Top(), PrevFace))
+	/*	if (ActiveArray->IsEmpty() || MeshingData.HeightCondition(ActiveArray->Top(), PrevFace))
 		{
 			ActiveArray->Push(PrevFace);
 		}
@@ -79,9 +79,10 @@ void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
 
 			PassiveArray->Push(PrevFace);
 			Swap(PassiveArray, ActiveArray);
-		}
+		}*/
+		VoxelMeshContainer.AddVirtualFaceToMesh(PrevFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
 	}
-
+/*
 	while (!ActiveArray->IsEmpty())
 	{
 		const FVirtualVoxelFace& PopFace = ActiveArray->Pop(EAllowShrinking::No);
@@ -92,5 +93,5 @@ void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
 	{
 		const FVirtualVoxelFace& PopFace = PassiveArray->Pop(EAllowShrinking::No);
 		VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
-	}
+	}*/
 }

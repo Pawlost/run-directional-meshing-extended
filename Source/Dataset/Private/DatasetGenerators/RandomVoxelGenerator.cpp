@@ -5,10 +5,10 @@
 void URandomVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {
 	const auto VoxelFillIndex = GetSingleVoxel();
-	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
+	const auto ChunkDimension = GetVoxelLine();
 
 	TArray<FVoxel> VoxelGrid;
-	VoxelGrid.SetNum(GetVoxelCountPerChunk());
+	VoxelGrid.SetNum(GetMaxVoxelsInChunk());
 
 	RandStream.Initialize(Seed);
 	

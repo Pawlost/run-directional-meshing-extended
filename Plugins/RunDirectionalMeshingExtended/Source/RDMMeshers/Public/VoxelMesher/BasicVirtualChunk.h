@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "VirtualChunk.h"
-#include "RunDirectionalVoxelMesher.generated.h"
+#include "BasicVirtualChunk.generated.h"
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)
-class RDMMESHERS_API URunDirectionalVoxelMesher : public UVirtualChunk
+class RDMMESHERS_API UBasicVirtualChunk : public UVirtualChunk
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,9 @@ public:
 	// void CheckBorderX(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
 	// void CheckBorderY(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
 	// void CheckBorderZ(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
-	//
+
+private:
 	FCriticalSection CriticalSection;
-	TSharedPtr<TArray<FVoxel>> VoxelGridPtr;
+	FCriticalSection MesherCriticalSection;
+	TSharedPtr<TArray<FVoxel>> BasicVoxelGridPtr;
 };

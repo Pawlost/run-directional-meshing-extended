@@ -14,8 +14,8 @@ class UVirtualChunk;
 
 struct FBorderParams
 {
-	TStaticArray<FBorderVirtualMeshEventPlanner, CHUNK_FACE_COUNT> BorderIndexParams;
-	TStaticArray<TStrongObjectPtr<UVirtualChunk>, CHUNK_FACE_COUNT> SideMeshers;
+	TStaticArray<FBorderVirtualMeshEventPlanner, VOXEL_FACE_COUNT> BorderIndexParams;
+	TStaticArray<TStrongObjectPtr<UVirtualChunk>, VOXEL_FACE_COUNT> SideMeshers;
 };
 
 /*

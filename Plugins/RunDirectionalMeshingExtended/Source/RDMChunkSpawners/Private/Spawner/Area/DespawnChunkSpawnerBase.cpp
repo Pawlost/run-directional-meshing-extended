@@ -40,7 +40,7 @@ void ADespawnChunkSpawnerBase::DespawnChunks()
 				auto Chunk = *ChunkGrid.Find(ChunkKey);
 
 				RemoveActor(Chunk->ChunkMeshActor);
-				for (int i = 0; i < CHUNK_FACE_COUNT; i++)
+				for (int i = 0; i < VOXEL_FACE_COUNT; i++)
 				{
 					RemoveActor(Chunk->BorderChunkMeshActor[i]);
 				}

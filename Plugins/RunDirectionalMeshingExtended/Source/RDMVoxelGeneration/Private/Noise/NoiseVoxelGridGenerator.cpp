@@ -36,12 +36,12 @@ void UNoiseVoxelGridGenerator::BeginPlay()
 void UNoiseVoxelGridGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	//NOTICE: This generation is unoptimized because it is not major part of my bachelor's thesis
-	const auto ChunkDimension = GetVoxelCountPerVoxelLine();
+	const auto ChunkDimension = GetVoxelLine();
 	const auto VoxelTypeCount = SurfaceGenerators.Num();
 
 	const auto GridPos = Chunk.GridPosition * ChunkDimension;
 
-	VoxelModel.SetNum(GetVoxelCountPerChunk());
+	VoxelModel.SetNum(GetMaxVoxelsInChunk());
 	
 	if (IsChunkPositionOutOfBounds(GridPos.Z, GridPos.Z + ChunkDimension - 1))
 	{

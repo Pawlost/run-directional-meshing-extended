@@ -20,7 +20,7 @@ bool FRDMMeshersTests_BaseVoxelData_VoxelLineNumber::RunTest(const FString& Para
 	
 	// Assert
 	TestEqual("Voxel line should be set by VoxelCountPerChunkDimension member variable",
-		BaseVoxelDataDummy->GetVoxelCountPerVoxelLine(), NumberOfVoxels);
+		BaseVoxelDataDummy->GetVoxelLine(), NumberOfVoxels);
 	
 	return true;
 }
@@ -44,7 +44,7 @@ bool FRDMMeshersTests_BaseVoxelData_VoxelPlaneNumber::RunTest(const FString& Par
 	
 	// Test
 	TestEqual("Voxel plane should be power of 2 of VoxelCountPerChunkDimension member variable",
-		BaseVoxelDataDummy->GetVoxelCountPerVoxelPlane(), NumberOfVoxels * NumberOfVoxels);
+		BaseVoxelDataDummy->GetVoxelPlane(), NumberOfVoxels * NumberOfVoxels);
 	
 	return true;
 }
@@ -67,7 +67,7 @@ bool FRDMMeshersTests_BaseVoxelData_ChunkSize::RunTest(const FString& Parameters
 	
 	// Test
 	TestEqual("Chunk size should be power of 3 of VoxelCountPerChunkDimension member variable",
-		BaseVoxelDataDummy->GetVoxelCountPerChunk(), NumberOfVoxels * NumberOfVoxels * NumberOfVoxels);
+		BaseVoxelDataDummy->GetMaxVoxelsInChunk(), NumberOfVoxels * NumberOfVoxels * NumberOfVoxels);
 	
 	return true;
 }
@@ -249,7 +249,7 @@ bool FRDMMeshersTests_BaseVoxelData_VoxelIndex_LastIndex::RunTest(const FString&
 
 	// Test
 	TestEqual("Last index should be less than maximum number of voxels in a chunk.",
-		Index, BaseVoxelDataDummy->GetVoxelCountPerChunk() - 1);
+		Index, BaseVoxelDataDummy->GetMaxVoxelsInChunk() - 1);
 	
 	
 	return true;
@@ -275,7 +275,7 @@ bool FRDMMeshersTests_BaseVoxelData_VoxelIndex_IndexIsOutOfChunkBounds::RunTest(
 	
 	// Test
 	TestTrue("Out of bounds index is ignored if it is higher than what function GetVoxelCountPerChunk() returns.",
-		InvalidIndex > BaseVoxelDataDummy->GetVoxelCountPerChunk());
+		InvalidIndex > BaseVoxelDataDummy->GetMaxVoxelsInChunk());
 	
 	return true;
 }

@@ -18,9 +18,9 @@ struct RDMVOXELGENERATION_API FChunk
 	UPROPERTY()
 	TWeakObjectPtr<AChunkActor> ChunkMeshActor = nullptr;
 	
-	TStaticArray<TWeakObjectPtr<AChunkActor>, CHUNK_FACE_COUNT> BorderChunkMeshActor;
+	TStaticArray<TWeakObjectPtr<AChunkActor>, VOXEL_FACE_COUNT> BorderChunkMeshActor;
 	
-	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, CHUNK_FACE_COUNT> VirtualFaces;
+	TStaticArray<TSharedPtr<TArray<TArray<FVirtualVoxelFace>>>, VOXEL_FACE_COUNT> VirtualFaces;
 
 	TStrongObjectPtr<UVoxelModel> VoxelModel;
 
@@ -32,15 +32,4 @@ struct RDMVOXELGENERATION_API FChunk
 	
 	UPROPERTY()
 	TObjectPtr<UVirtualChunk> VoxelMesher;
-	
-	void InitVoxelMesher(const TSubclassOf<UVirtualChunk>& VoxelMesherBlueprint, const TObjectPtr<UBaseVoxelData>&  BaseVoxelData)
-	{
-		checkf(VoxelMesherBlueprint, TEXT("Mesher blueprint must be set"));
-		if (VoxelMesherBlueprint)
-		{
-			// Register mesher
-			VoxelMesher = NewObject<URLEVirtualChunk>(VoxelMesherBlueprint);
-			VoxelMesher->SetVoxelGenerator(BaseVoxelData);
-		}
-	}
 };

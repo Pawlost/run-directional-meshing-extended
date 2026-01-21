@@ -77,7 +77,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		
 		FBorderParams BorderParams;
 		
-		for (int i = 0; i < CHUNK_FACE_COUNT; i++)
+		for (int i = 0; i < VOXEL_FACE_COUNT; i++)
 		{
 			auto& SideChunk= MeshVars.SideChunks[i];
 			if (SideChunk != nullptr)

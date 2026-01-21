@@ -33,9 +33,9 @@ public:
 
 	FORCEINLINE double GetChunkSpacing() const;
 	FORCEINLINE double GetVoxelSize() const;
-	FORCEINLINE uint32 GetVoxelCountPerVoxelLine() const;
-	FORCEINLINE uint32 GetVoxelCountPerVoxelPlane() const;
-	FORCEINLINE uint32 GetVoxelCountPerChunk() const;
+	FORCEINLINE uint32 GetVoxelLine() const;
+	FORCEINLINE uint32 GetVoxelPlane() const;
+	FORCEINLINE uint32 GetMaxVoxelsInChunk() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual double GetHighestElevationAtLocation(const FVector& Location);

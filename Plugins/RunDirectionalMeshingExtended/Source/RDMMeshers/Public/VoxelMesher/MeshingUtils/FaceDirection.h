@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "FaceDirection.generated.h"
 
-#define CHUNK_FACE_COUNT 6
+#define VOXEL_FACE_COUNT 6
 
 UENUM()
 enum EFaceDirection : uint8
@@ -10,6 +10,6 @@ enum EFaceDirection : uint8
 	Back = 1,
 	Right = 2,
 	Left = 3,
-	Bottom = 4,
-	Top = 5
+	Top = 4,
+	Bottom = 5
 };

@@ -11,7 +11,7 @@ struct RDMVOXELGENERATION_API FMesherVariables
 	GENERATED_BODY()
 	FVoxelMeshContainer MeshContainer;
 
-	TStaticArray<TSharedPtr<FChunk>, CHUNK_FACE_COUNT> SideChunks;
+	TStaticArray<TSharedPtr<FChunk>, VOXEL_FACE_COUNT> SideChunks;
 	TSharedPtr<FChunk> OriginalChunk;
 
 	UPROPERTY()

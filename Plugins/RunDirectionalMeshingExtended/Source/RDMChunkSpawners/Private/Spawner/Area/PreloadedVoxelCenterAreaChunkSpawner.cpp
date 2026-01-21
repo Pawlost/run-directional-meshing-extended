@@ -7,7 +7,7 @@ void APreloadedVoxelCenterAreaChunkSpawner::GenerateArea()
 	// TODO: fix magic numbers
 	auto InitialCenter = CenterGridPosition;
 	TSet<FIntVector> VisitedSpawnPositions;
-	VisitedSpawnPositions.Reserve(SpawnZone * SpawnZone * SpawnZone * CHUNK_FACE_COUNT);
+	VisitedSpawnPositions.Reserve(SpawnZone * SpawnZone * SpawnZone * VOXEL_FACE_COUNT);
 	TQueue<FIntVector> SpawnPositionsArray;
 	SpawnChunk(InitialCenter);
 	TArray<TSharedFuture<void>> Tasks;
@@ -33,7 +33,7 @@ void APreloadedVoxelCenterAreaChunkSpawner::GenerateArea()
 	 */
 	while (IsValid(this) && SpawnPositionsArray.Dequeue(CenterPosition) && InitialCenter == CenterGridPosition)
 	{
-		for (int32 s = 0; s < CHUNK_FACE_COUNT; s++)
+		for (int32 s = 0; s < VOXEL_FACE_COUNT; s++)
 		{
 			auto Direction = Directions[s];
 
