@@ -12,9 +12,7 @@ public:
 	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& IndexParams, const FIntVector& BorderVoxelPosition) override;
 	virtual void CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid) override;
 	
-	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
-						  TArray<FRLEVoxelEdit>& VoxelChanges,
-						  EBorderVisualizationOption BorderVisualization) override;
+	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges) override;
 
 	// void CheckBorderX(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;
 	// void CheckBorderY(const UVoxelGrid& VoxelGridObject, const FMesherVariables& MeshVars, int Y, int Z) const;

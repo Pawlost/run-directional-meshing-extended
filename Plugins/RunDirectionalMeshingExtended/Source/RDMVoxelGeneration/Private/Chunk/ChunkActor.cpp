@@ -76,7 +76,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 	#endif
 		
 		FBorderParams BorderParams;
-		
+		BorderParams.BorderVisualization = BorderVisualization;
 		for (int i = 0; i < VOXEL_FACE_COUNT; i++)
 		{
 			auto& SideChunk= MeshVars.SideChunks[i];
@@ -86,8 +86,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 			}
 		}
 		
-		VoxelMesher->GenerateMesh(MeshVars.MeshContainer, BorderParams,
-		                          VoxelEdits, BorderVisualization);
+		VoxelMesher->GenerateMesh(MeshVars.MeshContainer, BorderParams,VoxelEdits);
 		
 		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor,
 					   MeshVars.MeshContainer);

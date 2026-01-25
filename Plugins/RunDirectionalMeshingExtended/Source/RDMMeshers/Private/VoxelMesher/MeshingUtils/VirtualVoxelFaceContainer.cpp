@@ -11,7 +11,7 @@ FVirtualVoxelFaceContainer::FVirtualVoxelFaceContainer(uint32 VoxelPlane)
 {
 	for (int f = 0; f < VOXEL_FACE_COUNT; f++)
 	{
-		VirtualVoxelFaces[f].Reserve(VoxelPlane);	
+		VirtualVoxelFaceContainer[f].Reserve(VoxelPlane);	
 	}
 }
 
@@ -26,72 +26,64 @@ void FVirtualVoxelFaceContainer::AddNewVirtualFace(const EFaceDirection FaceInde
 	check(VoxelId != 0);
 
 	// Generate new face with coordinates
-	if (VirtualVoxelFaces[FaceIndex].IsEmpty() || !MeshingData.RunDirectionFaceMerge(VirtualVoxelFaces[FaceIndex].Last(), NewFace))
+	auto& VirtualVoxelFaces = VirtualVoxelFaceContainer[FaceIndex];
+	if (VirtualVoxelFaces.IsEmpty() || !MeshingData.RunDirectionFaceMerge(VirtualVoxelFaces.Last(), NewFace))
 	{
 		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
 		// Return when new face was merged
-		VirtualVoxelFaces[FaceIndex].Push(NewFace);
+		VirtualVoxelFaces.Push(NewFace);
 	}
 }
 
 void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
-	TArray<FVirtualVoxelFace>& FirstArray, TArray<FVirtualVoxelFace>& SecondArray,
-	FVoxelMeshContainer& VoxelMeshContainer,
-	const EFaceDirection FaceDirection, const double VoxelSize, const int MaxVoxelsInChunk)
+	TArray<FVirtualVoxelFace>* ActiveArray, TArray<FVirtualVoxelFace>* PassiveArray,
+	FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize, const int MaxVoxelsInChunk)
 {
-	TArray<FVirtualVoxelFace>* ActiveArray = &FirstArray;
-	TArray<FVirtualVoxelFace>* PassiveArray = &SecondArray;
-
-	auto& MeshingData = MeshingDataArray[FaceDirection];
-
-	// Iterate from last face
-	for (int32 i = VirtualVoxelFaces[FaceDirection].Num() - 1; i >= 0; i--)
+	for (uint8 f = 0; f < VOXEL_FACE_COUNT; f++)
 	{
-		FVirtualVoxelFace PrevFace = VirtualVoxelFaces[FaceDirection].Pop(EAllowShrinking::No);
+		EFaceDirection FaceDirection = static_cast<EFaceDirection>(f);
+		auto& MeshingData = MeshingDataArray[f];
 
-	/*	if (ActiveArray->IsEmpty() || MeshingData.HeightCondition(ActiveArray->Top(), PrevFace))
+		// Iterate from last face
+		auto& VirtualVoxelFaces = VirtualVoxelFaceContainer[f];
+		int FaceCount =  VirtualVoxelFaces.Num() - 1;
+		
+		for (int32 i = FaceCount; i >= 0; i--)
 		{
-			ActiveArray->Push(PrevFace);
-		}
-		else
-		{
+			FVirtualVoxelFace PrevFace = VirtualVoxelFaces.Pop(EAllowShrinking::No);
+
 			while (!ActiveArray->IsEmpty())
 			{
 				const FVirtualVoxelFace& PopFace = ActiveArray->Pop(EAllowShrinking::No);
-				if (!MeshingData.MergeFailCondition(PopFace, PrevFace))
+				if (MeshingData.MergeFailCondition(PopFace, PrevFace))
+				{						
+					VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
+				}
+				else if (MeshingData.GreedyMerge(PrevFace, PopFace))
 				{
-					// Attempt greedy merge
-					if (MeshingData.GreedyMerge(PrevFace, PopFace))
-					{
-						PassiveArray->Append(*ActiveArray);
-						ActiveArray->Reset();
-					}
-					else
-					{
-						PassiveArray->Push(PopFace);
-					}
+					PassiveArray->Append(*ActiveArray);
+					ActiveArray->Reset();
 				}
 				else
 				{
-					VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
+					PassiveArray->Push(PopFace);
 				}
 			}
-
+			
 			PassiveArray->Push(PrevFace);
 			Swap(PassiveArray, ActiveArray);
-		}*/
-		VoxelMeshContainer.AddVirtualFaceToMesh(PrevFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
-	}
-/*
-	while (!ActiveArray->IsEmpty())
-	{
-		const FVirtualVoxelFace& PopFace = ActiveArray->Pop(EAllowShrinking::No);
-		VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
-	}
+		}
 
-	while (!PassiveArray->IsEmpty())
-	{
-		const FVirtualVoxelFace& PopFace = PassiveArray->Pop(EAllowShrinking::No);
-		VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
-	}*/
+		while (!ActiveArray->IsEmpty())
+		{
+			const FVirtualVoxelFace& PopFace = ActiveArray->Pop(EAllowShrinking::No);
+			VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
+		}
+
+		while (!PassiveArray->IsEmpty())
+		{
+			const FVirtualVoxelFace& PopFace = PassiveArray->Pop(EAllowShrinking::No);
+			VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
+		}
+	}
 }

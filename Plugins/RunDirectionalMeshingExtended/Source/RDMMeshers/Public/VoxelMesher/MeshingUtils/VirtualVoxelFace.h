@@ -36,7 +36,6 @@ struct RDMMESHERS_API FVirtualVoxelFace
 	static FVirtualVoxelFace CreateRightFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 	static FVirtualVoxelFace CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
 	static FVirtualVoxelFace CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
-
 	
 	static void FrontBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
 	static void BackBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
@@ -45,10 +44,6 @@ struct RDMMESHERS_API FVirtualVoxelFace
 	static void TopBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
 	static void BottomBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension);
 
-	static bool HeightConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
-	static bool HeightConditionY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
-	static bool HeightConditionZ(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
-	
 	static bool MergeFailConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
 	static bool MergeFailConditionRightY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
 	static bool MergeFailConditionLeftY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
@@ -57,6 +52,10 @@ struct RDMMESHERS_API FVirtualVoxelFace
 	static bool MergeFaceEnd(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace);
 	static bool MergeFaceStart(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace);
 	static bool MergeFaceUp(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace);
+	
+	static int GetXFromVector(const FIntVector& Position);
+	static int GetYFromVector(const FIntVector& Position);
+	static int GetZFromVector(const FIntVector& Position);
 	
 	FVector GetFinalStartVertexDown(const double& VoxelSize) const;
 	FVector GetFinalStartVertexUp(const double& VoxelSize) const;

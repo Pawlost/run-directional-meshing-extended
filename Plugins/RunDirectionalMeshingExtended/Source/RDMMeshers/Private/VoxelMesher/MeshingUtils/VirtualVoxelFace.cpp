@@ -91,21 +91,6 @@ void FVirtualVoxelFace::BottomBorderLocation(FIntVector& OutBorderLocation, FInt
 	OutQuadPosition = FIntVector(X, Y, 0);
 }
 
-bool FVirtualVoxelFace::HeightConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
-{
-	return Face.StartVertexUp.X == NewFace.StartVertexUp.X;
-}
-
-bool FVirtualVoxelFace::HeightConditionY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
-{
-	return Face.StartVertexUp.Y == NewFace.StartVertexUp.Y;
-}
-
-bool FVirtualVoxelFace::HeightConditionZ(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
-{
-	return Face.StartVertexUp.Z == NewFace.StartVertexUp.Z;
-}
-
 bool FVirtualVoxelFace::MergeFailConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
 	return  Face.StartVertexDown.Z > NewFace.StartVertexUp.Z;
@@ -175,6 +160,21 @@ bool FVirtualVoxelFace::MergeFaceUp(FVirtualVoxelFace& PrevFace, const FVirtualV
 		return true;
 	}
 	return false;
+}
+
+int FVirtualVoxelFace::GetXFromVector(const FIntVector& Position)
+{
+	return Position.X;
+}
+
+int FVirtualVoxelFace::GetYFromVector(const FIntVector& Position)
+{
+	return Position.Y;
+}
+
+int FVirtualVoxelFace::GetZFromVector(const FIntVector& Position)
+{
+	return Position.Z;
 }
 
 FVector FVirtualVoxelFace::GetFinalStartVertexDown(const double& VoxelSize) const

@@ -2,7 +2,7 @@
 #include "VoxelMesher/BasicVirtualChunk.h"
 #include "Voxel/RLEVoxel.h"
 
-static TArray<TSharedPtr<FVirtualMeshEventPlanner>> UnusedMeshersPool;
+TArray<TSharedPtr<FVirtualMeshEventPlanner>> URLEVirtualChunk::UnusedMeshersPool;
 
 void URLEVirtualChunk::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 {
@@ -35,8 +35,7 @@ void URLEVirtualChunk::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 }
 
 // persistent preallocation must be maintained
-void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
-                                                 TArray<FRLEVoxelEdit>& VoxelEdits, EBorderVisualizationOption BorderVisualization)
+void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	// This scope may start in a parallel task
 	
@@ -59,8 +58,8 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderP
 			EventPlanner = MakeShared<FVirtualMeshEventPlanner>(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
 		}
 	}
-
-	EventPlanner->UpdateInternalState(BorderVisualization, VoxelLine, VoxelPlane, MaxVoxelsInChunk);
+	
+	EventPlanner->UpdateInternalState(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
 	// Keeps all variables local inside the task scope
 	TSharedPtr<TArray<FRLEVoxel>> VoxelGridCopy;
 	{

@@ -5,11 +5,22 @@
 
 struct FBasicRDMVirtualMesher : FVoxelIndexCounter
 {
+	struct FVoxelSideParams
+	{
+		EFaceDirection FaceDirection;
+		EFaceDirection InverseDirection;
+		FIntVector IndexOffset;
+		FIntVector PositionOffset;
+		TFunctionRef<int(const FIntVector& Position)> GetVoxelPlaneFromPosition;
+	};
+	
 	struct FBorderVoxelIndexParams
 	{
 		int32 SideChunkVoxelIndex;
 		FStaticMergeData StaticData;
 	};
+	
+	const static TStaticArray<FVoxelSideParams, VOXEL_FACE_COUNT> VoxelSideParams;
 
 	FBasicRDMVirtualMesher(uint32 VoxelLine, uint32 VoxelPlane, uint32 MaxVoxelsInChunk) : 
 		FVoxelIndexCounter(VoxelLine, VoxelPlane, MaxVoxelsInChunk)
@@ -32,24 +43,21 @@ struct FBasicRDMVirtualMesher : FVoxelIndexCounter
 private:
 	struct FVoxelParams
 	{
-		FIntVector Position = FIntVector(0);
-		FVoxel* NextVoxel = nullptr;
+		FVoxel NextVoxel;
+		bool IsBorderVoxel = false;
+		bool IsValid = false;
 	};
 	
-	bool InsertNextVoxel(TStaticArray<FVoxelParams, VOXEL_FACE_COUNT>& SideVoxels, const EFaceDirection FaceIndex,
-		bool CanGenerate, FIntVector PositionOffset) const;
+	bool CheckInnerVoxel(TStaticArray<FVoxelParams, VOXEL_FACE_COUNT>& SideVoxels, const EFaceDirection FaceIndex,
+		bool CanGenerate) const;
+	
+	bool CheckBorderVoxel(TStaticArray<FVoxelParams, VOXEL_FACE_COUNT>& SideVoxels, const EFaceDirection FaceIndex,
+		bool CanCheckBorder, FBorderParams& BorderParameters, FIntVector SideChunkBorderPosition) const;
 	
 	TArray<FVirtualVoxelFaceContainer> VirtualFaces;
-	
-	bool IsVoxelVisible(const int NextVoxelOffset);
 
 	FORCEINLINE FVoxel& GetCurrentVoxel() const
 	{
 		return (*VoxelGrid)[VoxelIndex];
 	}
-	
-	void IncrementRun(const EFaceDirection& FaceTemplate, int VoxelPlaneIndex, int NextVoxelOffset);
-	
-	static const TStaticArray<FIntVector, VOXEL_FACE_COUNT> IndexOffset;
-	static const TStaticArray<EFaceDirection, VOXEL_FACE_COUNT> InverseDirections;
 };

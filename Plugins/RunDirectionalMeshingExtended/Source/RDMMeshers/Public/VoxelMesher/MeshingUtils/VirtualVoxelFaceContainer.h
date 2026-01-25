@@ -15,9 +15,8 @@ struct FVirtualVoxelFaceContainer
 	explicit FVirtualVoxelFaceContainer(uint32 VoxelPlane);
 
 	void DirectionalGreedyMergeForVoxelPlane(
-		TArray<FVirtualVoxelFace>& FirstArray, TArray<FVirtualVoxelFace>& SecondArray,
-		FVoxelMeshContainer& VoxelMeshContainer,
-		const EFaceDirection FaceDirection, const double VoxelSize, const int MaxVoxelsInChunk);
+		TArray<FVirtualVoxelFace>* ActiveArray, TArray<FVirtualVoxelFace>* PassiveArray,
+		FVoxelMeshContainer& VoxelMeshContainer,const double VoxelSize, const int MaxVoxelsInChunk);
 
 private:
 	
@@ -31,5 +30,5 @@ private:
 	*/
 	static const FStaticMergeData MeshingDataArray[VOXEL_FACE_COUNT];
 	
-	TStaticArray<TArray<FVirtualVoxelFace>, VOXEL_FACE_COUNT> VirtualVoxelFaces;
+	TStaticArray<TArray<FVirtualVoxelFace>, VOXEL_FACE_COUNT> VirtualVoxelFaceContainer;
 };

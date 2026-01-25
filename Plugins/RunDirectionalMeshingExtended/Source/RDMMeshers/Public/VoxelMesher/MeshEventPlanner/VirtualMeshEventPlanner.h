@@ -1,22 +1,13 @@
 ﻿#pragma once
-#include "BorderVirtualMeshEventPlanner.h"
 #include "MeshingEvent.h"
 #include "VirtualMeshEventPlannerBase.h"
 #include "Voxel/RLEVoxel.h"
+#include "VoxelMesher/VirtualChunk.h"
 #include "VoxelMesher/MeshingUtils/BorderVisualizationOption.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
-#include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
-
-struct FVirtualMeshEventPlanner;
-class UVirtualChunk;
-
-struct FBorderParams
-{
-	TStaticArray<FBorderVirtualMeshEventPlanner, VOXEL_FACE_COUNT> BorderIndexParams;
-	TStaticArray<TStrongObjectPtr<UVirtualChunk>, VOXEL_FACE_COUNT> SideMeshers;
-};
+#include "VoxelMesher/MeshingUtils/BorderParams.h"
 
 /*
 Front = 0,
@@ -32,7 +23,7 @@ public:
 	FVirtualMeshEventPlanner(const uint32 VoxelLine,
 		const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels);
 	
-	void UpdateInternalState(const EBorderVisualizationOption BorderVisualization, const uint32 VoxelLineParam, const uint32 VoxelPlaneParam,
+	void UpdateInternalState(const uint32 VoxelLineParam, const uint32 VoxelPlaneParam,
 	const uint32 MaxVoxelsInChunkParam);
 	
 	void AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits);
@@ -61,11 +52,10 @@ public:
 	
 	void EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits);
 	
-	void CreateBorder(FBorderParams& BorderParameters,
-		FIntVector VoxelPosition, uint32 YEnd,
+	void CreateBorder(FBorderParams& BorderParameters, uint32 YEnd,
 		 const FRLEVoxel& CurrentVoxelSample,
 		EFaceDirection Direction,
-		FIntVector SideChunkBorderPosition, bool BorderCondition);
+		 const FIntVector& PositionOffset, bool BorderCondition);
 	
 	void InternalReset();
 
@@ -83,6 +73,5 @@ private:
 	FIntVector PreviousPosition = FIntVector(0, 0, 0);
 		
 	TArray<FVirtualVoxelFaceContainer> VirtualFaces;
-	EBorderVisualizationOption BorderVisualization = EBorderVisualizationOption::None;
 };
 	
