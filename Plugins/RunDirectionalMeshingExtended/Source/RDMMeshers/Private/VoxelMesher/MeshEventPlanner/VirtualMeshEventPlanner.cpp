@@ -150,9 +150,10 @@ void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameter
 
 	if (!PreviousVoxelRun->IsVoxelEmpty())
 	{
+		VoxelPosition.Y--;
 		// Right Border
-		CreateBorder(BorderParameters, 1, *PreviousVoxelRun, EFaceDirection::Right,
-		             FIntVector(0, 0, 0), true);
+		CreateBorder(BorderParameters, 1, *PreviousVoxelRun, 
+			EFaceDirection::Right, FIntVector(VoxelPosition.X,VoxelLine - 1,VoxelPosition.Z),true);
 	}
 }
 
@@ -184,33 +185,35 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 		if (!IsLeadingEmpty)
 		{
 			// Left border
-			CreateBorder(BorderParameters, 1, LeadingEventVoxel,
-			             EFaceDirection::Left, FIntVector(0, 0, 0), VoxelPosition.Y == 0);
+			CreateBorder(BorderParameters, 1, LeadingEventVoxel, 
+				EFaceDirection::Left, FIntVector(VoxelPosition.X, 0, VoxelPosition.Z),VoxelPosition.Y == 0);
 
 			// Front border
-			CreateBorder(BorderParameters, IndexSequenceBetweenEvents,
-			             LeadingEventVoxel, EFaceDirection::Front,
-			             FIntVector(1, 0, 0), VoxelPosition.X == VoxelLine - 1);
+			CreateBorder(BorderParameters, IndexSequenceBetweenEvents, LeadingEventVoxel,
+						EFaceDirection::Front,FIntVector(0, VoxelPosition.Y,VoxelPosition.Z),
+						VoxelPosition.X == VoxelLine - 1);
 
 			// Top border
-			CreateBorder(BorderParameters, IndexSequenceBetweenEvents,
-			             LeadingEventVoxel, EFaceDirection::Top,
-			             FIntVector(0, 0, 1), VoxelPosition.Z + 1 == VoxelLine);
+			CreateBorder(BorderParameters, IndexSequenceBetweenEvents, LeadingEventVoxel,
+						EFaceDirection::Top, FIntVector(VoxelPosition.X, VoxelPosition.Y, 0),
+			              VoxelPosition.Z == VoxelLine - 1);
 
 			// Bottom border
 			CreateBorder(BorderParameters,  IndexSequenceBetweenEvents, LeadingEventVoxel,
-			             EFaceDirection::Bottom, FIntVector(0, 0, 0), VoxelPosition.Z == 0);
+			             EFaceDirection::Bottom, FIntVector(VoxelPosition.X, VoxelPosition.Y, VoxelLine - 1),
+			            VoxelPosition.Z == 0);
 
 			//Back borders
 			CreateBorder(BorderParameters, IndexSequenceBetweenEvents, LeadingEventVoxel,
-			             EFaceDirection::Back, FIntVector(0, 0, 0), VoxelPosition.X == 0);
+			             EFaceDirection::Back, FIntVector(VoxelLine - 1, VoxelPosition.Y, VoxelPosition.Z), 
+			             VoxelPosition.X == 0);
 		}
 
 		PreviousPosition = VoxelPosition;
 
 		if (VoxelPosition.X != 0 && !IsFollowingXEmpty && (IsLeadingEmpty || (IsLeadingTransparent && !
 					   IsFollowingXTransparent)))
-			{
+		{
 			VirtualFaces[VoxelPosition.X].AddNewVirtualFace(EFaceDirection::Front, FollowingXEvent.GetCurrentVoxel(), 
 				VoxelPosition, IndexSequenceBetweenEvents);
 		}
@@ -323,8 +326,7 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 
 void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters, uint32 YEnd,
                                             const FRLEVoxel& CurrentVoxelSample,
-                                            EFaceDirection Direction,
-                                            const FIntVector& PositionOffset, bool BorderCondition)
+                                            EFaceDirection Direction, FIntVector BorderPosition, bool BorderCondition)
 {
 	if (BorderCondition)
 	{
@@ -334,13 +336,14 @@ void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters, uin
 		// This for loop may be removed in the future if someone will implement interval checking in between borders
 		for (uint32 y = 0; y < YEnd; y++)
 		{
-			if (BorderParameters.CanGenerate(Direction, CurrentVoxelPosition, VoxelLine, CurrentVoxel))
+			if (BorderParameters.CanGenerateBorder(Direction, BorderPosition, CurrentVoxel))
 			{
-				// If checking intervals is implement run may be larger than 1
+				// If checking intervals is implemented, run may be larger than 1
 				constexpr int RunLenght = 1;
-				VirtualFaces[0].AddNewVirtualFace(Direction, CurrentVoxel, CurrentVoxelPosition + PositionOffset, RunLenght);
+				VirtualFaces[0].AddNewVirtualFace(Direction, CurrentVoxel, CurrentVoxelPosition + VoxelPositionOffsets[Direction], RunLenght);
 			}
 			CurrentVoxelPosition.Y++;
+			BorderPosition.Y++;
 		}
 	}
 }

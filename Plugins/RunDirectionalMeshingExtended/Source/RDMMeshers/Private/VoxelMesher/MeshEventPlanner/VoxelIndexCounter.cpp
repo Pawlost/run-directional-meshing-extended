@@ -1,5 +1,14 @@
 ﻿#include "VoxelMesher/MeshEventPlanner/VoxelIndexCounter.h"
 
+const TStaticArray<FIntVector, VOXEL_FACE_COUNT> FVoxelIndexCounter::VoxelPositionOffsets = {
+	 FIntVector(1,0,0)  ,
+	  FIntVector(0,0,0) ,  
+	 FIntVector(0,1,0)  ,  
+	 FIntVector(0,0,0)  ,  
+	  FIntVector(0,0,1) ,  
+	 FIntVector(0,0,0)  ,  
+};
+
 void FVoxelIndexCounter::UpdatePositionFromIndex()
 {
 	VoxelPosition.X = VoxelIndex / (VoxelPlane);

@@ -3,7 +3,6 @@
 #include "VirtualMeshEventPlannerBase.h"
 #include "Voxel/RLEVoxel.h"
 #include "VoxelMesher/VirtualChunk.h"
-#include "VoxelMesher/MeshingUtils/BorderVisualizationOption.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
@@ -53,9 +52,7 @@ public:
 	void EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits);
 	
 	void CreateBorder(FBorderParams& BorderParameters, uint32 YEnd,
-		 const FRLEVoxel& CurrentVoxelSample,
-		EFaceDirection Direction,
-		 const FIntVector& PositionOffset, bool BorderCondition);
+		 const FRLEVoxel& CurrentVoxelSample, EFaceDirection Direction, FIntVector BorderPosition, bool BorderCondition);
 	
 	void InternalReset();
 

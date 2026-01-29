@@ -7,8 +7,8 @@ class UVirtualChunk;
 struct FBorderParams
 {
 	TStaticArray<TStrongObjectPtr<UVirtualChunk>, VOXEL_FACE_COUNT> SideMeshers;
-	bool CanGenerate(EFaceDirection Direction, FIntVector BorderVoxelPosition, uint32 VoxelLine,
-                     	const FVoxel& CurrentVoxel);
+	bool CanGenerateBorder(EFaceDirection Direction, FIntVector BorderVoxelPosition, 
+		const FVoxel& CurrentVoxel);
 	
 	EBorderVisualizationOption BorderVisualization = EBorderVisualizationOption::None;
 private:

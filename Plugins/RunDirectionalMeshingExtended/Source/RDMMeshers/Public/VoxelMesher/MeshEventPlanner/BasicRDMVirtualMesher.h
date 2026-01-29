@@ -10,7 +10,6 @@ struct FBasicRDMVirtualMesher : FVoxelIndexCounter
 		EFaceDirection FaceDirection;
 		EFaceDirection InverseDirection;
 		FIntVector IndexOffset;
-		FIntVector PositionOffset;
 		TFunctionRef<int(const FIntVector& Position)> GetVoxelPlaneFromPosition;
 	};
 	
@@ -35,9 +34,8 @@ struct FBasicRDMVirtualMesher : FVoxelIndexCounter
 
 	void ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize);
 	
-	//void IncrementBorderRun(const EFaceDirection& FaceTemplate, const FIntVector& Position, int BorderIndex) const;
-	//static bool IsBorderVoxelVisible(const FBorderVoxelIndexParams& FaceData);
-
+	void CheckBorder(FBorderParams& BorderParameters, EFaceDirection Direction, const FIntVector& CurrentPosition, const FIntVector& BorderVoxelPosition);
+	
 	TSharedPtr<TArray<FVoxel>> VoxelGrid;
 	
 private:
@@ -51,13 +49,16 @@ private:
 	bool CheckInnerVoxel(TStaticArray<FVoxelParams, VOXEL_FACE_COUNT>& SideVoxels, const EFaceDirection FaceIndex,
 		bool CanGenerate) const;
 	
-	bool CheckBorderVoxel(TStaticArray<FVoxelParams, VOXEL_FACE_COUNT>& SideVoxels, const EFaceDirection FaceIndex,
-		bool CanCheckBorder, FBorderParams& BorderParameters, FIntVector SideChunkBorderPosition) const;
-	
 	TArray<FVirtualVoxelFaceContainer> VirtualFaces;
 
 	FORCEINLINE FVoxel& GetCurrentVoxel() const
 	{
 		return (*VoxelGrid)[VoxelIndex];
+	}
+	
+	FORCEINLINE FVoxel& GetVoxelFromPosition(const FIntVector& Position) const
+	{
+		const auto VoxelPositionIndex = CalculateIndexFromPosition(Position);
+		return (*VoxelGrid)[VoxelPositionIndex];
 	}
 };

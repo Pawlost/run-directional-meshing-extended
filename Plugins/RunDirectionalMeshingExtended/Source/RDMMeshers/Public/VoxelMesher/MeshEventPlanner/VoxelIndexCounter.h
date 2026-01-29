@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 
 struct FVoxelIndexCounter
@@ -16,6 +17,8 @@ public:
 
 	
 protected:
+	const static TStaticArray<FIntVector, VOXEL_FACE_COUNT> VoxelPositionOffsets;
+	
 	uint32 VoxelLine = 0;
 	uint32 VoxelPlane = 0;
 	uint32 MaxVoxelsInChunk = 0;
