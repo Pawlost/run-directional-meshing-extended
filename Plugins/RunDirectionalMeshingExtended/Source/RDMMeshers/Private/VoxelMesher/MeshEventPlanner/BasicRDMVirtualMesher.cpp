@@ -79,13 +79,11 @@ void FBasicRDMVirtualMesher::GenerateVirtualFaces(FBorderParams& BorderParameter
 
 				if (Voxel.IsEmptyVoxel() || Voxel.IsTransparent())
 				{
-					// TODO: finish
-					bool FullSolid = false;
-					CheckInnerVoxel(TempVoxels, EFaceDirection::Back, x != 0);
-					CheckInnerVoxel(TempVoxels, EFaceDirection::Front, x != VoxelLine - 1);
-					CheckInnerVoxel(TempVoxels, EFaceDirection::Top, z != VoxelLine - 1);
-					CheckInnerVoxel(TempVoxels, EFaceDirection::Bottom, z != 0);
-					CheckInnerVoxel(TempVoxels, EFaceDirection::Right, y != VoxelLine - 1);
+					bool FullSolid = CheckInnerVoxel(TempVoxels, EFaceDirection::Back, x != 0) & 
+					CheckInnerVoxel(TempVoxels, EFaceDirection::Front, x != VoxelLine - 1) & 
+					CheckInnerVoxel(TempVoxels, EFaceDirection::Top, z != VoxelLine - 1) & 
+					CheckInnerVoxel(TempVoxels, EFaceDirection::Bottom, z != 0) & 
+					CheckInnerVoxel(TempVoxels, EFaceDirection::Right, y != VoxelLine - 1) & 
 					CheckInnerVoxel(TempVoxels, EFaceDirection::Left, y != 0);
 
 					if (!FullSolid)
@@ -133,7 +131,7 @@ bool FBasicRDMVirtualMesher::CheckInnerVoxel(TStaticArray<FVoxelParams, VOXEL_FA
 		}
 	}
 
-	return !CanCheck;
+	return false;
 }
 
 void FBasicRDMVirtualMesher::ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize)

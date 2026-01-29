@@ -8,8 +8,7 @@ void UChessboardVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelMo
 	const auto VoxelFillIndex = GetSingleVoxel();
 	const auto ChunkDimension = GetVoxelLine();
 	
-	TArray<FVoxel> VoxelGrid;
-	VoxelGrid.SetNum(GetMaxVoxelsInChunk());
+	VoxelModel.SetNum(GetMaxVoxelsInChunk());
 	
 	for (uint32 x = 0; x < ChunkDimension; x++)
 	{
