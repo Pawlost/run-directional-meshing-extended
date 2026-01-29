@@ -39,15 +39,10 @@ struct FBasicRDMVirtualMesher : FVoxelIndexCounter
 	TSharedPtr<TArray<FVoxel>> VoxelGrid;
 	
 private:
-	struct FVoxelParams
-	{
-		FVoxel NextVoxel;
-		bool IsBorderVoxel = false;
-		bool IsValid = false;
-	};
 	
-	bool CheckInnerVoxel(TStaticArray<FVoxelParams, VOXEL_FACE_COUNT>& SideVoxels, const EFaceDirection FaceIndex,
-		bool CanGenerate) const;
+	TStaticArray<FVoxel*, VOXEL_FACE_COUNT> TempVoxels;
+	
+	bool CheckInnerVoxel(const EFaceDirection FaceIndex, bool CanGenerate);;
 	
 	TArray<FVirtualVoxelFaceContainer> VirtualFaces;
 

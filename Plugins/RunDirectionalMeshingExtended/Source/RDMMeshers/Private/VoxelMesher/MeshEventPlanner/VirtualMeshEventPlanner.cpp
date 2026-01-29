@@ -45,17 +45,17 @@ void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>
 	// Set first run to trigger first condition in while loop
 	if (!VoxelEdits.IsEmpty())
 	{
-		auto NewVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
+		const auto NewVoxelGrid = MakeShared<TArray<FRLEVoxel>>();
 		constexpr int PreallocationEstimation = 3;
 		NewVoxelGrid->Reserve(RLEVoxelGrid->Num() + VoxelEdits.Num() * PreallocationEstimation);
 		EditEnabled = true;
 
-		auto VoxelEdit = VoxelEdits.Pop();
+		const auto [EditEventIndex, EditVoxel] = VoxelEdits.Pop();
 		int CopyVoxelRunIndex = -1;
 		TSharedPtr<TArray<FRLEVoxel>> EditEventArray = MakeShared<TArray<FRLEVoxel>>();
 
-		EditEventArray->Push(VoxelEdit.EditVoxel);
-		MeshingEvents[EMeshingEventIndex::EditEvent] = {EditEventArray, VoxelEdit.EditEventIndex, 0};
+		EditEventArray->Push(EditVoxel);
+		MeshingEvents[EMeshingEventIndex::EditEvent] = {EditEventArray, EditEventIndex, 0};
 
 		CopyVoxelRunIndex++;
 		auto CopyVoxel = (*RLEVoxelGrid)[CopyVoxelRunIndex];
@@ -63,12 +63,12 @@ void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>
 		// First voxel in a chunk
 
 		// TODO: fix and create test for this
-		if (VoxelEdit.EditEventIndex == 0)
+		if (EditEventIndex == 0)
 		{
-			NewVoxelGrid->Add(VoxelEdit.EditVoxel);
+			NewVoxelGrid->Add(EditVoxel);
 
 			uint32 RemainingIndex = CopyVoxel.RunLenght;
-			while (VoxelEdit.EditVoxel.RunLenght > RemainingIndex)
+			while (EditVoxel.RunLenght > RemainingIndex)
 			{
 				Offset += CopyVoxel.RunLenght;
 				CopyVoxelRunIndex++;
@@ -78,7 +78,7 @@ void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>
 
 			AdvanceEditInterval(VoxelEdits);
 
-			CopyVoxel.RunLenght = RemainingIndex - VoxelEdit.EditVoxel.RunLenght;
+			CopyVoxel.RunLenght = RemainingIndex - EditVoxel.RunLenght;
 
 			if (NewVoxelGrid->Last().Voxel == CopyVoxel.Voxel)
 			{
@@ -160,22 +160,22 @@ void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameter
 
 void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& BorderParameters)
 {
-	auto& LeadingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
-	auto& FollowingXEvent = MeshingEvents[EMeshingEventIndex::FollowingXInterval];
-	auto& FollowingZEvent = MeshingEvents[EMeshingEventIndex::FollowingZInterval];
+	const auto& LeadingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
+	const auto& FollowingXEvent = MeshingEvents[EMeshingEventIndex::FollowingXInterval];
+	const auto& FollowingZEvent = MeshingEvents[EMeshingEventIndex::FollowingZInterval];
 
 	// Sample interval
 	// Move interval one step ahead if at the run end
-	bool IsLeadingEmpty = LeadingEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
-	bool IsFollowingXEmpty = FollowingXEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
-	bool IsFollowingZEmpty = FollowingZEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
+	const bool IsLeadingEmpty = LeadingEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
+	const bool IsFollowingXEmpty = FollowingXEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
+	const bool IsFollowingZEmpty = FollowingZEvent.GetCurrentRLEVoxel().IsVoxelEmpty();
 
 	// Generate culled faces
 	if (!IsLeadingEmpty || !IsFollowingXEmpty || !IsFollowingZEmpty)
 	{
-		bool IsLeadingTransparent = LeadingEvent.GetCurrentVoxel().IsTransparent();
-		bool IsFollowingXTransparent = FollowingXEvent.GetCurrentVoxel().IsTransparent();
-		bool IsFollowingZTransparent = FollowingZEvent.GetCurrentVoxel().IsTransparent();
+		const bool IsLeadingTransparent = LeadingEvent.GetCurrentVoxel().IsTransparent();
+		const bool IsFollowingXTransparent = FollowingXEvent.GetCurrentVoxel().IsTransparent();
+		const bool IsFollowingZTransparent = FollowingZEvent.GetCurrentVoxel().IsTransparent();
 
 		const uint32 MaxYSequence = (VoxelLine - VoxelPosition.Y) + VoxelIndex;
 		TryUpdateNextMeshingEvent(MaxYSequence);
@@ -249,8 +249,8 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	auto& CopyEvent = MeshingEvents[EMeshingEventIndex::CopyEvent];
-	auto& EditEvent = MeshingEvents[EMeshingEventIndex::EditEvent];
-	auto& LeadingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
+	const auto& EditEvent = MeshingEvents[EMeshingEventIndex::EditEvent];
+	const auto& LeadingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
 
 	if (EditEvent.LastEventIndex == VoxelIndex)
 	{
@@ -272,7 +272,7 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 			CurrentVoxel = CopyEvent.GetCurrentVoxel();
 		}
 
-		auto& EditVoxel = EditEvent.GetCurrentRLEVoxel();
+		const auto& EditVoxel = EditEvent.GetCurrentRLEVoxel();
 		while (EditVoxel.RunLenght > RemainingIndex)
 		{
 			CopyEvent.AdvanceEvent();
@@ -312,7 +312,7 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 	}
 	else
 	{
-		int CopyEventIndex = CopyEvent.GetEventIndex();
+		const int CopyEventIndex = CopyEvent.GetEventIndex();
 		if (CopyEventIndex == VoxelIndex)
 		{
 			CopyEvent.AdvanceEvent();
@@ -324,9 +324,9 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 	TryUpdateNextMeshingEvent(EditEvent.LastEventIndex);
 }
 
-void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters, uint32 YEnd,
+void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters, const uint32 YEnd,
                                             const FRLEVoxel& CurrentVoxelSample,
-                                            EFaceDirection Direction, FIntVector BorderPosition, bool BorderCondition)
+                                            const EFaceDirection Direction, FIntVector BorderPosition, const bool BorderCondition)
 {
 	if (BorderCondition)
 	{
@@ -365,7 +365,7 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 	auto& LeadingMeshingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
 	if (AdvanceMeshingEvent(LeadingMeshingEvent))
 	{
-		auto& LeadingMeshingEventVoxel = LeadingMeshingEvent.GetCurrentVoxel();
+		const auto& LeadingMeshingEventVoxel = LeadingMeshingEvent.GetCurrentVoxel();
 
 		// Left
 		if ((PreviousVoxelRun->Voxel.IsEmptyVoxel() || PreviousVoxelRun->Voxel.IsTransparent()
@@ -376,7 +376,7 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 		}
 
 		// Right
-		int VoxelPlaneIndex = PreviousPosition.Y + IndexSequenceBetweenEvents;
+		const int VoxelPlaneIndex = PreviousPosition.Y + IndexSequenceBetweenEvents;
 		if (!PreviousVoxelRun->IsVoxelEmpty() && (LeadingMeshingEventVoxel.IsEmptyVoxel() ||
 			LeadingMeshingEventVoxel.IsTransparent()) && VoxelPlaneIndex != VoxelLine)
 		{
