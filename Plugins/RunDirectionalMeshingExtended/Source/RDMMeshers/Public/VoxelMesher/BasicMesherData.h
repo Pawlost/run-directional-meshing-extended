@@ -2,11 +2,11 @@
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 
-struct FVoxelIndexCounter
+struct FBasicMesherData
 {
 
 public:
-	FVoxelIndexCounter(uint32 VoxelLine, uint32 VoxelPlane, uint32 MaxVoxelsInChunk)
+	FBasicMesherData(const uint32 VoxelLine, const uint32 VoxelPlane, const uint32 MaxVoxelsInChunk)
 		: VoxelLine(VoxelLine), VoxelPlane(VoxelPlane), MaxVoxelsInChunk(MaxVoxelsInChunk)
 	{
 		constexpr int EstimatedRows = 3;

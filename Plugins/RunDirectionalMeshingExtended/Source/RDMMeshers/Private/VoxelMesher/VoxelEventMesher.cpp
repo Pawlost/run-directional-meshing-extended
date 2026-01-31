@@ -1,8 +1,8 @@
-﻿#include "VoxelMesher/MeshEventPlanner/VirtualMeshEventPlanner.h"
+﻿#include "VoxelMesher/MeshEventPlanner/VoxelEventMesher.h"
 #include "VoxelMesher/VirtualChunk.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
 
-void FVirtualMeshEventPlanner::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits)
+void FVoxelEventMesher::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	auto& EditEvent = MeshingEvents[EMeshingEventIndex::EditEvent];
 
@@ -18,9 +18,9 @@ void FVirtualMeshEventPlanner::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelE
 	}
 }
 
-FVirtualMeshEventPlanner::FVirtualMeshEventPlanner(const uint32 VoxelLine,
+FVoxelEventMesher::FVoxelEventMesher(const uint32 VoxelLine,
                                                    const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels)
-	: FVirtualMeshEventPlannerBase(VoxelLine, VoxelPlane, MaxNumberOfVoxels)
+	: FVoxelEventMesherBase(VoxelLine, VoxelPlane, MaxNumberOfVoxels)
 {
 	for (uint32 y = 0; y < VoxelLine; y++)
 	{
@@ -28,7 +28,7 @@ FVirtualMeshEventPlanner::FVirtualMeshEventPlanner(const uint32 VoxelLine,
 	}
 }
 
-void FVirtualMeshEventPlanner::UpdateInternalState(const uint32 VoxelLineParam, const uint32 VoxelPlaneParam,
+void FVoxelEventMesher::UpdateInternalState(const uint32 VoxelLineParam, const uint32 VoxelPlaneParam,
                                                    const uint32 MaxVoxelsInChunkParam)
 {
 	VoxelLine = VoxelLineParam;
@@ -38,7 +38,7 @@ void FVirtualMeshEventPlanner::UpdateInternalState(const uint32 VoxelLineParam, 
 	InternalReset();
 }
 
-void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid,
+void FVoxelEventMesher::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid,
                                                    TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	TSharedPtr<TArray<FRLEVoxel>> MainVoxelGrid;
@@ -107,7 +107,7 @@ void FVirtualMeshEventPlanner::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>
 	MeshingEvents[EMeshingEventIndex::FollowingZInterval] = {MainVoxelGrid, VoxelLine, 0};
 }
 
-void FVirtualMeshEventPlanner::GenerateVirtualFaces(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
+void FVoxelEventMesher::GenerateVirtualFaces(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("RLE Meshing - RunDirectionalMeshing from RLECompression generation")
@@ -122,7 +122,7 @@ void FVirtualMeshEventPlanner::GenerateVirtualFaces(FBorderParams& BorderParamet
 	}
 }
 
-void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
+void FVoxelEventMesher::TraverseYDirection(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	// Check borders
 	do
@@ -158,7 +158,7 @@ void FVirtualMeshEventPlanner::TraverseYDirection(FBorderParams& BorderParameter
 }
 
 
-void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& BorderParameters)
+void FVoxelEventMesher::CreateVirtualVoxelFacesInLShape(FBorderParams& BorderParameters)
 {
 	const auto& LeadingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
 	const auto& FollowingXEvent = MeshingEvents[EMeshingEventIndex::FollowingXInterval];
@@ -246,7 +246,7 @@ void FVirtualMeshEventPlanner::CreateVirtualVoxelFacesInLShape(FBorderParams& Bo
 	}
 }
 
-void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
+void FVoxelEventMesher::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	auto& CopyEvent = MeshingEvents[EMeshingEventIndex::CopyEvent];
 	const auto& EditEvent = MeshingEvents[EMeshingEventIndex::EditEvent];
@@ -324,7 +324,7 @@ void FVirtualMeshEventPlanner::EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits)
 	TryUpdateNextMeshingEvent(EditEvent.LastEventIndex);
 }
 
-void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters, const uint32 YEnd,
+void FVoxelEventMesher::CreateBorder(FBorderParams& BorderParameters, const uint32 YEnd,
                                             const FRLEVoxel& CurrentVoxelSample,
                                             const EFaceDirection Direction, FIntVector BorderPosition, const bool BorderCondition)
 {
@@ -348,7 +348,7 @@ void FVirtualMeshEventPlanner::CreateBorder(FBorderParams& BorderParameters, con
 	}
 }
 
-void FVirtualMeshEventPlanner::InternalReset()
+void FVoxelEventMesher::InternalReset()
 {
 	Reset();
 
@@ -360,7 +360,7 @@ void FVirtualMeshEventPlanner::InternalReset()
 	PreviousPosition = FIntVector(0, 0, 0);
 }
 
-void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
+void FVoxelEventMesher::AdvanceAllMeshingEvents()
 {
 	auto& LeadingMeshingEvent = MeshingEvents[EMeshingEventIndex::LeadingInterval];
 	if (AdvanceMeshingEvent(LeadingMeshingEvent))
@@ -392,7 +392,7 @@ void FVirtualMeshEventPlanner::AdvanceAllMeshingEvents()
 	AdvanceMeshingEvent(MeshingEvents[EMeshingEventIndex::FollowingZInterval]);
 }
 
-void FVirtualMeshEventPlanner::ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer,
+void FVoxelEventMesher::ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer,
                                                       const double VoxelSize)
 {
 #if CPUPROFILERTRACE_ENABLED

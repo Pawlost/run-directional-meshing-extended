@@ -2,7 +2,7 @@
 #include "VoxelMesher/BasicVirtualChunk.h"
 #include "Voxel/RLEVoxel.h"
 
-TArray<TSharedPtr<FVirtualMeshEventPlanner>> URLEVirtualChunk::UnusedMeshersPool;
+TArray<TSharedPtr<FVoxelEventMesher>> URLEVirtualChunk::UnusedMeshersPool;
 
 void URLEVirtualChunk::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 {
@@ -47,7 +47,7 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderP
 	const uint32 VoxelLine = VoxelData->GetVoxelLine();
 	const uint32 VoxelPlane = VoxelData->GetVoxelPlane();
 	
-	TSharedPtr<FVirtualMeshEventPlanner> EventPlanner;
+	TSharedPtr<FVoxelEventMesher> EventPlanner;
 	{
 		FScopeLock Lock(&MesherCriticalSection);
 		if (!UnusedMeshersPool.IsEmpty())
@@ -55,7 +55,7 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderP
 			EventPlanner = UnusedMeshersPool.Pop();
 		}else
 		{
-			EventPlanner = MakeShared<FVirtualMeshEventPlanner>(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
+			EventPlanner = MakeShared<FVoxelEventMesher>(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
 		}
 	}
 	
@@ -88,7 +88,7 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderP
 	}
 }
 
-FVoxel URLEVirtualChunk::GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition)
+FVoxel URLEVirtualChunk::GetBorderVoxel(FBorderEventMesher& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition)
 {
 	const uint32 MaxChunkVoxelSequence = VoxelData->GetMaxVoxelsInChunk();
 

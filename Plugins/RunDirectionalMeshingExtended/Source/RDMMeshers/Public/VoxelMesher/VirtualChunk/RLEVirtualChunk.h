@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "VirtualChunk.h"
-#include "MeshEventPlanner/VirtualMeshEventPlanner.h"
+#include "MeshEventPlanner/VoxelEventMesher.h"
 #include "MeshingUtils/VoxelMeshContainer.h"
 #include "Voxel/RLEVoxel.h"
 #include "RLEVirtualChunk.generated.h"
@@ -19,12 +19,12 @@ public:
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
 
-	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition) override;
+	virtual FVoxel GetBorderVoxel(FBorderEventMesher& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition) override;
 
 PRIVATE_MODIFIER:
 	FCriticalSection MesherCriticalSection;
 	FCriticalSection GridCriticalSection;
 	TSharedPtr<TArray<FRLEVoxel>> RLEVoxelGrid;
 	
-	static TArray<TSharedPtr<FVirtualMeshEventPlanner>> UnusedMeshersPool;
+	static TArray<TSharedPtr<FVoxelEventMesher>> UnusedMeshersPool;
 };

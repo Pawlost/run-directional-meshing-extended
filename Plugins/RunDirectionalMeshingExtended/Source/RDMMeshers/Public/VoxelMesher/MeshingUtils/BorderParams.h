@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "BorderVisualizationOption.h"
-#include "VoxelMesher/MeshEventPlanner/BorderVirtualMeshEventPlanner.h"
+#include "VoxelMesher/MeshEventPlanner/BorderVoxelEventMesher.h"
 
 class UVirtualChunk;
 
@@ -12,5 +12,5 @@ struct FBorderParams
 	
 	EBorderVisualizationOption BorderVisualization = EBorderVisualizationOption::None;
 private:
-	TStaticArray<FBorderVirtualMeshEventPlanner, VOXEL_FACE_COUNT> BorderIndexParams;
+	TStaticArray<FBorderEventMesher, VOXEL_FACE_COUNT> BorderIndexParams;
 };

@@ -13,12 +13,6 @@ enum EMeshingEventIndex
 	CopyEvent = 4
 };
 
-struct FRLEMeshingData
-{
-	const FStaticMergeData FaceData;
-	EMeshingEventIndex MeshingEventIndex;
-};
-	
 struct FMeshingEvent
 {
 	// Voxel sequence (run) to be traversed

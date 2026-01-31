@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include "MeshingEvent.h"
-#include "VirtualMeshEventPlannerBase.h"
+#include "VoxelEventMesherBase.h"
 
-struct FBorderVirtualMeshEventPlanner : FVirtualMeshEventPlannerBase
+struct FBorderEventMesher : FVoxelEventMesherBase
 {
 	FMeshingEvent BorderMeshingEvent;
 	FORCEINLINE void SetVoxelIndex(uint32 NewVoxelIndex)
@@ -15,7 +15,7 @@ struct FBorderVirtualMeshEventPlanner : FVirtualMeshEventPlannerBase
 		return VoxelIndex;
 	}
 	
-	FBorderVirtualMeshEventPlanner() : FVirtualMeshEventPlannerBase(0, 0, 0)
+	FBorderEventMesher() : FVoxelEventMesherBase(0, 0, 0)
 	{
 	}
 };

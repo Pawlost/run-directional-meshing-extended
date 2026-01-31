@@ -1,9 +1,9 @@
 ﻿#pragma once
-#include "VirtualMeshEventPlanner.h"
-#include "VoxelIndexCounter.h"
+#include "VoxelEventMesher.h"
+#include "BasicMesherData.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
 
-struct FBasicRDMVirtualMesher : FVoxelIndexCounter
+struct FBasicVoxelMesher : FBasicMesherData
 {
 	struct FVoxelSideParams
 	{
@@ -21,8 +21,8 @@ struct FBasicRDMVirtualMesher : FVoxelIndexCounter
 	
 	const static TStaticArray<FVoxelSideParams, VOXEL_FACE_COUNT> VoxelSideParams;
 
-	FBasicRDMVirtualMesher(uint32 VoxelLine, uint32 VoxelPlane, uint32 MaxVoxelsInChunk) : 
-		FVoxelIndexCounter(VoxelLine, VoxelPlane, MaxVoxelsInChunk)
+	FBasicVoxelMesher(uint32 VoxelLine, uint32 VoxelPlane, uint32 MaxVoxelsInChunk) : 
+		FBasicMesherData(VoxelLine, VoxelPlane, MaxVoxelsInChunk)
 	{
 		for (uint32 y = 0; y < VoxelLine; y++)
 		{

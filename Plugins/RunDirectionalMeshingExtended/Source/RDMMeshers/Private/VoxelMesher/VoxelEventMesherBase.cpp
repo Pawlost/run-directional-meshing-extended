@@ -1,17 +1,17 @@
-﻿#include "VoxelMesher/MeshEventPlanner/VirtualMeshEventPlannerBase.h"
+﻿#include "VoxelMesher/MeshEventPlanner/VoxelEventMesherBase.h"
 
-void FVirtualMeshEventPlannerBase::TryUpdateNextMeshingEvent(const uint32 EventIndex)
+void FVoxelEventMesherBase::TryUpdateNextMeshingEvent(const uint32 EventIndex)
 {
 	NextVoxelIndex = FMath::Min(EventIndex, NextVoxelIndex);
 }
 
-void FVirtualMeshEventPlannerBase::Reset()
+void FVoxelEventMesherBase::Reset()
 {
 	VoxelIndex = 0;
 	NextVoxelIndex = 0;
 }
 
-bool FVirtualMeshEventPlannerBase::AdvanceMeshingEvent(FMeshingEvent& MeshingEvent)
+bool FVoxelEventMesherBase::AdvanceMeshingEvent(FMeshingEvent& MeshingEvent)
 {
 	bool EventAdvanced = false;
 	int IntervalEventIndex = MeshingEvent.GetEventIndex();

@@ -1,7 +1,7 @@
-﻿#include "VoxelMesher/MeshEventPlanner/BasicRDMVirtualMesher.h"
+﻿#include "VoxelMesher/MeshEventPlanner/BasicVoxelMesher.h"
 
-const TStaticArray<FBasicRDMVirtualMesher::FVoxelSideParams, VOXEL_FACE_COUNT>
-FBasicRDMVirtualMesher::VoxelSideParams = {
+const TStaticArray<FBasicVoxelMesher::FVoxelSideParams, VOXEL_FACE_COUNT>
+FBasicVoxelMesher::VoxelSideParams = {
 	FVoxelSideParams{
 		EFaceDirection::Front, EFaceDirection::Back, FIntVector(1, 0, 0), FVirtualVoxelFace::GetXFromVector
 	},
@@ -22,7 +22,7 @@ FBasicRDMVirtualMesher::VoxelSideParams = {
 	}
 };
 
-void FBasicRDMVirtualMesher::CheckBorder(FBorderParams& BorderParameters, EFaceDirection Direction,
+void FBasicVoxelMesher::CheckBorder(FBorderParams& BorderParameters, EFaceDirection Direction,
                                          const FIntVector& CurrentPosition,
                                          const FIntVector& BorderVoxelPosition)
 {
@@ -37,7 +37,7 @@ void FBasicRDMVirtualMesher::CheckBorder(FBorderParams& BorderParameters, EFaceD
 	}
 }
 
-void FBasicRDMVirtualMesher::GenerateVirtualFaces(FBorderParams& BorderParameters)
+void FBasicVoxelMesher::GenerateVirtualFaces(FBorderParams& BorderParameters)
 {
 	// Traverse through voxel grid
 	for (uint32 x = 0; x < VoxelLine; x++)
@@ -67,13 +67,8 @@ void FBasicRDMVirtualMesher::GenerateVirtualFaces(FBorderParams& BorderParameter
 				VoxelPosition = FIntVector(x, y, z);
 
 				UpdateIndexFromPosition();
-
+				
 				const FVoxel& Voxel = GetCurrentVoxel();
-
-				// If voxel is empty, no mesh should be generated
-				// Calculate indices need to check if face should be generated
-
-				// Check if face should be generated
 
 				if (Voxel.IsEmptyVoxel() || Voxel.IsTransparent())
 				{
@@ -106,14 +101,14 @@ void FBasicRDMVirtualMesher::GenerateVirtualFaces(FBorderParams& BorderParameter
 	}
 }
 
-bool FBasicRDMVirtualMesher::CheckInnerVoxel(const EFaceDirection FaceIndex, bool CanCheck)
+bool FBasicVoxelMesher::CheckInnerVoxel(const EFaceDirection FaceIndex, bool CanCheck)
 {
 	auto& NextVoxel = TempVoxels[FaceIndex];
 	NextVoxel = nullptr;
 
 	if (CanCheck)
 	{
-		const auto AdjustedVoxelIndex = VoxelIndex + CalculateIndexFromPosition(VoxelSideParams[FaceIndex].IndexOffset);
+		const uint32 AdjustedVoxelIndex = VoxelIndex + CalculateIndexFromPosition(VoxelSideParams[FaceIndex].IndexOffset);
 
 		if (VoxelGrid->IsValidIndex(AdjustedVoxelIndex))
 		{
@@ -126,7 +121,7 @@ bool FBasicRDMVirtualMesher::CheckInnerVoxel(const EFaceDirection FaceIndex, boo
 	return false;
 }
 
-void FBasicRDMVirtualMesher::ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize)
+void FBasicVoxelMesher::ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize)
 {
 	for (uint32 y = 0; y < VoxelLine; y++)
 	{

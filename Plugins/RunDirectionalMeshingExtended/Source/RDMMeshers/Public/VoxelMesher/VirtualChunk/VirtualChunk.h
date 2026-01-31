@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "BaseVoxelData.h"
-#include "MeshEventPlanner/BorderVirtualMeshEventPlanner.h"
-#include "MeshEventPlanner/VirtualMeshEventPlanner.h"
+#include "MeshEventPlanner/BorderVoxelEventMesher.h"
+#include "MeshEventPlanner/VoxelEventMesher.h"
 #include "MeshingUtils/BorderParams.h"
 #include "MeshingUtils/RLEVoxelEdit.h"
 #include "MeshingUtils/VoxelMeshContainer.h"
@@ -28,7 +28,7 @@ public:
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid) PURE_VIRTUAL(UVirtualChunk::NewVoxelGrid);
 
-	virtual FVoxel GetBorderVoxel(FBorderVirtualMeshEventPlanner& IndexParams, const FIntVector& BorderVoxelPosition)
+	virtual FVoxel GetBorderVoxel(FBorderEventMesher& IndexParams, const FIntVector& BorderVoxelPosition)
 	PURE_VIRTUAL(UVoxelMesherBase::SampleLeftBorder, return FVoxel(););
 
 protected:

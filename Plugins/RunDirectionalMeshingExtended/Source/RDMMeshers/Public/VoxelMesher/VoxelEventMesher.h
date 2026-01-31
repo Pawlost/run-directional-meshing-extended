@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "MeshingEvent.h"
-#include "VirtualMeshEventPlannerBase.h"
+#include "VoxelEventMesherBase.h"
 #include "Voxel/RLEVoxel.h"
 #include "VoxelMesher/VirtualChunk.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
@@ -16,10 +16,10 @@ Left = 3,
 Bottom = 4,
 Top = 5
 */
-struct FVirtualMeshEventPlanner : FVirtualMeshEventPlannerBase
+struct FVoxelEventMesher : FVoxelEventMesherBase
 {
 public:
-	FVirtualMeshEventPlanner(const uint32 VoxelLine,
+	FVoxelEventMesher(const uint32 VoxelLine,
 		const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels);
 	
 	void UpdateInternalState(const uint32 VoxelLineParam, const uint32 VoxelPlaneParam,

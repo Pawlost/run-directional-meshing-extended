@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include "MeshingEvent.h"
-#include "VoxelIndexCounter.h"
+#include "BasicMesherData.h"
 
 // Must be struct and cannot be class because of UE reflection system limitations
-struct FVirtualMeshEventPlannerBase : FVoxelIndexCounter
+struct FVoxelEventMesherBase : FBasicMesherData
 {
-	FVirtualMeshEventPlannerBase(uint32 VoxelLine,uint32 VoxelPlane,uint32 MaxVoxelsInChunk) : FVoxelIndexCounter(VoxelLine, VoxelPlane, MaxVoxelsInChunk)
+	FVoxelEventMesherBase(const uint32 VoxelLine, const uint32 VoxelPlane, const uint32 MaxVoxelsInChunk) : FBasicMesherData(VoxelLine, VoxelPlane, MaxVoxelsInChunk)
 	{
 	}
 	

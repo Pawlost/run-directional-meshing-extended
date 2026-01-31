@@ -1,9 +1,9 @@
 ﻿#include "VoxelMesher/BasicVirtualChunk.h"
-#include "VoxelMesher/MeshEventPlanner/BasicRDMVirtualMesher.h"
+#include "VoxelMesher/MeshEventPlanner/BasicVoxelMesher.h"
 
-static TArray<TSharedPtr<FBasicRDMVirtualMesher>> UnusedMeshersPool;
+static TArray<TSharedPtr<FBasicVoxelMesher>> UnusedMeshersPool;
 
-FVoxel UBasicVirtualChunk::GetBorderVoxel(FBorderVirtualMeshEventPlanner& IndexParams,
+FVoxel UBasicVirtualChunk::GetBorderVoxel(FBorderEventMesher& IndexParams,
                                                   const FIntVector& BorderVoxelPosition)
 {
 	const auto VoxelIndex = VoxelData->CalculateVoxelIndex(BorderVoxelPosition);
@@ -62,7 +62,7 @@ void UBasicVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorde
 	const uint32 VoxelLine = VoxelData->GetVoxelLine();
 	const uint32 VoxelPlane = VoxelData->GetVoxelPlane();
 	
-	TSharedPtr<FBasicRDMVirtualMesher> EventPlanner;
+	TSharedPtr<FBasicVoxelMesher> EventPlanner;
 	{
 		FScopeLock Lock(&MesherCriticalSection);
 		if (!UnusedMeshersPool.IsEmpty())
@@ -70,7 +70,7 @@ void UBasicVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorde
 			EventPlanner = UnusedMeshersPool.Pop();
 		}else
 		{
-			EventPlanner = MakeShared<FBasicRDMVirtualMesher>(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
+			EventPlanner = MakeShared<FBasicVoxelMesher>(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
 		}
 	}
 	
