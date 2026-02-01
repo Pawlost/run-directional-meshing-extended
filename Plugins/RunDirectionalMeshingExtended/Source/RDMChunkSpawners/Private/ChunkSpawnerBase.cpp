@@ -60,7 +60,7 @@ void AChunkSpawnerBase::ChangeVoxelAtHit(const FVector& HitPosition, const FVect
 void AChunkSpawnerBase::ChangeVoxelSphereAtHit(const FVector& HitPosition, const FVector& HitNormal,
                                                const FName& VoxelName, bool bPick, int Radius)
 {
-	TMap<FIntVector, TArray<FVoxelChange>> Sphere;
+	TMap<FIntVector, TArray<FVoxelEdit>> Sphere;
 	const auto VoxelPosition = CalculateGlobalVoxelPositionFromHit(HitPosition, HitNormal, bPick);
 
 	// TODO: finish
@@ -119,7 +119,7 @@ void AChunkSpawnerBase::ChangeVoxelsInChunk(TMap<FIntVector, FChunkEdit>& ChunkE
 	{
 		auto VoxelChanges = ChunkEdit.Value.VoxelChanges;
 		
-		VoxelChanges.Sort([](const FVoxelChange& A, const FVoxelChange& B)
+		VoxelChanges.Sort([](const FVoxelEdit& A, const FVoxelEdit& B)
 		{
 			if (A.VoxelPosition.X != B.VoxelPosition.X)
 				return A.VoxelPosition.X < B.VoxelPosition.X;
@@ -299,7 +299,7 @@ void AChunkSpawnerBase::AddGlobalVoxelPositionToEdit(TMap<FIntVector, FChunkEdit
 	const FIntVector VoxelPosition = FIntVector(
 		GlobalVoxelPosition - (ChunkPosition * VoxelGenerator->GetVoxelLine()));
 
-	const FVoxelChange Modification(VoxelType, VoxelPosition);
+	const FVoxelEdit Modification(VoxelType, VoxelPosition);
 	auto& VoxelModifications = OutChunkEdit.FindOrAdd(ChunkPosition);
 	VoxelModifications.VoxelChanges.Add(Modification);
 }

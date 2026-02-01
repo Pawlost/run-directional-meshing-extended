@@ -35,7 +35,7 @@ void URLEVirtualChunk::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 }
 
 // persistent preallocation must be maintained
-void URLEVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
+void URLEVirtualChunk::GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	// This scope may start in a parallel task
 	

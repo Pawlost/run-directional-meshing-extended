@@ -4,8 +4,8 @@
 #include "Voxel/Voxel.h"
 #include "BasicVirtualChunk.generated.h"
 
-struct FBorderParams;
-struct FVoxelMeshContainer;
+struct FChunkBorderContext;
+struct FVoxelMesh;
 struct FBorderEventMesher;
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)
@@ -17,7 +17,7 @@ public:
 	virtual FVoxel GetBorderVoxel(FBorderEventMesher& IndexParams, const FIntVector& BorderVoxelPosition) override;
 	virtual void CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid) override;
 	
-	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges) override;
+	virtual void GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges) override;
 
 private:
 	FCriticalSection CriticalSection;

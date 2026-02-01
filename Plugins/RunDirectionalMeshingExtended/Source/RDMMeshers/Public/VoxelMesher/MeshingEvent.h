@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "Voxel/RLEVoxel.h"
-#include "VoxelMesher/MeshingUtils/StaticMergeData.h"
 
 constexpr static int EventIndexCount = 5;
 

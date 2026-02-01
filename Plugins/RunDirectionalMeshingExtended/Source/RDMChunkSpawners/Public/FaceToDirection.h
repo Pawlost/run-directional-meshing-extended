@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "VoxelMesher/MeshingUtils/FaceDirection.h"
+#include "VoxelMesher/MeshingUtil/Enum/FaceDirection.h"
 
 struct RDMCHUNKSPAWNERS_API FFaceToDirection
 {

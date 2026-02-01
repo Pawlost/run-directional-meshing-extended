@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "VoxelMesher/MeshingUtils/VoxelChange.h"
+#include "VoxelMesher/MeshingUtil/VoxelEdit.h"
 #include "ChunkEdit.generated.h"
 
 USTRUCT(BlueprintType)
@@ -10,7 +10,7 @@ struct RDMVOXELGENERATION_API FChunkEdit
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FVoxelChange> VoxelChanges;
+	TArray<FVoxelEdit> VoxelChanges;
 };
 
 

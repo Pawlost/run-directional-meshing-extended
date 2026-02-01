@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "VoxelChange.generated.h"
+#include "VoxelEdit.generated.h"
 
 USTRUCT(BlueprintType)
-struct RDMMESHERS_API FVoxelChange
+struct RDMMESHERS_API FVoxelEdit
 {
 	GENERATED_BODY()
 

@@ -4,9 +4,9 @@
 #include "VoxelMesher/BorderVoxelEventMesher.h"
 #include "VirtualChunk.generated.h"
 
-struct FBorderParams;
+struct FChunkBorderContext;
 struct FRLEVoxelEdit;
-struct FVoxelMeshContainer;
+struct FVoxelMesh;
 class UBaseVoxelData;
 /**
   * @brief Base class for components that convert voxel models into a mesh.
@@ -22,7 +22,7 @@ public:
 
 	void SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase);
 
-	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters,
+	virtual void GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters,
 	                          TArray<FRLEVoxelEdit>& VoxelChanges) PURE_VIRTUAL(UVirtualChunk::GenerateMesh)
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid) PURE_VIRTUAL(UVirtualChunk::NewVoxelGrid);

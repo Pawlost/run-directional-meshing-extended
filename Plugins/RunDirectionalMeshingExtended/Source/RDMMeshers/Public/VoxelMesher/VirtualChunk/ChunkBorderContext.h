@@ -1,12 +1,12 @@
 ﻿#pragma once
-#include "BorderVisualizationOption.h"
-#include "FaceDirection.h"
 #include "Voxel/Voxel.h"
 #include "VoxelMesher/BorderVoxelEventMesher.h"
+#include "VoxelMesher/MeshingUtil/Enum/BorderVisualizationOption.h"
+#include "VoxelMesher/MeshingUtil/Enum/FaceDirection.h"
 
 class UVirtualChunk;
 
-struct FBorderParams
+struct FChunkBorderContext
 {
 	TStaticArray<TStrongObjectPtr<UVirtualChunk>, VOXEL_FACE_COUNT> SideMeshers;
 	bool CanGenerateBorder(const EFaceDirection Direction, const FIntVector& BorderVoxelPosition, 

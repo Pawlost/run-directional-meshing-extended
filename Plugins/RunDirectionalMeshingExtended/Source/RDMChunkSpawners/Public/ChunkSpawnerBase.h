@@ -4,7 +4,8 @@
 #include "VoxelGeneratorBase.h"
 #include "Chunk/ChunkActor.h"
 #include "Chunk/MesherVariables.h"
-#include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
+#include "VoxelMesher/MeshingUtil/RLEVoxelEdit.h"
+#include "VoxelMesher/MeshingUtil/Enum/BorderVisualizationOption.h"
 #include "ChunkSpawnerBase.generated.h"
 
 UCLASS(ClassGroup=(ChunkSpawners), Abstract, Blueprintable)

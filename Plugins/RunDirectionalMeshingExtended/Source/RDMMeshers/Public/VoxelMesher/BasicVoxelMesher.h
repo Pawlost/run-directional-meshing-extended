@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "VoxelEventMesher.h"
 #include "BasicMesherData.h"
-#include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
 
 struct FBasicVoxelMesher : FBasicMesherData
 {
@@ -16,7 +15,7 @@ struct FBasicVoxelMesher : FBasicMesherData
 	struct FBorderVoxelIndexParams
 	{
 		int32 SideChunkVoxelIndex;
-		FStaticMergeData StaticData;
+		FFaceMergeData StaticData;
 	};
 	
 	const static TStaticArray<FVoxelSideParams, VOXEL_FACE_COUNT> VoxelSideParams;
@@ -30,11 +29,11 @@ struct FBasicVoxelMesher : FBasicMesherData
 		}
 	}
 
-	void GenerateVirtualFaces(FBorderParams& BorderParameters);
+	void GenerateVirtualFaces(FChunkBorderContext& BorderParameters);
 
-	void ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize);
+	void ConvertVirtualFacesToMesh(FVoxelMesh& VoxelMeshContainer, const double VoxelSize);
 	
-	void CheckBorder(FBorderParams& BorderParameters, EFaceDirection Direction, const FIntVector& CurrentPosition, const FIntVector& BorderVoxelPosition);
+	void CheckBorder(FChunkBorderContext& BorderContext, EFaceDirection Direction, const FIntVector& CurrentPosition, const FIntVector& BorderVoxelPosition);
 	
 	TSharedPtr<TArray<FVoxel>> VoxelGrid;
 	
@@ -44,7 +43,7 @@ private:
 	
 	bool CheckInnerVoxel(const EFaceDirection FaceIndex, bool CanGenerate);;
 	
-	TArray<FVirtualVoxelFaceContainer> VirtualFaces;
+	TArray<FVirtualVoxelFaceContext> VirtualFaces;
 
 	FORCEINLINE FVoxel& GetCurrentVoxel() const
 	{

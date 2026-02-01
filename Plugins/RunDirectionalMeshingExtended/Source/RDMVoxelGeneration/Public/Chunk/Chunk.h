@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "VoxelMesher/MeshingUtils/FaceDirection.h"
-#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
+#include "VoxelMesher/MeshingUtil/VirtualVoxelFace.h"
+#include "VoxelMesher/MeshingUtil/Enum/FaceDirection.h"
 #include "VoxelModel/RLEVoxelGrid.h"
 #include "Chunk.generated.h"
 

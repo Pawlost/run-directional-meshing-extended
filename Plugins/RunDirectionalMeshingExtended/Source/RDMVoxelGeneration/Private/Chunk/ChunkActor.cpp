@@ -1,7 +1,7 @@
 ﻿#include "Chunk/ChunkActor.h"
 
 #include "VoxelGeneratorBase.h"
-#include "VoxelMesher/MeshingUtils/BorderParams.h"
+#include "VoxelMesher/VirtualChunk/ChunkBorderContext.h"
 #include "VoxelMesher/VirtualChunk/VirtualChunk.h"
 
 AChunkActor::AChunkActor() 
@@ -41,7 +41,7 @@ void AChunkActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
-	const FVoxelMeshContainer& LocalVoxelTable) const
+	const FVoxelMesh& LocalVoxelTable) const
 {
 	for (const auto LocalVoxelType : LocalVoxelTable.VoxelTable)
 	{
@@ -77,7 +77,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 		TRACE_CPUPROFILER_EVENT_SCOPE("Total - Mesh generation - RDM Meshing")
 	#endif
 		
-		FBorderParams BorderParams;
+		FChunkBorderContext BorderParams;
 		BorderParams.BorderVisualization = BorderVisualization;
 		for (int i = 0; i < VOXEL_FACE_COUNT; i++)
 		{

@@ -5,8 +5,6 @@
 #include "Chunk/Chunk.h"
 #include "Chunk/ChunkActor.h"
 #include "Voxel/Voxel.h"
-#include "VoxelMesher/MeshingUtils/ProcMeshSectionVars.h"
-#include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "VoxelGeneratorBase.generated.h"
 
 struct FMesherVariables;

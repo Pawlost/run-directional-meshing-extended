@@ -1,5 +1,6 @@
 ﻿#include "VoxelMesher/BasicVoxelMesher.h"
-#include "VoxelMesher/MeshingUtils/BorderParams.h"
+
+#include "VoxelMesher/VirtualChunk/ChunkBorderContext.h"
 
 const TStaticArray<FBasicVoxelMesher::FVoxelSideParams, VOXEL_FACE_COUNT>
 FBasicVoxelMesher::VoxelSideParams = {
@@ -23,14 +24,14 @@ FBasicVoxelMesher::VoxelSideParams = {
 	}
 };
 
-void FBasicVoxelMesher::CheckBorder(FBorderParams& BorderParameters, EFaceDirection Direction,
+void FBasicVoxelMesher::CheckBorder(FChunkBorderContext& BorderContext, EFaceDirection Direction,
                                          const FIntVector& CurrentPosition,
                                          const FIntVector& BorderVoxelPosition)
 {
 	auto CurrentVoxel = GetVoxelFromPosition(CurrentPosition);
 	if (!CurrentVoxel.IsEmptyVoxel())
 	{
-		if (BorderParameters.CanGenerateBorder(Direction, BorderVoxelPosition, CurrentVoxel))
+		if (BorderContext.CanGenerateBorder(Direction, BorderVoxelPosition, CurrentVoxel))
 		{
 			VirtualFaces[0].AddNewVirtualFace(Direction, CurrentVoxel,
 			                                  CurrentPosition + VoxelPositionOffsets[Direction], 1);
@@ -38,7 +39,7 @@ void FBasicVoxelMesher::CheckBorder(FBorderParams& BorderParameters, EFaceDirect
 	}
 }
 
-void FBasicVoxelMesher::GenerateVirtualFaces(FBorderParams& BorderParameters)
+void FBasicVoxelMesher::GenerateVirtualFaces(FChunkBorderContext& BorderParameters)
 {
 	// Traverse through voxel grid
 	for (uint32 x = 0; x < VoxelLine; x++)
@@ -122,7 +123,7 @@ bool FBasicVoxelMesher::CheckInnerVoxel(const EFaceDirection FaceIndex, bool Can
 	return false;
 }
 
-void FBasicVoxelMesher::ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize)
+void FBasicVoxelMesher::ConvertVirtualFacesToMesh(FVoxelMesh& VoxelMeshContainer, const double VoxelSize)
 {
 	for (uint32 y = 0; y < VoxelLine; y++)
 	{

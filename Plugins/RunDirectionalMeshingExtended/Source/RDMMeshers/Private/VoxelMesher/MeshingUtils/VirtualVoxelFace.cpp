@@ -1,4 +1,4 @@
-﻿#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
+﻿#include "VoxelMesher/MeshingUtil/VirtualVoxelFace.h"
 
 FVirtualVoxelFace FVirtualVoxelFace::CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght){
 	return FVirtualVoxelFace(Voxel,
@@ -17,7 +17,6 @@ FVirtualVoxelFace FVirtualVoxelFace::CreateBackFace(const FVoxel& Voxel, const F
 		InitialPosition + FIntVector(0, RunLenght, 1),
 		InitialPosition + FIntVector(0, 0, 1));
 }
-
 
 FVirtualVoxelFace FVirtualVoxelFace::CreateLeftFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
 {
@@ -53,42 +52,6 @@ FVirtualVoxelFace FVirtualVoxelFace::CreateBottomFace(const FVoxel& Voxel, const
 		 InitialPosition,
 		InitialPosition + FIntVector(1, 0, 0),
 		InitialPosition +FIntVector(1, RunLenght, 0));
-}
-
-void FVirtualVoxelFace::FrontBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
-{
-	OutBorderLocation = FIntVector(0, Y, X);
-	OutQuadPosition = FIntVector(ChunkDimension, Y, X);
-}
-
-void FVirtualVoxelFace::BackBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
-{
-	OutBorderLocation = FIntVector(0, Y, X);
-	OutQuadPosition = FIntVector(0, Y, X);
-}
-
-void FVirtualVoxelFace::LeftBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
-{
-	OutBorderLocation = FIntVector(0, X, Y);
-	OutQuadPosition = FIntVector(X, 0, Y);
-}
-
-void FVirtualVoxelFace::RightBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
-{
-	OutBorderLocation = FIntVector(0, X, Y);
-	OutQuadPosition = FIntVector(X, ChunkDimension, Y);
-}
-
-void FVirtualVoxelFace::TopBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
-{
-	OutBorderLocation = FIntVector(0, Y, X);
-	OutQuadPosition =FIntVector(X, Y, ChunkDimension);
-}
-
-void FVirtualVoxelFace::BottomBorderLocation(FIntVector& OutBorderLocation, FIntVector& OutQuadPosition, int X, int Y, int ChunkDimension)
-{
-	OutBorderLocation = FIntVector(0, Y, X);
-	OutQuadPosition = FIntVector(X, Y, 0);
 }
 
 bool FVirtualVoxelFace::MergeFailConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)

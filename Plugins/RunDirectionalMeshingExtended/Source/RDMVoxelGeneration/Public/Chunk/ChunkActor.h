@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "MesherVariables.h"
 #include "ProceduralMeshComponent.h"
-#include "VoxelMesher/MeshingUtils/BorderVisualizationOption.h"
+#include "VoxelMesher/MeshingUtil/Enum/BorderVisualizationOption.h"
 #include "ChunkActor.generated.h"
 
 struct FRLEVoxelEdit;
@@ -35,5 +35,5 @@ private:
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 	
 	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
-                        	const FVoxelMeshContainer& LocalVoxelTable) const;
+                        	const FVoxelMesh& LocalVoxelTable) const;
 };

@@ -1,12 +1,12 @@
 ﻿#pragma once
-#include "FaceDirection.h"
 #include "ProcMeshSectionVars.h"
 #include "VirtualVoxelFace.h"
+#include "Enum/FaceDirection.h"
 #include "Voxel/Voxel.h"
 
-struct FVoxelMeshContainer
+struct FVoxelMesh
 {
-	FVoxelMeshContainer()
+	FVoxelMesh()
 	{
 		constexpr int EstimatedVoxelRows = 100;
 		VoxelTable.Reserve(EstimatedVoxelRows);

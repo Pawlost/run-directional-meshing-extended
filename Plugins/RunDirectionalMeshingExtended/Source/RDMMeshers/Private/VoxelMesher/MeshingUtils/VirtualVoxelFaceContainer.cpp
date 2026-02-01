@@ -1,21 +1,76 @@
-﻿#include "VoxelMesher/MeshingUtils//VirtualVoxelFaceContainer.h"
-#include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
+﻿#include "VoxelMesher/MeshingUtil/VirtualVoxelFaceContext.h"
+#include "VoxelMesher/MeshingUtil/FaceMergeData.h"
+#include "VoxelMesher/MeshingUtil/VoxelMesh.h"
 
-const FStaticMergeData FVirtualVoxelFaceContainer::MeshingDataArray[] = {
-	FStaticMergeData::FrontFaceData, FStaticMergeData::BackFaceData,
-	FStaticMergeData::RightFaceData, FStaticMergeData::LeftFaceData,
-	FStaticMergeData::TopFaceData, FStaticMergeData::BottomFaceData
+const FFaceMergeData FVirtualVoxelFaceContext:: FrontFaceData = FFaceMergeData(
+	EFaceDirection::Front,
+	EFaceDirection::Back,
+	FVirtualVoxelFace::MergeFaceStart,
+	FVirtualVoxelFace::MergeFaceUp,
+	FVirtualVoxelFace::CreateFrontFace,
+	FVirtualVoxelFace::MergeFailConditionX
+);
+
+const FFaceMergeData FVirtualVoxelFaceContext::BackFaceData = FFaceMergeData(
+	EFaceDirection::Back,
+	EFaceDirection::Front,
+	FVirtualVoxelFace::MergeFaceEnd,
+	FVirtualVoxelFace::MergeFaceUp,
+	FVirtualVoxelFace::CreateBackFace,
+	FVirtualVoxelFace::MergeFailConditionX
+);
+
+const FFaceMergeData FVirtualVoxelFaceContext::RightFaceData = FFaceMergeData(
+	EFaceDirection::Right,
+	EFaceDirection::Left,
+	FVirtualVoxelFace::MergeFaceUp,
+	FVirtualVoxelFace::MergeFaceEnd,
+	FVirtualVoxelFace::CreateRightFace,
+	FVirtualVoxelFace::MergeFailConditionRightY
+);
+
+const FFaceMergeData FVirtualVoxelFaceContext::LeftFaceData = FFaceMergeData(
+	EFaceDirection::Left,
+	EFaceDirection::Right,
+	FVirtualVoxelFace::MergeFaceUp,
+	FVirtualVoxelFace::MergeFaceStart,
+	FVirtualVoxelFace::CreateLeftFace,
+	FVirtualVoxelFace::MergeFailConditionLeftY
+);
+
+const FFaceMergeData FVirtualVoxelFaceContext::TopFaceData = FFaceMergeData(
+	EFaceDirection::Top,
+	EFaceDirection::Bottom,
+	FVirtualVoxelFace::MergeFaceEnd,
+	FVirtualVoxelFace::MergeFaceUp,
+	FVirtualVoxelFace::CreateTopFace,
+	FVirtualVoxelFace::MergeFailConditionZ
+);
+
+const FFaceMergeData FVirtualVoxelFaceContext::BottomFaceData = FFaceMergeData(
+	EFaceDirection::Bottom,
+	EFaceDirection::Top,
+	FVirtualVoxelFace::MergeFaceStart,
+	FVirtualVoxelFace::MergeFaceUp,
+	FVirtualVoxelFace::CreateBottomFace,
+	FVirtualVoxelFace::MergeFailConditionZ
+);
+
+const FFaceMergeData FVirtualVoxelFaceContext::MeshingDataArray[] = {
+	FrontFaceData, BackFaceData,
+	RightFaceData, LeftFaceData,
+	TopFaceData, BottomFaceData
 };
 
-FVirtualVoxelFaceContainer::FVirtualVoxelFaceContainer(uint32 VoxelPlane)
+FVirtualVoxelFaceContext::FVirtualVoxelFaceContext(uint32 VoxelPlane)
 {
 	for (int f = 0; f < VOXEL_FACE_COUNT; f++)
 	{
-		VirtualVoxelFaceContainer[f].Reserve(VoxelPlane);	
+		FacesByDirection[f].Reserve(VoxelPlane);	
 	}
 }
 
-void FVirtualVoxelFaceContainer::AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel, const FIntVector& Position,
+void FVirtualVoxelFaceContext::AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel, const FIntVector& Position,
                                                    const int Lenght)
 {
 	auto& MeshingData = MeshingDataArray[FaceIndex];
@@ -26,7 +81,7 @@ void FVirtualVoxelFaceContainer::AddNewVirtualFace(const EFaceDirection FaceInde
 	check(VoxelId != 0);
 
 	// Generate new face with coordinates
-	auto& VirtualVoxelFaces = VirtualVoxelFaceContainer[FaceIndex];
+	auto& VirtualVoxelFaces = FacesByDirection[FaceIndex];
 	if (VirtualVoxelFaces.IsEmpty() || !MeshingData.RunDirectionFaceMerge(VirtualVoxelFaces.Last(), NewFace))
 	{
 		// Tries to merge face coordinates into previous face. Because faces are sorted, the last one is always the correct one.
@@ -35,9 +90,9 @@ void FVirtualVoxelFaceContainer::AddNewVirtualFace(const EFaceDirection FaceInde
 	}
 }
 
-void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
+void FVirtualVoxelFaceContext::DirectionalGreedyMergeForVoxelPlane(
 	TArray<FVirtualVoxelFace>* ActiveArray, TArray<FVirtualVoxelFace>* PassiveArray,
-	FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize, const int MaxVoxelsInChunk)
+	FVoxelMesh& VoxelMeshContainer, const double VoxelSize, const int MaxVoxelsInChunk)
 {
 	for (uint8 f = 0; f < VOXEL_FACE_COUNT; f++)
 	{
@@ -45,7 +100,7 @@ void FVirtualVoxelFaceContainer::DirectionalGreedyMergeForVoxelPlane(
 		auto& MeshingData = MeshingDataArray[f];
 
 		// Iterate from last face
-		auto& VirtualVoxelFaces = VirtualVoxelFaceContainer[f];
+		auto& VirtualVoxelFaces = FacesByDirection[f];
 		int FaceCount =  VirtualVoxelFaces.Num() - 1;
 		
 		for (int32 i = FaceCount; i >= 0; i--)

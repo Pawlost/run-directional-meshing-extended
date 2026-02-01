@@ -14,7 +14,7 @@ class RDMMESHERS_API URLEVirtualChunk : public UVirtualChunk
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges) override;
+	virtual void GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges) override;
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
 

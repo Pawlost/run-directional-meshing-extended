@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "VoxelMesher/MeshingUtils/FaceDirection.h"
-#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
+#include "MeshingUtil/VirtualVoxelFace.h"
+#include "MeshingUtil/Enum/FaceDirection.h"
 
 struct FBasicMesherData
 {

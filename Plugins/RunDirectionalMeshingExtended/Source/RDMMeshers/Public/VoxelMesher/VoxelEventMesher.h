@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "MeshingEvent.h"
 #include "VoxelEventMesherBase.h"
+#include "MeshingUtil/RLEVoxelEdit.h"
+#include "MeshingUtil/VirtualVoxelFaceContext.h"
+#include "MeshingUtil/VoxelMesh.h"
 #include "Voxel/RLEVoxel.h"
-#include "VoxelMesher/MeshingUtils/FaceDirection.h"
-#include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
-#include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
 
-struct FBorderParams;
+struct FChunkBorderContext;
 /*
 Front = 0,
 Back = 1,
@@ -28,7 +28,7 @@ public:
 	
 	void InitializeIntervals(const TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid, TArray<FRLEVoxelEdit>& VoxelEdits);
 	
-	void GenerateVirtualFaces(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits);
+	void GenerateVirtualFaces(FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits);
 	
 	FORCEINLINE bool IsEditEnabled() const
 	{
@@ -40,17 +40,17 @@ public:
 		return MeshingEvents[EMeshingEventIndex::LeadingInterval].VoxelGridPtr;
 	}
 	
-	void CreateVirtualVoxelFacesInLShape(FBorderParams& BorderParameters);
+	void CreateVirtualVoxelFacesInLShape(FChunkBorderContext& BorderParameters);
 	
-	void TraverseYDirection(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits);
+	void TraverseYDirection(FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits);
 	
 	void AdvanceAllMeshingEvents();
 	
-	void ConvertVirtualFacesToMesh(FVoxelMeshContainer& VoxelMeshContainer, const double VoxelSize);
+	void ConvertVirtualFacesToMesh(FVoxelMesh& VoxelMeshContainer, const double VoxelSize);
 	
 	void EditVoxelGrid(TArray<FRLEVoxelEdit>& VoxelEdits);
 	
-	void CreateBorder(FBorderParams& BorderParameters, uint32 YEnd,
+	void CreateBorder(FChunkBorderContext& BorderContext, uint32 YEnd,
 		 const FRLEVoxel& CurrentVoxelSample, EFaceDirection Direction, FIntVector BorderPosition, bool BorderCondition);
 	
 	void InternalReset();
@@ -68,6 +68,6 @@ private:
 	bool EditEnabled = false;
 	FIntVector PreviousPosition = FIntVector(0, 0, 0);
 		
-	TArray<FVirtualVoxelFaceContainer> VirtualFaces;
+	TArray<FVirtualVoxelFaceContext> VirtualFaces;
 };
 	

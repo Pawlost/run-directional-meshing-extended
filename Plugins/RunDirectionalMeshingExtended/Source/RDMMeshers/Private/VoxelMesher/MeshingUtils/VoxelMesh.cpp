@@ -1,7 +1,6 @@
-﻿#include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
-#include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
+﻿#include "VoxelMesher/MeshingUtil/VoxelMesh.h"
 
-const FVoxelMeshContainer::FNormalsAndTangents FVoxelMeshContainer::FaceNormalsAndTangents[] = {
+const FVoxelMesh::FNormalsAndTangents FVoxelMesh::FaceNormalsAndTangents[] = {
 	{FVector(1.0f, 0.0f, 0.0f), FProcMeshTangent(0.0, 1.0, 0.0)}, //Front
 	{FVector(-1.0f, 0.0f, 0.0f), FProcMeshTangent(0.0, 1.0, 0.0)}, //Back
 	{FVector(0.0f, 1.0f, 0.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)}, // Right 
@@ -10,7 +9,7 @@ const FVoxelMeshContainer::FNormalsAndTangents FVoxelMeshContainer::FaceNormalsA
 	{FVector(0.0f, 0.0f, -1.0f), FProcMeshTangent(1.0f, 0.0f, 0.0f)}, //Bottom
 };
 
-void FVoxelMeshContainer::AddVirtualFaceToMesh(const FVirtualVoxelFace& Face, const EFaceDirection FaceIndex,
+void FVoxelMesh::AddVirtualFaceToMesh(const FVirtualVoxelFace& Face, const EFaceDirection FaceIndex,
                                                const double VoxelSize, int MaxNumberVoxels)
 {
 	const auto& Voxel = Face.Voxel;

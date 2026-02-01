@@ -12,7 +12,7 @@ struct RDMVOXELGENERATION_API FCrossChunkEdit
 
 	FORCEINLINE void AddVoxelEdit(const FIntVector& VoxelPosition, const FIntVector& ChunkPosition, const FName& VoxelName)
 	{
-		const FVoxelChange Modification(VoxelName, VoxelPosition);
+		const FVoxelEdit Modification(VoxelName, VoxelPosition);
 		auto& VoxelModifications = ChunkEdits.FindOrAdd(ChunkPosition);
 		VoxelModifications.VoxelChanges.Add(Modification);
 	}

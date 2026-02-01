@@ -15,7 +15,7 @@ void UBasicVirtualChunk::CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid)
 	this->BasicVoxelGridPtr = MakeShared<TArray<FVoxel>>(NewVoxelGrid);
 }
 
-void UBasicVirtualChunk::GenerateMesh(FVoxelMeshContainer& MeshContainer, FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges)
+void UBasicVirtualChunk::GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges)
 {
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RunDirectionalMeshing generation")
