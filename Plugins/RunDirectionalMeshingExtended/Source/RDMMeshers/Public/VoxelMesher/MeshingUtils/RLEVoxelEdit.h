@@ -5,7 +5,7 @@
 #include "RLEVoxelEdit.generated.h"
 
 USTRUCT()
-struct RDMMESHERS_API FRLEVoxelEdit
+struct FRLEVoxelEdit
 {
 	GENERATED_BODY()
 

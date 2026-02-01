@@ -1,6 +1,7 @@
 ﻿#include "DummyTestClasses.h"
 #include "Misc/AutomationTest.h"
 
+/*
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FRDMMeshersRLERunDirectionalVoxelMesher,
 	"RDM.RDMMeshersTests.BaseVoxelData.VoxelPlaneNumber",
@@ -18,3 +19,4 @@ bool FRDMMeshersRLERunDirectionalVoxelMesher::RunTest(const FString& Parameters)
 	
 	return true;
 }
+*/

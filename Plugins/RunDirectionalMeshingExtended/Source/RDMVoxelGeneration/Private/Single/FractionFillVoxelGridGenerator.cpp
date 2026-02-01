@@ -1,7 +1,5 @@
 ﻿#include "Single/FractionFillVoxelGridGenerator.h"
 
-#include "VoxelMesher/VirtualChunk.h"
-
 void UFractionFillVoxelGridGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel)
 {
 	const auto VoxelFillIndex = GetSingleVoxel();

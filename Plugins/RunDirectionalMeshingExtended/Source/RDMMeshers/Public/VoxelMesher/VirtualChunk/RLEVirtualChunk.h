@@ -1,11 +1,10 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "VirtualChunk.h"
-#include "MeshEventPlanner/VoxelEventMesher.h"
-#include "MeshingUtils/VoxelMeshContainer.h"
 #include "Voxel/RLEVoxel.h"
 #include "RLEVirtualChunk.generated.h"
 
+struct FVoxelEventMesher;
 class URLEVoxelGrid;
 struct FChunkParams;
 

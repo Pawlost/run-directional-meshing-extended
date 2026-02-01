@@ -1,7 +1,5 @@
 #include "DatasetGenerators/RandomVoxelGenerator.h"
 
-#include "VoxelMesher/VirtualChunk.h"
-
 void URandomVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {
 	const auto VoxelFillIndex = GetSingleVoxel();

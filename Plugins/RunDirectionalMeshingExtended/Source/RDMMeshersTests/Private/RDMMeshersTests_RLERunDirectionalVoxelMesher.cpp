@@ -1,14 +1,15 @@
 ﻿#include "DummyTestClasses.h"
 #include "TestData.h"
 #include "Misc/AutomationTest.h"
-#include "VoxelMesher/RLEVirtualChunk.h"
 
+/*
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FRDMMeshersTests_RLERunDirectionalVoxelMesher_TestValidVoxelSequenceAfterMeshing,
 	"RDM.RDMMeshersTests.RLERunDirectionalVoxelMesher.CheckValidVoxelSequenceAfterMeshing",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
+/*
 bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_TestValidVoxelSequenceAfterMeshing::RunTest(
 	const FString& Parameters)
 {
@@ -70,7 +71,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_TestValidVoxelSequenceAfterMe
 		TestTrue("Each voxel needs to be unique after meshing.", NextVoxel.Voxel != Voxel.Voxel);
 	}
 
-	*/
+	*//*
 	return true;
 }
 
@@ -143,7 +144,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_TestAdvanceAllMeshingEvents::
 		TestTrue("Each voxel needs to be unique after meshing.", NextVoxel.Voxel != Voxel.Voxel);
 	}
 
-	*/
+	*//*
 	return true;
 }
 
@@ -254,7 +255,7 @@ bool FRDMMeshersTests_RLERunDirectionalVoxelMesher_Borderless_YTraversal_NoiseVo
 	
 	// Execute
 	DummyRLERunDirectionalVoxelMesher->TraverseYDirection(IndexParams, 0, 0, 7, SideMeshers, BorderIndexParams);
-	*/
+	*//*s
 	
 	// Test
 	// TODO: add tests

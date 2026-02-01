@@ -1,6 +1,8 @@
 ﻿#include "Chunk/ChunkActor.h"
 
 #include "VoxelGeneratorBase.h"
+#include "VoxelMesher/MeshingUtils/BorderParams.h"
+#include "VoxelMesher/VirtualChunk/VirtualChunk.h"
 
 AChunkActor::AChunkActor() 
 {
@@ -64,7 +66,7 @@ void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
 	}
 }
 
-void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits,  EBorderVisualizationOption BorderVisualization) const
+void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits, const EBorderVisualizationOption BorderVisualization) const
 {
 	auto& VoxelMesher = MeshVars.OriginalChunk->VoxelMesher;
 	if (VoxelMesher->bEnableVoxelMeshing)

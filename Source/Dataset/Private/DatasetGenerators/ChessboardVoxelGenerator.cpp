@@ -1,7 +1,6 @@
 #include "DatasetGenerators/ChessboardVoxelGenerator.h"
 
 #include "DatasetGenerators/SphereVoxelGenerator.h"
-#include "VoxelMesher/VirtualChunk.h"
 
 void UChessboardVoxelGenerator::AddVoxels(FChunk& Chunk, TArray<FVoxel>& VoxelModel) 
 {

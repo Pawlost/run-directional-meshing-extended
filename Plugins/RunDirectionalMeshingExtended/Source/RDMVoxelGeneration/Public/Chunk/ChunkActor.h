@@ -3,9 +3,10 @@
 #include "CoreMinimal.h"
 #include "MesherVariables.h"
 #include "ProceduralMeshComponent.h"
-#include "VoxelMesher/VirtualChunk.h"
+#include "VoxelMesher/MeshingUtils/BorderVisualizationOption.h"
 #include "ChunkActor.generated.h"
 
+struct FRLEVoxelEdit;
 class UVoxelGeneratorBase;
 
 UCLASS()
@@ -24,7 +25,7 @@ public:
 	void ClearMesh() const;
 	void SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase);
 		
-	void GenerateMesh(FMesherVariables& MesherVariables, TArray<FRLEVoxelEdit>& VoxelChanges, EBorderVisualizationOption BorderVisualization) const;
+	void GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits, EBorderVisualizationOption BorderVisualization) const;
 protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	

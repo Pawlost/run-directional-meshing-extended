@@ -1,5 +1,4 @@
 #include "DatasetGenerators/StripsVoxelGenerator.h"
-#include "VoxelMesher/VirtualChunk.h"
 
 bool UStripsVoxelGenerator::IsInGap(const uint32 Coordinate, const int32 StripDimension)
 {

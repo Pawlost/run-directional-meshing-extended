@@ -1,5 +1,7 @@
-﻿#include "VoxelMesher/MeshEventPlanner/VoxelEventMesher.h"
-#include "VoxelMesher/VirtualChunk.h"
+﻿#include "VoxelMesher/VoxelEventMesher.h"
+
+#include "VoxelMesher/MeshingUtils/BorderParams.h"
+#include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
 
 void FVoxelEventMesher::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits)
@@ -38,7 +40,7 @@ void FVoxelEventMesher::UpdateInternalState(const uint32 VoxelLineParam, const u
 	InternalReset();
 }
 
-void FVoxelEventMesher::InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid,
+void FVoxelEventMesher::InitializeIntervals(const TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid,
                                                    TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	TSharedPtr<TArray<FRLEVoxel>> MainVoxelGrid;

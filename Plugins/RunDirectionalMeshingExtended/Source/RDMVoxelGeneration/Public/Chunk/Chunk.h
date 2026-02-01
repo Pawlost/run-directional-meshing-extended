@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "VoxelMesher/RLEVirtualChunk.h"
-#include "VoxelMesher/VirtualChunk.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFace.h"
 #include "VoxelModel/RLEVoxelGrid.h"
 #include "Chunk.generated.h"
 
+class UVirtualChunk;
 class AChunkActor;
 class UVoxelModel;
 

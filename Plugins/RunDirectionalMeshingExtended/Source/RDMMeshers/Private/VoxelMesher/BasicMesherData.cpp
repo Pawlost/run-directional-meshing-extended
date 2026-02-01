@@ -1,4 +1,4 @@
-﻿#include "VoxelMesher/MeshEventPlanner/BasicMesherData.h"
+﻿#include "VoxelMesher/BasicMesherData.h"
 
 const TStaticArray<FIntVector, VOXEL_FACE_COUNT> FBasicMesherData::VoxelPositionOffsets = {
 	FIntVector(1, 0, 0),

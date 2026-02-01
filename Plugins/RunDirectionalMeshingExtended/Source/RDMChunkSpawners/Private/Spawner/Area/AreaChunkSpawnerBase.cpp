@@ -91,7 +91,6 @@ void AAreaChunkSpawnerBase::GenerateChunkMesh(FMesherVariables& MesherVars, cons
 
 	MesherVars.SpawnerPtr = this;
 	MesherVars.OriginalChunk = Chunk;
-	MesherVars.ShowBorders = BorderVisualization;
 	MesherVars.WorldTransform = UseWorldCenter;
 
 	AddChunksFromGrid(MesherVars, FFaceToDirection::TopDirection);

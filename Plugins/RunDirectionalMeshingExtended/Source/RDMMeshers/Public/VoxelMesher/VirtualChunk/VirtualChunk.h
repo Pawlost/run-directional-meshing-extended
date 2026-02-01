@@ -1,13 +1,12 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "BaseVoxelData.h"
-#include "MeshEventPlanner/BorderVoxelEventMesher.h"
-#include "MeshEventPlanner/VoxelEventMesher.h"
-#include "MeshingUtils/BorderParams.h"
-#include "MeshingUtils/RLEVoxelEdit.h"
-#include "MeshingUtils/VoxelMeshContainer.h"
+#include "VoxelMesher/BorderVoxelEventMesher.h"
 #include "VirtualChunk.generated.h"
 
+struct FBorderParams;
+struct FRLEVoxelEdit;
+struct FVoxelMeshContainer;
 class UBaseVoxelData;
 /**
   * @brief Base class for components that convert voxel models into a mesh.

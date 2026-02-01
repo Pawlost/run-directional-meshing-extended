@@ -2,6 +2,7 @@
 
 #include "BaseVoxelData.h"
 #include "VoxelGeneratorBase.h"
+#include "VoxelMesher/VirtualChunk/VirtualChunk.h"
 
 bool AChunkSpawnerBase::IsInitialized() const
 {

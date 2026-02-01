@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "VoxelMesher/MeshingUtils/BorderParams.h"
-#include "VoxelMesher/VirtualChunk.h"
+#include "VoxelMesher/VirtualChunk/VirtualChunk.h"
 
-bool FBorderParams::CanGenerateBorder(EFaceDirection Direction, FIntVector BorderVoxelPosition, 
-	const FVoxel& CurrentVoxel)
+bool FBorderParams::CanGenerateBorder(const EFaceDirection Direction, const FIntVector& BorderVoxelPosition, 
+                                      const FVoxel& CurrentVoxel)
 {
 	if (BorderVisualization == EBorderVisualizationOption::All)
 	{

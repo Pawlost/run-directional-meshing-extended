@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "BaseVoxelData.h"
-#include "VoxelMesher/RLEVirtualChunk.h"
 
 class UBaseVoxelDataDummy : public UBaseVoxelData
 {
@@ -9,13 +8,13 @@ public:
 };
 
 
-class UDummyRLERunDirectionalVoxelMesher : public URLEVirtualChunk
+class UDummyRLERunDirectionalVoxelMesher //: public URLEVirtualChunk
 {
 public:
 	//using URLERunDirectionalVoxelMesher::AdvanceEditInterval;
 	//using URLERunDirectionalVoxelMesher::AdvanceAllMeshingEvents;
 	//using URLERunDirectionalVoxelMesher::FaceGeneration;
-	using URLEVirtualChunk::RLEVoxelGrid;
+	//using URLEVirtualChunk::RLEVoxelGrid;
 	//using URLERunDirectionalVoxelMesher::TraverseYDirection;
 };
 

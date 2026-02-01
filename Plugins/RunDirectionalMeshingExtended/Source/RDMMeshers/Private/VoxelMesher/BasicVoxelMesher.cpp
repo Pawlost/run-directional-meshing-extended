@@ -1,4 +1,5 @@
-﻿#include "VoxelMesher/MeshEventPlanner/BasicVoxelMesher.h"
+﻿#include "VoxelMesher/BasicVoxelMesher.h"
+#include "VoxelMesher/MeshingUtils/BorderParams.h"
 
 const TStaticArray<FBasicVoxelMesher::FVoxelSideParams, VOXEL_FACE_COUNT>
 FBasicVoxelMesher::VoxelSideParams = {

@@ -4,6 +4,10 @@
 #include "Voxel/Voxel.h"
 #include "BasicVirtualChunk.generated.h"
 
+struct FBorderParams;
+struct FVoxelMeshContainer;
+struct FBorderEventMesher;
+
 UCLASS(ClassGroup=(Meshers), Blueprintable)
 class RDMMESHERS_API UBasicVirtualChunk : public UVirtualChunk
 {

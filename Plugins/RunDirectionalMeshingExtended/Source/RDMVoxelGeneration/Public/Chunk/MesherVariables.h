@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Chunk/Chunk.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
+#include "VoxelMesher/MeshingUtils/VoxelMeshContainer.h"
 #include "MesherVariables.generated.h"
 
 class AChunkSpawnerBase;
@@ -18,6 +19,4 @@ struct RDMVOXELGENERATION_API FMesherVariables
 	TWeakObjectPtr<AActor> SpawnerPtr = nullptr;
 
 	bool WorldTransform = false;
-	// TODO: rewrite or remove
-	EBorderVisualizationOption ShowBorders;
 };

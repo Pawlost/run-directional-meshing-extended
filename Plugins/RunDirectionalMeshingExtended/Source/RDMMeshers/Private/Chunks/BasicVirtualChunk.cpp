@@ -1,5 +1,5 @@
-﻿#include "VoxelMesher/BasicVirtualChunk.h"
-#include "VoxelMesher/MeshEventPlanner/BasicVoxelMesher.h"
+﻿#include "VoxelMesher/VirtualChunk/BasicVirtualChunk.h"
+#include "VoxelMesher/BasicVoxelMesher.h"
 
 static TArray<TSharedPtr<FBasicVoxelMesher>> UnusedMeshersPool;
 

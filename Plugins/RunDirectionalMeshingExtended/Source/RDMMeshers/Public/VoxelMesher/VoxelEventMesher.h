@@ -2,12 +2,11 @@
 #include "MeshingEvent.h"
 #include "VoxelEventMesherBase.h"
 #include "Voxel/RLEVoxel.h"
-#include "VoxelMesher/VirtualChunk.h"
 #include "VoxelMesher/MeshingUtils/FaceDirection.h"
 #include "VoxelMesher/MeshingUtils/RLEVoxelEdit.h"
 #include "VoxelMesher/MeshingUtils/VirtualVoxelFaceContainer.h"
-#include "VoxelMesher/MeshingUtils/BorderParams.h"
 
+struct FBorderParams;
 /*
 Front = 0,
 Back = 1,
@@ -27,7 +26,7 @@ public:
 	
 	void AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits);
 	
-	void InitializeIntervals(TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid, TArray<FRLEVoxelEdit>& VoxelEdits);
+	void InitializeIntervals(const TSharedPtr<TArray<FRLEVoxel>>& RLEVoxelGrid, TArray<FRLEVoxelEdit>& VoxelEdits);
 	
 	void GenerateVirtualFaces(FBorderParams& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits);
 	
