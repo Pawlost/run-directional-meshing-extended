@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "Tests/AutomationTestAccessModifiers.h"
-#include "BaseVoxelData.generated.h"
+#include "BaseVoxelDataDummy.generated.h"
 /**
  * Base for components used to fill voxel models with voxels.
  */

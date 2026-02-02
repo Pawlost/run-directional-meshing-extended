@@ -1,5 +1,4 @@
-﻿#include "DummyTestClasses.h"
-#include "Misc/AutomationTest.h"
+﻿#include "Misc/AutomationTest.h"
 
 /*
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(

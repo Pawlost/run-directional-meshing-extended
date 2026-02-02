@@ -55,7 +55,7 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderConte
 			EventPlanner = UnusedMeshersPool.Pop();
 		}else
 		{
-			EventPlanner = MakeShared<FVoxelEventMesher>(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
+			EventPlanner = MakeShared<FVoxelEventMesher>(VoxelData);
 		}
 	}
 	

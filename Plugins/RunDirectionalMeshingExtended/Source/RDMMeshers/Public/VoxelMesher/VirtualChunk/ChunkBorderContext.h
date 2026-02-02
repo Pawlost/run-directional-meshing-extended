@@ -8,6 +8,7 @@ class UVirtualChunk;
 
 struct FChunkBorderContext
 {
+	
 	TStaticArray<TStrongObjectPtr<UVirtualChunk>, VOXEL_FACE_COUNT> SideMeshers;
 	bool CanGenerateBorder(const EFaceDirection Direction, const FIntVector& BorderVoxelPosition, 
 		const FVoxel& CurrentVoxel);

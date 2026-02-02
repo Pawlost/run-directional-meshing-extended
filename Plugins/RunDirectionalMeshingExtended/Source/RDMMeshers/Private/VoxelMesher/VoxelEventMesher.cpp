@@ -17,9 +17,8 @@ void FVoxelEventMesher::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits)
 	}
 }
 
-FVoxelEventMesher::FVoxelEventMesher(const uint32 VoxelLine,
-                                     const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels)
-	: FVoxelEventMesherBase(VoxelLine, VoxelPlane, MaxNumberOfVoxels)
+FVoxelEventMesher::FVoxelEventMesher(const TObjectPtr<UBaseVoxelData> BaseVoxelData)
+	: FVoxelEventMesherBase(BaseVoxelData)
 {
 	for (uint32 y = 0; y < VoxelLine; y++)
 	{

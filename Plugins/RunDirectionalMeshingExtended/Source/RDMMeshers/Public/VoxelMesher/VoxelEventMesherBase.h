@@ -5,7 +5,7 @@
 // Must be struct and cannot be class because of UE reflection system limitations
 struct FVoxelEventMesherBase : FBasicMesherData
 {
-	FVoxelEventMesherBase(const uint32 VoxelLine, const uint32 VoxelPlane, const uint32 MaxVoxelsInChunk) : FBasicMesherData(VoxelLine, VoxelPlane, MaxVoxelsInChunk)
+	FVoxelEventMesherBase(const TObjectPtr<UBaseVoxelData> BaseVoxelData) : FBasicMesherData(BaseVoxelData)
 	{
 	}
 	

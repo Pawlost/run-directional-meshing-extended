@@ -24,9 +24,17 @@ FBasicVoxelMesher::VoxelSideParams = {
 	}
 };
 
+FBasicVoxelMesher::FBasicVoxelMesher(const TObjectPtr<UBaseVoxelData> BaseVoxelData) : FBasicMesherData(BaseVoxelData)
+{
+	for (uint32 y = 0; y < VoxelLine; y++)
+	{
+		VirtualFaces.Emplace(VoxelPlane);
+	}
+}
+
 void FBasicVoxelMesher::CheckBorder(FChunkBorderContext& BorderContext, EFaceDirection Direction,
-                                         const FIntVector& CurrentPosition,
-                                         const FIntVector& BorderVoxelPosition)
+                                    const FIntVector& CurrentPosition,
+                                    const FIntVector& BorderVoxelPosition)
 {
 	auto CurrentVoxel = GetVoxelFromPosition(CurrentPosition);
 	if (!CurrentVoxel.IsEmptyVoxel())

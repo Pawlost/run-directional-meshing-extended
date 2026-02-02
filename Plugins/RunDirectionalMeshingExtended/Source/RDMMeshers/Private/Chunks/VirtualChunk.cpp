@@ -1,6 +1,6 @@
 ﻿#include "VoxelMesher/VirtualChunk/VirtualChunk.h"
 
-#include "BaseVoxelData.h"
+#include "BaseVoxelDataDummy.h"
 
 void UVirtualChunk::SetVoxelGenerator(const TObjectPtr<UBaseVoxelData>& VoxelGeneratorBase)
 {

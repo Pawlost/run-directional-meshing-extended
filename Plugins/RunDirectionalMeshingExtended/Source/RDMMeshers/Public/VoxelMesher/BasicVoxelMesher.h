@@ -20,14 +20,7 @@ struct FBasicVoxelMesher : FBasicMesherData
 	
 	const static TStaticArray<FVoxelSideParams, VOXEL_FACE_COUNT> VoxelSideParams;
 
-	FBasicVoxelMesher(uint32 VoxelLine, uint32 VoxelPlane, uint32 MaxVoxelsInChunk) : 
-		FBasicMesherData(VoxelLine, VoxelPlane, MaxVoxelsInChunk)
-	{
-		for (uint32 y = 0; y < VoxelLine; y++)
-		{
-			VirtualFaces.Emplace(VoxelPlane);
-		}
-	}
+	FBasicVoxelMesher(const TObjectPtr<UBaseVoxelData> BaseVoxelData);
 
 	void GenerateVirtualFaces(FChunkBorderContext& BorderParameters);
 

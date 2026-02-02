@@ -1,4 +1,4 @@
-﻿#include "BaseVoxelData.h"
+﻿#include "BaseVoxelDataDummy.h"
 
 void UBaseVoxelData::BeginPlay()
 {

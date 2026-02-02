@@ -70,7 +70,7 @@ void UBasicVirtualChunk::GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderCon
 			EventPlanner = UnusedMeshersPool.Pop();
 		}else
 		{
-			EventPlanner = MakeShared<FBasicVoxelMesher>(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
+			EventPlanner = MakeShared<FBasicVoxelMesher>(VoxelData);
 		}
 	}
 	

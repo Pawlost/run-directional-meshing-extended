@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "BaseVoxelDataDummy.h"
 #include "MeshingUtil/VirtualVoxelFace.h"
 #include "MeshingUtil/Enum/FaceDirection.h"
 
@@ -6,8 +7,10 @@ struct FBasicMesherData
 {
 
 public:
-	FBasicMesherData(const uint32 VoxelLine, const uint32 VoxelPlane, const uint32 MaxVoxelsInChunk)
-		: VoxelLine(VoxelLine), VoxelPlane(VoxelPlane), MaxVoxelsInChunk(MaxVoxelsInChunk)
+	FBasicMesherData(const TObjectPtr<UBaseVoxelData> BaseVoxelData)
+		: VoxelLine(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelLine()), 
+		VoxelPlane(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelPlane()),
+		MaxVoxelsInChunk(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetMaxVoxelsInChunk())
 	{
 		constexpr int EstimatedRows = 3;
 

@@ -18,8 +18,7 @@ Top = 5
 struct FVoxelEventMesher : FVoxelEventMesherBase
 {
 public:
-	FVoxelEventMesher(const uint32 VoxelLine,
-		const uint32 VoxelPlane, const uint32 MaxNumberOfVoxels);
+	FVoxelEventMesher(const TObjectPtr<UBaseVoxelData> BaseVoxelData);
 	
 	void UpdateInternalState(const uint32 VoxelLineParam, const uint32 VoxelPlaneParam,
 	const uint32 MaxVoxelsInChunkParam);

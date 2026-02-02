@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "BaseVoxelData.h"
+#include "BaseVoxelDataDummy.h"
 #include "VoxelTableRow.h"
 #include "Chunk/Chunk.h"
 #include "Chunk/ChunkActor.h"

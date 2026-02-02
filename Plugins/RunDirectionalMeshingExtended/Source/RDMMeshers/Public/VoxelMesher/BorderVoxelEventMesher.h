@@ -15,7 +15,7 @@ struct FBorderEventMesher : FVoxelEventMesherBase
 		return VoxelIndex;
 	}
 	
-	FBorderEventMesher() : FVoxelEventMesherBase(0, 0, 0)
+	FBorderEventMesher() : FVoxelEventMesherBase(nullptr)
 	{
 	}
 };
