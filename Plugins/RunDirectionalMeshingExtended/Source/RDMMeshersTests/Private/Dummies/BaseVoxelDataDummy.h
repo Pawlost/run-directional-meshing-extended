@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "RDMMeshers/Public/BaseVoxelDataDummy.h"
+#include "RDMMeshers/Public/BaseVoxelData.h"
 
 class UBaseVoxelDataDummy : public UBaseVoxelData
 {

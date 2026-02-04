@@ -18,6 +18,17 @@ void FBasicMesherData::UpdatePositionFromIndex()
 	VoxelPosition.Y = VoxelIndex - PosX - PosZ;
 }
 
+FBasicMesherData::FBasicMesherData(const TObjectPtr<UBaseVoxelData> BaseVoxelData)
+		: VoxelLine(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelLine()), 
+		VoxelPlane(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelPlane()),
+		MaxVoxelsInChunk(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetMaxVoxelsInChunk())
+{
+	constexpr int EstimatedRows = 3;
+
+	FirstDirectionalMeshingHelperArray.Reserve(VoxelLine * EstimatedRows);
+	SecondDirectionalMeshingHelperArray.Reserve(VoxelLine * EstimatedRows);
+}
+
 uint32 FBasicMesherData::CalculateIndexFromPosition(const FIntVector& Position) const
 {
 	return Position.Y + (Position.Z * VoxelLine) + (Position.X * VoxelPlane);

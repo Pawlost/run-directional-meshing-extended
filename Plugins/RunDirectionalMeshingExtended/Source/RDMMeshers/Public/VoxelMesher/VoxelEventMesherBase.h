@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "MeshingEvent.h"
+#include "MeshingUtil/MeshingEvent.h"
 #include "BasicMesherData.h"
 
 // Must be struct and cannot be class because of UE reflection system limitations

@@ -1,23 +1,15 @@
 ﻿#pragma once
-#include "BaseVoxelDataDummy.h"
+#include "BaseVoxelData.h"
 #include "MeshingUtil/VirtualVoxelFace.h"
 #include "MeshingUtil/Enum/FaceDirection.h"
 
-struct FBasicMesherData
+struct RDMMESHERS_API FBasicMesherData
 {
 
 public:
-	FBasicMesherData(const TObjectPtr<UBaseVoxelData> BaseVoxelData)
-		: VoxelLine(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelLine()), 
-		VoxelPlane(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelPlane()),
-		MaxVoxelsInChunk(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetMaxVoxelsInChunk())
-	{
-		constexpr int EstimatedRows = 3;
+	FBasicMesherData(const TObjectPtr<UBaseVoxelData> BaseVoxelData);
 
-		FirstDirectionalMeshingHelperArray.Reserve(VoxelLine * EstimatedRows);
-		SecondDirectionalMeshingHelperArray.Reserve(VoxelLine * EstimatedRows);
-	}
-
+	uint32 CalculateIndexFromPosition(const FIntVector& Position) const;
 	
 protected:
 	const static TStaticArray<FIntVector, VOXEL_FACE_COUNT> VoxelPositionOffsets;
@@ -33,8 +25,6 @@ protected:
 
 	void UpdatePositionFromIndex();
 	void UpdateIndexFromPosition();
-	
-	uint32 CalculateIndexFromPosition(const FIntVector& Position) const;
 	
 	TArray<FVirtualVoxelFace> FirstDirectionalMeshingHelperArray;
 	TArray<FVirtualVoxelFace> SecondDirectionalMeshingHelperArray;

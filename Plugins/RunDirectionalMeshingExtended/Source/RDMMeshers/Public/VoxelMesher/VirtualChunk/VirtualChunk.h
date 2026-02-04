@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "BaseVoxelDataDummy.h"
+#include "BaseVoxelData.h"
 #include "VoxelMesher/BorderVoxelEventMesher.h"
 #include "VirtualChunk.generated.h"
 

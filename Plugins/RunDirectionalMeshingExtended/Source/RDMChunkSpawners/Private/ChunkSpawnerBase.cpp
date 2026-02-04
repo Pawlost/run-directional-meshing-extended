@@ -1,6 +1,6 @@
 ﻿#include "ChunkSpawnerBase.h"
 
-#include "BaseVoxelDataDummy.h"
+#include "BaseVoxelData.h"
 #include "VoxelGeneratorBase.h"
 #include "VoxelMesher/VirtualChunk/VirtualChunk.h"
 

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "MeshingEvent.h"
+#include "MeshingUtil/MeshingEvent.h"
 #include "VoxelEventMesherBase.h"
 
 struct FBorderEventMesher : FVoxelEventMesherBase
