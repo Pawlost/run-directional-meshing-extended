@@ -16,6 +16,6 @@ public:
 
 	virtual FVoxel GetVoxelAtIndex(const int32 Index) override
 	{
-		return (*VoxelGrid)[Index];		
+		return (*VoxelGrid)[Index];
 	}
 };

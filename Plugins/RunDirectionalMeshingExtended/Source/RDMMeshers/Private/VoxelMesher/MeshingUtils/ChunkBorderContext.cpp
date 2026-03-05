@@ -2,8 +2,8 @@
 #include "VoxelMesher/VirtualChunk/ChunkBorderContext.h"
 #include "VoxelMesher/VirtualChunk/VirtualChunk.h"
 
-bool FChunkBorderContext::CanGenerateBorder(const EFaceDirection Direction, const FIntVector& BorderVoxelPosition, 
-                                      const FVoxel& CurrentVoxel)
+bool FChunkBorderContext::CanGenerateBorder(const EFaceDirection Direction, const FIntVector& BorderVoxelPosition,
+                                            const FVoxel& CurrentVoxel)
 {
 	if (BorderVisualization == EBorderVisualizationOption::All)
 	{
@@ -12,9 +12,10 @@ bool FChunkBorderContext::CanGenerateBorder(const EFaceDirection Direction, cons
 
 	if (SideMeshers[Direction] != nullptr)
 	{
-		const auto& BorderVoxel = SideMeshers[Direction]->GetBorderVoxel(BorderIndexParams[Direction], BorderVoxelPosition);
+		const auto& BorderVoxel = SideMeshers[Direction]->GetBorderVoxel(
+			BorderIndexParams[Direction], BorderVoxelPosition);
 		return BorderVoxel.IsEmptyVoxel() || (BorderVoxel.IsTransparent() && !CurrentVoxel.IsTransparent());
 	}
-	
+
 	return BorderVisualization == EBorderVisualizationOption::OnlyOuterBorders;
 }

@@ -2,7 +2,7 @@
 #include "VoxelMesher/MeshingUtil/FaceMergeData.h"
 #include "VoxelMesher/MeshingUtil/VoxelMesh.h"
 
-const FFaceMergeData FVirtualVoxelFaceContext:: FrontFaceData = FFaceMergeData(
+const FFaceMergeData FVirtualVoxelFaceContext::FrontFaceData = FFaceMergeData(
 	EFaceDirection::Front,
 	EFaceDirection::Back,
 	FVirtualVoxelFace::MergeFaceStart,
@@ -66,12 +66,13 @@ FVirtualVoxelFaceContext::FVirtualVoxelFaceContext(uint32 VoxelPlane)
 {
 	for (int f = 0; f < VOXEL_FACE_COUNT; f++)
 	{
-		FacesByDirection[f].Reserve(VoxelPlane);	
+		FacesByDirection[f].Reserve(VoxelPlane);
 	}
 }
 
-void FVirtualVoxelFaceContext::AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel, const FIntVector& Position,
-                                                   const int Lenght)
+void FVirtualVoxelFaceContext::AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel,
+                                                 const FIntVector& Position,
+                                                 const int Lenght)
 {
 	auto& MeshingData = MeshingDataArray[FaceIndex];
 	const FVirtualVoxelFace NewFace = MeshingData.FaceCreator(Voxel, Position, Lenght);
@@ -101,8 +102,8 @@ void FVirtualVoxelFaceContext::DirectionalGreedyMergeForVoxelPlane(
 
 		// Iterate from last face
 		auto& VirtualVoxelFaces = FacesByDirection[f];
-		int FaceCount =  VirtualVoxelFaces.Num() - 1;
-		
+		int FaceCount = VirtualVoxelFaces.Num() - 1;
+
 		for (int32 i = FaceCount; i >= 0; i--)
 		{
 			FVirtualVoxelFace PrevFace = VirtualVoxelFaces.Pop(EAllowShrinking::No);
@@ -111,7 +112,7 @@ void FVirtualVoxelFaceContext::DirectionalGreedyMergeForVoxelPlane(
 			{
 				const FVirtualVoxelFace& PopFace = ActiveArray->Pop(EAllowShrinking::No);
 				if (MeshingData.MergeFailCondition(PopFace, PrevFace))
-				{						
+				{
 					VoxelMeshContainer.AddVirtualFaceToMesh(PopFace, FaceDirection, VoxelSize, MaxVoxelsInChunk);
 				}
 				else if (MeshingData.GreedyMerge(PrevFace, PopFace))
@@ -124,7 +125,7 @@ void FVirtualVoxelFaceContext::DirectionalGreedyMergeForVoxelPlane(
 					PassiveArray->Push(PopFace);
 				}
 			}
-			
+
 			PassiveArray->Push(PrevFace);
 			Swap(PassiveArray, ActiveArray);
 		}

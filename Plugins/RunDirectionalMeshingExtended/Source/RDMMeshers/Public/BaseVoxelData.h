@@ -14,13 +14,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Voxels",
 		meta=(ToolTip=
 			"The number of voxels in a single dimension (X, Y, or Z) of the chunk. This value represents the count of voxels along one axis of the chunk, not the total number of voxels in the entire chunk."
-		, MinClamp="0"))
+			, MinClamp="0"))
 	int64 VoxelCountPerChunkDimension = 32;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category ="Voxels",
 		meta=(ToolTip="Size of a single voxel in world coordinates.", MinClamp="0"))
 	double VoxelSize = 20;
-	
+
 	/**
 	 * Calculate voxel index in chunk grid from grid coordinates.
 	 */
@@ -39,10 +39,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual double GetHighestElevationAtLocation(const FVector& Location);
-	
+
 protected:
 	virtual void BeginPlay() override;
-	
+
 PRIVATE_MODIFIER:
 	void CalculateVoxelData();
 	double ChunkSpacing = 0.0, InternalVoxelSize = 0.0;

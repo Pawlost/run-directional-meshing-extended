@@ -14,16 +14,18 @@ class RDMMESHERS_API URLEVirtualChunk : public UVirtualChunk
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges) override;
+	virtual void GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters,
+	                          TArray<FRLEVoxelEdit>& VoxelChanges) override;
 
 	virtual void CompressVoxelModel(TArray<FVoxel>& VoxelGrid) override;
 
-	virtual FVoxel GetBorderVoxel(FBorderEventMesher& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition) override;
+	virtual FVoxel GetBorderVoxel(FBorderEventMesher& BorderMeshingEventPlanner,
+	                              const FIntVector& BorderVoxelPosition) override;
 
 PRIVATE_MODIFIER:
 	FCriticalSection MesherCriticalSection;
 	FCriticalSection GridCriticalSection;
 	TSharedPtr<TArray<FRLEVoxel>> RLEVoxelGrid;
-	
+
 	static TArray<TSharedPtr<FVoxelEventMesher>> UnusedMeshersPool;
 };

@@ -18,38 +18,46 @@ struct RDMMESHERS_API FVirtualVoxelFace
 	}
 
 	FVirtualVoxelFace(const FVoxel& Voxel, const FIntVector& StartVertexDown, const FIntVector& EndVertexDown,
-	           const FIntVector& EndVertexUp, const FIntVector& StartVertexUp) : Voxel(Voxel),
+	                  const FIntVector& EndVertexUp, const FIntVector& StartVertexUp) : Voxel(Voxel),
 		StartVertexDown(StartVertexDown),
 		EndVertexDown(EndVertexDown), EndVertexUp(EndVertexUp), StartVertexUp(StartVertexUp)
 	{
 	}
 
 	FVirtualVoxelFace(const FIntVector& StartVertexDown, const FIntVector& EndVertexDown,
-	           const FIntVector& EndVertexUp, const FIntVector& StartVertexUp) : StartVertexDown(StartVertexDown),
-		EndVertexDown(EndVertexDown), EndVertexUp(EndVertexUp), StartVertexUp(StartVertexUp)
+	                  const FIntVector& EndVertexUp,
+	                  const FIntVector& StartVertexUp) : StartVertexDown(StartVertexDown),
+	                                                     EndVertexDown(EndVertexDown), EndVertexUp(EndVertexUp),
+	                                                     StartVertexUp(StartVertexUp)
 	{
 	}
 
-	static FVirtualVoxelFace CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
-	static FVirtualVoxelFace CreateBackFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
-	static FVirtualVoxelFace CreateLeftFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
-	static FVirtualVoxelFace CreateRightFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
-	static FVirtualVoxelFace CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
-	static FVirtualVoxelFace CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght = 1);
-	
+	static FVirtualVoxelFace CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+	                                         const int RunLenght = 1);
+	static FVirtualVoxelFace CreateBackFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+	                                        const int RunLenght = 1);
+	static FVirtualVoxelFace CreateLeftFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+	                                        const int RunLenght = 1);
+	static FVirtualVoxelFace CreateRightFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+	                                         const int RunLenght = 1);
+	static FVirtualVoxelFace CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+	                                       const int RunLenght = 1);
+	static FVirtualVoxelFace CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+	                                          const int RunLenght = 1);
+
 	static bool MergeFailConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
 	static bool MergeFailConditionRightY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
 	static bool MergeFailConditionLeftY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
 	static bool MergeFailConditionZ(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace);
-	
+
 	static bool MergeFaceEnd(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace);
 	static bool MergeFaceStart(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace);
 	static bool MergeFaceUp(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace);
-	
+
 	static int GetXFromVector(const FIntVector& Position);
 	static int GetYFromVector(const FIntVector& Position);
 	static int GetZFromVector(const FIntVector& Position);
-	
+
 	FVector GetFinalStartVertexDown(const double& VoxelSize) const;
 	FVector GetFinalStartVertexUp(const double& VoxelSize) const;
 	FVector GetFinalEndVertexDown(const double& VoxelSize) const;

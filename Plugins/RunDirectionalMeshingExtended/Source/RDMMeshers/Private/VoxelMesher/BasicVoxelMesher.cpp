@@ -77,7 +77,7 @@ void FBasicVoxelMesher::GenerateVirtualFaces(FChunkBorderContext& BorderParamete
 				VoxelPosition = FIntVector(x, y, z);
 
 				UpdateIndexFromPosition();
-				
+
 				const FVoxel& Voxel = GetCurrentVoxel();
 
 				if (Voxel.IsEmptyVoxel() || Voxel.IsTransparent())
@@ -118,7 +118,8 @@ bool FBasicVoxelMesher::CheckInnerVoxel(const EFaceDirection FaceIndex, bool Can
 
 	if (CanCheck)
 	{
-		const uint32 AdjustedVoxelIndex = VoxelIndex + CalculateIndexFromPosition(VoxelSideParams[FaceIndex].IndexOffset);
+		const uint32 AdjustedVoxelIndex = VoxelIndex + CalculateIndexFromPosition(
+			VoxelSideParams[FaceIndex].IndexOffset);
 
 		if (VoxelGrid->IsValidIndex(AdjustedVoxelIndex))
 		{

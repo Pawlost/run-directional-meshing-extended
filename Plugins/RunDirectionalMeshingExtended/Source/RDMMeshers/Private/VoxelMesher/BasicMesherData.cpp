@@ -19,9 +19,9 @@ void FBasicMesherData::UpdatePositionFromIndex()
 }
 
 FBasicMesherData::FBasicMesherData(const TObjectPtr<UBaseVoxelData> BaseVoxelData)
-		: VoxelLine(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelLine()), 
-		VoxelPlane(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelPlane()),
-		MaxVoxelsInChunk(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetMaxVoxelsInChunk())
+	: VoxelLine(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelLine()),
+	  VoxelPlane(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetVoxelPlane()),
+	  MaxVoxelsInChunk(BaseVoxelData == nullptr ? 0 : BaseVoxelData->GetMaxVoxelsInChunk())
 {
 	constexpr int EstimatedRows = 3;
 

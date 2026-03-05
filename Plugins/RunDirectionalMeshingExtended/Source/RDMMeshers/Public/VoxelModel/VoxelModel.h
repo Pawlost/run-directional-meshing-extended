@@ -11,6 +11,6 @@ class RDMMESHERS_API UVoxelModel : public UObject
 {
 	GENERATED_BODY()
 
-	public:
-		virtual FVoxel GetVoxelAtIndex(int32 Index) PURE_VIRTUAL( UVoxelData::GetVoxelAtIndex, return FVoxel(); );
+public:
+	virtual FVoxel GetVoxelAtIndex(int32 Index) PURE_VIRTUAL(UVoxelData::GetVoxelAtIndex, return FVoxel(););
 };

@@ -35,30 +35,32 @@ void URLEVirtualChunk::CompressVoxelModel(TArray<FVoxel>& VoxelGrid)
 }
 
 // persistent preallocation must be maintained
-void URLEVirtualChunk::GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelEdits)
+void URLEVirtualChunk::GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters,
+                                    TArray<FRLEVoxelEdit>& VoxelEdits)
 {
 	// This scope may start in a parallel task
-	
+
 #if CPUPROFILERTRACE_ENABLED
 	TRACE_CPUPROFILER_EVENT_SCOPE("Total - RLE RunDirectionalMeshing generation")
 #endif
-	
+
 	const uint32 MaxVoxelsInChunk = VoxelData->GetMaxVoxelsInChunk();
 	const uint32 VoxelLine = VoxelData->GetVoxelLine();
 	const uint32 VoxelPlane = VoxelData->GetVoxelPlane();
-	
+
 	TSharedPtr<FVoxelEventMesher> EventPlanner;
 	{
 		FScopeLock Lock(&MesherCriticalSection);
 		if (!UnusedMeshersPool.IsEmpty())
 		{
 			EventPlanner = UnusedMeshersPool.Pop();
-		}else
+		}
+		else
 		{
 			EventPlanner = MakeShared<FVoxelEventMesher>(VoxelData);
 		}
 	}
-	
+
 	EventPlanner->UpdateInternalState(VoxelLine, VoxelPlane, MaxVoxelsInChunk);
 	// Keeps all variables local inside the task scope
 	TSharedPtr<TArray<FRLEVoxel>> VoxelGridCopy;
@@ -66,18 +68,18 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderConte
 		FScopeLock Lock(&GridCriticalSection);
 		VoxelGridCopy = RLEVoxelGrid;
 	}
-	
+
 	EventPlanner->InitializeIntervals(VoxelGridCopy, VoxelEdits);
 	EventPlanner->GenerateVirtualFaces(BorderParameters, VoxelEdits);
-	
+
 	if (EventPlanner->IsEditEnabled())
 	{
 		FScopeLock Lock(&GridCriticalSection);
 		RLEVoxelGrid = EventPlanner->GetMainVoxelGridPtr();
 	}
-	
+
 	EventPlanner->ConvertVirtualFacesToMesh(MeshContainer, VoxelData->VoxelSize);
-	
+
 	{
 		FScopeLock Lock(&MesherCriticalSection);
 		constexpr int MAX_NUMBER_OF_MESHERS = 20;
@@ -88,7 +90,8 @@ void URLEVirtualChunk::GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderConte
 	}
 }
 
-FVoxel URLEVirtualChunk::GetBorderVoxel(FBorderEventMesher& BorderMeshingEventPlanner, const FIntVector& BorderVoxelPosition)
+FVoxel URLEVirtualChunk::GetBorderVoxel(FBorderEventMesher& BorderMeshingEventPlanner,
+                                        const FIntVector& BorderVoxelPosition)
 {
 	const uint32 MaxChunkVoxelSequence = VoxelData->GetMaxVoxelsInChunk();
 

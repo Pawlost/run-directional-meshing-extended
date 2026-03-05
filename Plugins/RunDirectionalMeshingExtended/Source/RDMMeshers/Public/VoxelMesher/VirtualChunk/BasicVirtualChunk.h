@@ -16,8 +16,9 @@ class RDMMESHERS_API UBasicVirtualChunk : public UVirtualChunk
 public:
 	virtual FVoxel GetBorderVoxel(FBorderEventMesher& IndexParams, const FIntVector& BorderVoxelPosition) override;
 	virtual void CompressVoxelModel(TArray<FVoxel>& NewVoxelGrid) override;
-	
-	virtual void GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters, TArray<FRLEVoxelEdit>& VoxelChanges) override;
+
+	virtual void GenerateMesh(FVoxelMesh& MeshContainer, FChunkBorderContext& BorderParameters,
+	                          TArray<FRLEVoxelEdit>& VoxelChanges) override;
 
 private:
 	FCriticalSection CriticalSection;

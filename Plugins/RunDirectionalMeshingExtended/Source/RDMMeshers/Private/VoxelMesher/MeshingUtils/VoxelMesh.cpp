@@ -10,7 +10,7 @@ const FVoxelMesh::FNormalsAndTangents FVoxelMesh::FaceNormalsAndTangents[] = {
 };
 
 void FVoxelMesh::AddVirtualFaceToMesh(const FVirtualVoxelFace& Face, const EFaceDirection FaceIndex,
-                                               const double VoxelSize, int MaxNumberVoxels)
+                                      const double VoxelSize, int MaxNumberVoxels)
 {
 	const auto& Voxel = Face.Voxel;
 	// TODO: remove

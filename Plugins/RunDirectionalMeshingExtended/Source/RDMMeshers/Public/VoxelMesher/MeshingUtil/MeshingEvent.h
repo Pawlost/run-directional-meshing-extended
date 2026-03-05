@@ -39,7 +39,7 @@ struct FMeshingEvent
 	{
 		return (*VoxelGridPtr)[VoxelRunIndex];
 	}
-	
+
 	FORCEINLINE FVoxel& GetCurrentVoxel() const
 	{
 		return GetCurrentRLEVoxel().Voxel;

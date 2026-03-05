@@ -9,12 +9,12 @@ struct FBorderEventMesher : FVoxelEventMesherBase
 	{
 		VoxelIndex = NewVoxelIndex;
 	}
-	
+
 	FORCEINLINE uint32 GetVoxelIndex() const
 	{
 		return VoxelIndex;
 	}
-	
+
 	FBorderEventMesher() : FVoxelEventMesherBase(nullptr)
 	{
 	}

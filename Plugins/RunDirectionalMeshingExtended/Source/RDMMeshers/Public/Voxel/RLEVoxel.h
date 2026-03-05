@@ -12,10 +12,10 @@ USTRUCT()
 struct RDMMESHERS_API FRLEVoxel
 {
 	GENERATED_BODY()
-	
+
 	uint32 RunLenght = 0;
 	FVoxel Voxel;
-	
+
 	FORCEINLINE bool IsVoxelEmpty() const
 	{
 		return Voxel.IsEmptyVoxel();

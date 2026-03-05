@@ -6,7 +6,7 @@ struct FFaceMergeData
 {
 	const EFaceDirection FaceDirection;
 	const EFaceDirection InverseFaceDirection;
-	
+
 	const TFunctionRef<bool(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace)> RunDirectionFaceMerge;
 	const TFunctionRef<bool(FVirtualVoxelFace& PrevFace, const FVirtualVoxelFace& NewFace)> GreedyMerge;
 	const TFunctionRef<FVirtualVoxelFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)> FaceCreator;

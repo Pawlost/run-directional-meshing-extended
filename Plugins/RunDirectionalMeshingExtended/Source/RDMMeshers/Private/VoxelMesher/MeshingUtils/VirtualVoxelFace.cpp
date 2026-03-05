@@ -1,62 +1,69 @@
 ﻿#include "VoxelMesher/MeshingUtil/VirtualVoxelFace.h"
 
-FVirtualVoxelFace FVirtualVoxelFace::CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght){
+FVirtualVoxelFace FVirtualVoxelFace::CreateFrontFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+                                                     const int RunLenght)
+{
 	return FVirtualVoxelFace(Voxel,
-		InitialPosition + FIntVector(0, RunLenght, 0),
-		 InitialPosition + FIntVector(0, 0, 0),
-		InitialPosition + FIntVector(0, 0, 1),
-		InitialPosition + FIntVector(0, RunLenght, 1));
+	                         InitialPosition + FIntVector(0, RunLenght, 0),
+	                         InitialPosition + FIntVector(0, 0, 0),
+	                         InitialPosition + FIntVector(0, 0, 1),
+	                         InitialPosition + FIntVector(0, RunLenght, 1));
 }
 
 
-FVirtualVoxelFace FVirtualVoxelFace::CreateBackFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateBackFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+                                                    const int RunLenght)
 {
 	return FVirtualVoxelFace(Voxel,
-		InitialPosition,
-		 InitialPosition + FIntVector(0, RunLenght, 0),
-		InitialPosition + FIntVector(0, RunLenght, 1),
-		InitialPosition + FIntVector(0, 0, 1));
+	                         InitialPosition,
+	                         InitialPosition + FIntVector(0, RunLenght, 0),
+	                         InitialPosition + FIntVector(0, RunLenght, 1),
+	                         InitialPosition + FIntVector(0, 0, 1));
 }
 
-FVirtualVoxelFace FVirtualVoxelFace::CreateLeftFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateLeftFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+                                                    const int RunLenght)
 {
 	return FVirtualVoxelFace(Voxel,
-		InitialPosition + FIntVector(1, 0, 0),
-		 InitialPosition,
-		InitialPosition + FIntVector(0, 0, 1),
-		InitialPosition + FIntVector(1, 0, 1));
+	                         InitialPosition + FIntVector(1, 0, 0),
+	                         InitialPosition,
+	                         InitialPosition + FIntVector(0, 0, 1),
+	                         InitialPosition + FIntVector(1, 0, 1));
 }
 
-FVirtualVoxelFace FVirtualVoxelFace::CreateRightFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateRightFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+                                                     const int RunLenght)
 {
 	return FVirtualVoxelFace(Voxel,
-		InitialPosition + FIntVector(0, RunLenght - 1, 0),
-		 InitialPosition + FIntVector(1, RunLenght - 1, 0),
-		InitialPosition + FIntVector(1, RunLenght - 1, 1),
-		InitialPosition + FIntVector(0, RunLenght - 1, 1));
+	                         InitialPosition + FIntVector(0, RunLenght - 1, 0),
+	                         InitialPosition + FIntVector(1, RunLenght - 1, 0),
+	                         InitialPosition + FIntVector(1, RunLenght - 1, 1),
+	                         InitialPosition + FIntVector(0, RunLenght - 1, 1));
 }
 
-FVirtualVoxelFace FVirtualVoxelFace::CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateTopFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+                                                   const int RunLenght)
 {
 	return FVirtualVoxelFace(Voxel,
-		InitialPosition + FIntVector(0, 0, 0),
-		 InitialPosition + FIntVector(0, RunLenght, 0),
-		InitialPosition + FIntVector(1, RunLenght, 0),
-		InitialPosition + FIntVector(1, 0, 0));
+	                         InitialPosition + FIntVector(0, 0, 0),
+	                         InitialPosition + FIntVector(0, RunLenght, 0),
+	                         InitialPosition + FIntVector(1, RunLenght, 0),
+	                         InitialPosition + FIntVector(1, 0, 0));
 }
 
-FVirtualVoxelFace FVirtualVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition, const int RunLenght)
+FVirtualVoxelFace FVirtualVoxelFace::CreateBottomFace(const FVoxel& Voxel, const FIntVector& InitialPosition,
+                                                      const int RunLenght)
 {
 	return FVirtualVoxelFace(Voxel,
-		InitialPosition + FIntVector(0, RunLenght, 0),
-		 InitialPosition,
-		InitialPosition + FIntVector(1, 0, 0),
-		InitialPosition +FIntVector(1, RunLenght, 0));
+	                         InitialPosition + FIntVector(0, RunLenght, 0),
+	                         InitialPosition,
+	                         InitialPosition + FIntVector(1, 0, 0),
+	                         InitialPosition + FIntVector(1, RunLenght, 0));
 }
 
 bool FVirtualVoxelFace::MergeFailConditionX(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)
 {
-	return  Face.StartVertexDown.Z > NewFace.StartVertexUp.Z;
+	return Face.StartVertexDown.Z > NewFace.StartVertexUp.Z;
 }
 
 bool FVirtualVoxelFace::MergeFailConditionRightY(const FVirtualVoxelFace& Face, const FVirtualVoxelFace& NewFace)

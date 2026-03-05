@@ -12,7 +12,9 @@ struct RDMMESHERS_API FBorderChunk
 	TSharedPtr<TArray<FRLEVoxel>> BorderVoxelSamples;
 	TSharedPtr<TArray<FRLEVoxel>> InversedBorderVoxelSamples;
 
-	FBorderChunk(){}
+	FBorderChunk()
+	{
+	}
 
 	explicit FBorderChunk(const int VoxelLayer)
 	{

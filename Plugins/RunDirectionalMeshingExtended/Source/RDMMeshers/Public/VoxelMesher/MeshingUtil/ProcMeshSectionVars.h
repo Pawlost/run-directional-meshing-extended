@@ -6,15 +6,15 @@ USTRUCT()
 struct FProcMeshSectionVars
 {
 	GENERATED_BODY()
-	
-	TArray<FVector> Vertices; 
+
+	TArray<FVector> Vertices;
 	TArray<int32> Triangles;
 	TArray<FVector2D> UV0;
 	TArray<FVector> Normals;
 	TArray<FProcMeshTangent> Tangents;
 	int32 GlobalTriangleIndex = 0;
 	uint32 MeshSectionId = 0;
-	
+
 	FProcMeshSectionVars()
 	{
 	}
