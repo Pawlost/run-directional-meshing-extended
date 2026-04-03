@@ -13,7 +13,7 @@ struct RDMMESHERS_API FVirtualVoxelFace
 	FIntVector EndVertexUp;
 	FIntVector StartVertexUp;
 
-	FVirtualVoxelFace() : Voxel(FVoxel()), StartVertexDown(), EndVertexDown(), EndVertexUp(), StartVertexUp()
+	FVirtualVoxelFace() : Voxel(FVoxel()), StartVertexDown(0), EndVertexDown(0), EndVertexUp(0), StartVertexUp(0)
 	{
 	}
 

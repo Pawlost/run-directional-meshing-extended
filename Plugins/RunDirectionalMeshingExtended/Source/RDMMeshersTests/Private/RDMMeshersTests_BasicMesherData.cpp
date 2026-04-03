@@ -123,12 +123,12 @@ bool FBasicMesherData_IndexPositionRoundTrip::RunTest(const FString& Parameters)
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FBasicMesherData_MaxIndexMapsToMaxPositionAndBack,
-	"RDM.RDMMeshersTests.BasicMesherData.MaxIndexMapsToMaxPositionAndBack",
+	FBasicMesherData_MaxIndexMapsToMaxPosition,
+	"RDM.RDMMeshersTests.BasicMesherData.MaxIndexMapsToMaxPosition",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FBasicMesherData_MaxIndexMapsToMaxPositionAndBack::RunTest(const FString& Parameters)
+bool FBasicMesherData_MaxIndexMapsToMaxPosition::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -145,12 +145,39 @@ bool FBasicMesherData_MaxIndexMapsToMaxPositionAndBack::RunTest(const FString& P
 	BasicMesherDataDummy.VoxelIndex = ExpectedMaxFor32VoxelCount;
 	BasicMesherDataDummy.UpdatePositionFromIndex();
 	FIntVector RecoveredPosition = BasicMesherDataDummy.VoxelPosition;
-	BasicMesherDataDummy.UpdateIndexFromPosition();
-	const uint32 RecoveredIndex = BasicMesherDataDummy.VoxelIndex;
 
 	// Assert
 	TestEqual(TEXT("Position from max index should equal maximum voxel position"), RecoveredPosition,
 	          ExpectedMaxPosition);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FBasicMesherData_MaxPositionMapsToMaxIndex,
+	"RDM.RDMMeshersTests.BasicMesherData.MaxPositionMapsToMaxIndex",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FBasicMesherData_MaxPositionMapsToMaxIndex::RunTest(const FString& Parameters)
+{
+	// Arrange
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int NumberOfVoxels = 32;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = NumberOfVoxels;
+	BaseVoxelDataDummy->CalculateVoxelData();
+
+	FBasicMesherDataDummy BasicMesherDataDummy(BaseVoxelDataDummy);
+
+	constexpr uint32 ExpectedMaxFor32VoxelCount = 32767u;
+	const FIntVector ExpectedMaxPosition = FIntVector(NumberOfVoxels - 1, NumberOfVoxels - 1, NumberOfVoxels - 1);
+
+	// Act
+	BasicMesherDataDummy.VoxelPosition = ExpectedMaxPosition;
+	BasicMesherDataDummy.UpdateIndexFromPosition();
+	const uint32 RecoveredIndex = BasicMesherDataDummy.VoxelIndex;
+
+	// Assert
 	TestEqual(TEXT("Index from maximum voxel position should equal max index"), RecoveredIndex,
 	          ExpectedMaxFor32VoxelCount);
 
@@ -250,13 +277,17 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 
 bool FBasicMesherData_VoxelCountOne_MaxIndexZero::RunTest(const FString& Parameters)
 {
+	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
 	BaseVoxelDataDummy->VoxelCountPerChunkDimension = 1;
 	BaseVoxelDataDummy->CalculateVoxelData();
 
 	FBasicMesherDataDummy BasicMesherDataDummy(BaseVoxelDataDummy);
 
+	// Act
 	const uint32 MaxIndex = BasicMesherDataDummy.CalculateIndexFromPosition(FIntVector(0, 0, 0));
+
+	// Assert
 	TestEqual(TEXT("With a single voxel per dimension the only index should be zero"), MaxIndex, 0u);
 
 	return true;
@@ -270,6 +301,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 
 bool FBasicMesherData_AllPositionsRoundTrip_SmallArea::RunTest(const FString& Parameters)
 {
+	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
 	BaseVoxelDataDummy->VoxelCountPerChunkDimension = 2;
 	BaseVoxelDataDummy->CalculateVoxelData();
@@ -279,6 +311,7 @@ bool FBasicMesherData_AllPositionsRoundTrip_SmallArea::RunTest(const FString& Pa
 	constexpr uint32 MaxIndices = 2u * 2u * 2u;
 	TSet<uint32> SeenIndices;
 
+	// Act & Assert (iterate over all positions)
 	for (int X = 0; X < 2; ++X)
 	{
 		for (int Y = 0; Y < 2; ++Y)
@@ -311,6 +344,7 @@ bool FBasicMesherData_AllPositionsRoundTrip_SmallArea::RunTest(const FString& Pa
 		}
 	}
 
+	// Assert final
 	TestEqual(TEXT("Should have produced exactly eight unique indices for 2^3 positions"), SeenIndices.Num(),
 	          MaxIndices);
 
@@ -325,6 +359,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 
 bool FBasicMesherData_AllPositionsRoundTrip_AllBoundsPositions::RunTest(const FString& Parameters)
 {
+	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
 	constexpr int VoxelCount = 8;
 	BaseVoxelDataDummy->VoxelCountPerChunkDimension = VoxelCount;
@@ -335,6 +370,7 @@ bool FBasicMesherData_AllPositionsRoundTrip_AllBoundsPositions::RunTest(const FS
 	constexpr uint32 Total = static_cast<uint32>(VoxelCount * VoxelCount * VoxelCount);
 	TSet<uint32> SeenIndices;
 
+	// Act & Assert (iterate over bounds)
 	for (int X = 0; X < VoxelCount; ++X)
 	{
 		for (int Y = 0; Y < VoxelCount; ++Y)
@@ -360,6 +396,7 @@ bool FBasicMesherData_AllPositionsRoundTrip_AllBoundsPositions::RunTest(const FS
 		}
 	}
 
+	// Assert final
 	TestEqual(TEXT("Number of unique indices for 8^3 positions should equal total voxels"), SeenIndices.Num(), Total);
 
 	return true;
@@ -373,6 +410,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 
 bool FBasicMesherData_MultipleVoxelCounts::RunTest(const FString& Parameters)
 {
+	// Arrange
 	TArray<int> Counts = {2, 4, 8, 16};
 	for (int Count : Counts)
 	{
@@ -393,16 +431,20 @@ bool FBasicMesherData_MultipleVoxelCounts::RunTest(const FString& Parameters)
 
 		for (const FIntVector& Pos : Samples)
 		{
+			// Act
 			const uint32 Index = BasicMesherDataDummy.CalculateIndexFromPosition(Pos);
 			TestTrue(*FString::Printf(
 				         TEXT("Index for (%d,%d,%d) with count %d must be < total"), Pos.X, Pos.Y, Pos.Z, Count),
 			         Index < Total);
 
+			// Round-trip
 			BasicMesherDataDummy.VoxelPosition = Pos;
 			BasicMesherDataDummy.UpdateIndexFromPosition();
 			const uint32 RoundIndex = BasicMesherDataDummy.VoxelIndex;
 			BasicMesherDataDummy.UpdatePositionFromIndex();
 			const FIntVector RoundPos = BasicMesherDataDummy.VoxelPosition;
+
+			// Assert
 			TestEqual(*FString::Printf(
 				          TEXT("Round-trip position for (%d,%d,%d) with count %d"), Pos.X, Pos.Y, Pos.Z, Count),
 			          RoundPos, Pos);
