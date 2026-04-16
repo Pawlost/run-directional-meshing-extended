@@ -8,7 +8,7 @@
 #include "VoxelGeneratorBase.generated.h"
 
 struct FMesherVariables;
-class UVirtualChunk;
+class UVirtualChunkBase;
 
 /**
  * Base for components used to fill voxel models with voxels.

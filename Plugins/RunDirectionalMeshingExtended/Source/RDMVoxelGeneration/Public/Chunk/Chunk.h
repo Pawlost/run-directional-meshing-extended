@@ -5,7 +5,7 @@
 #include "VoxelModel/RLEVoxelGrid.h"
 #include "Chunk.generated.h"
 
-class UVirtualChunk;
+class UVirtualChunkBase;
 class AChunkActor;
 class UVoxelModel;
 
@@ -30,5 +30,5 @@ struct RDMVOXELGENERATION_API FChunk
 	bool bIsActive = false;
 	
 	UPROPERTY()
-	TObjectPtr<UVirtualChunk> VoxelMesher;
+	TObjectPtr<UVirtualChunkBase> VoxelMesher;
 };

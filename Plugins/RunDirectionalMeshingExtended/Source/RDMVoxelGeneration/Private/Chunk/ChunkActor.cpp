@@ -1,8 +1,8 @@
 ﻿#include "Chunk/ChunkActor.h"
 
 #include "VoxelGeneratorBase.h"
-#include "VoxelMesher/VirtualChunk/ChunkBorderContext.h"
-#include "VoxelMesher/VirtualChunk/VirtualChunk.h"
+#include "VirtualChunk/ChunkBorderContext.h"
+#include "VirtualChunk/VirtualChunkBase.h"
 
 AChunkActor::AChunkActor() 
 {
@@ -84,7 +84,7 @@ void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>
 			auto& SideChunk= MeshVars.SideChunks[i];
 			if (SideChunk != nullptr)
 			{
-				BorderParams.SideMeshers[i] = TStrongObjectPtr<UVirtualChunk>(SideChunk->VoxelMesher);
+				BorderParams.SideMeshers[i] = TStrongObjectPtr<UVirtualChunkBase>(SideChunk->VoxelMesher);
 			}
 		}
 		

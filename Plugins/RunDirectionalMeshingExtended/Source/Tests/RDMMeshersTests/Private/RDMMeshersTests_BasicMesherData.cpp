@@ -414,3 +414,196 @@ bool FBasicMesherData_MultipleVoxelCounts::RunTest(const FString& Parameters)
 
 	return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FBasicMesherData_IndexRoundTripPreservesEveryIndexForSmallVoxelCount,
+	"RDM.RDMMeshersTests.BasicMesherData.IndexRoundTripPreservesEveryIndexForSmallVoxelCount",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FBasicMesherData_IndexRoundTripPreservesEveryIndexForSmallVoxelCount::RunTest(const FString& Parameters)
+{
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int VoxelCount = 4;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = VoxelCount;
+	BaseVoxelDataDummy->CalculateVoxelData();
+
+	FBasicMesherDataDummy BasicMesherDataDummy(BaseVoxelDataDummy);
+
+	constexpr uint32 Total = static_cast<uint32>(VoxelCount * VoxelCount * VoxelCount);
+
+	for (uint32 Index = 0; Index < Total; ++Index)
+	{
+		BasicMesherDataDummy.VoxelIndex = Index;
+		BasicMesherDataDummy.UpdatePositionFromIndex();
+
+		const FIntVector Position = BasicMesherDataDummy.VoxelPosition;
+		TestTrue(*FString::Printf(TEXT("X for index %u should be within bounds"), Index),
+		         Position.X >= 0 && Position.X < VoxelCount);
+		TestTrue(*FString::Printf(TEXT("Y for index %u should be within bounds"), Index),
+		         Position.Y >= 0 && Position.Y < VoxelCount);
+		TestTrue(*FString::Printf(TEXT("Z for index %u should be within bounds"), Index),
+		         Position.Z >= 0 && Position.Z < VoxelCount);
+
+		BasicMesherDataDummy.UpdateIndexFromPosition();
+		const uint32 RoundTripIndex = BasicMesherDataDummy.VoxelIndex;
+		TestEqual(*FString::Printf(TEXT("Round-trip should preserve index %u"), Index), RoundTripIndex, Index);
+	}
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FBasicMesherData_IndexToPositionCoversUniquePositionsForSmallVoxelCount,
+	"RDM.RDMMeshersTests.BasicMesherData.IndexToPositionCoversUniquePositionsForSmallVoxelCount",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FBasicMesherData_IndexToPositionCoversUniquePositionsForSmallVoxelCount::RunTest(const FString& Parameters)
+{
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int VoxelCount = 4;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = VoxelCount;
+	BaseVoxelDataDummy->CalculateVoxelData();
+
+	FBasicMesherDataDummy BasicMesherDataDummy(BaseVoxelDataDummy);
+
+	constexpr uint32 Total = static_cast<uint32>(VoxelCount * VoxelCount * VoxelCount);
+	TSet<FIntVector> SeenPositions;
+
+	for (uint32 Index = 0; Index < Total; ++Index)
+	{
+		BasicMesherDataDummy.VoxelIndex = Index;
+		BasicMesherDataDummy.UpdatePositionFromIndex();
+		const FIntVector Position = BasicMesherDataDummy.VoxelPosition;
+
+		TestTrue(*FString::Printf(TEXT("Position from index %u should be in bounds"), Index),
+		         Position.X >= 0 && Position.X < VoxelCount && Position.Y >= 0 && Position.Y < VoxelCount &&
+		         Position.Z >= 0 && Position.Z < VoxelCount);
+		SeenPositions.Add(Position);
+	}
+
+	TestEqual(TEXT("All indices should map to unique positions"), SeenPositions.Num(), Total);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FBasicMesherData_NeighborStrideFromArbitraryPositionMatchesExpectedDelta,
+	"RDM.RDMMeshersTests.BasicMesherData.NeighborStrideFromArbitraryPositionMatchesExpectedDelta",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FBasicMesherData_NeighborStrideFromArbitraryPositionMatchesExpectedDelta::RunTest(const FString& Parameters)
+{
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int VoxelCount = 8;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = VoxelCount;
+	BaseVoxelDataDummy->CalculateVoxelData();
+
+	FBasicMesherDataDummy BasicMesherDataDummy(BaseVoxelDataDummy);
+
+	const FIntVector BasePosition(2, 3, 4);
+	const uint32 BaseIndex = BasicMesherDataDummy.CalculateIndexFromPosition(BasePosition);
+	const uint32 IndexAtNextX = BasicMesherDataDummy.CalculateIndexFromPosition(BasePosition + FIntVector(1, 0, 0));
+	const uint32 IndexAtNextY = BasicMesherDataDummy.CalculateIndexFromPosition(BasePosition + FIntVector(0, 1, 0));
+	const uint32 IndexAtNextZ = BasicMesherDataDummy.CalculateIndexFromPosition(BasePosition + FIntVector(0, 0, 1));
+
+	constexpr uint32 ExpectedXDelta = static_cast<uint32>(VoxelCount * VoxelCount);
+	constexpr uint32 ExpectedYDelta = 1u;
+	constexpr uint32 ExpectedZDelta = static_cast<uint32>(VoxelCount);
+
+	TestEqual(TEXT("Moving one voxel on X should add one voxel plane"), IndexAtNextX, BaseIndex + ExpectedXDelta);
+	TestEqual(TEXT("Moving one voxel on Y should add one index"), IndexAtNextY, BaseIndex + ExpectedYDelta);
+	TestEqual(TEXT("Moving one voxel on Z should add one voxel line"), IndexAtNextZ, BaseIndex + ExpectedZDelta);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FBasicMesherData_SequentialIndexCarriesFromEndOfYToNextZ,
+	"RDM.RDMMeshersTests.BasicMesherData.SequentialIndexCarriesFromEndOfYToNextZ",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FBasicMesherData_SequentialIndexCarriesFromEndOfYToNextZ::RunTest(const FString& Parameters)
+{
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int VoxelCount = 8;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = VoxelCount;
+	BaseVoxelDataDummy->CalculateVoxelData();
+
+	FBasicMesherDataDummy BasicMesherDataDummy(BaseVoxelDataDummy);
+
+	const uint32 IndexAtEndOfY = BasicMesherDataDummy.CalculateIndexFromPosition(FIntVector(0, VoxelCount - 1, 0));
+	const uint32 IndexAtStartOfNextZ = BasicMesherDataDummy.CalculateIndexFromPosition(FIntVector(0, 0, 1));
+
+	TestEqual(TEXT("Index should advance by one when Y wraps and Z increments"), IndexAtStartOfNextZ, IndexAtEndOfY + 1u);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FBasicMesherData_SequentialIndexCarriesFromEndOfYZToNextX,
+	"RDM.RDMMeshersTests.BasicMesherData.SequentialIndexCarriesFromEndOfYZToNextX",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FBasicMesherData_SequentialIndexCarriesFromEndOfYZToNextX::RunTest(const FString& Parameters)
+{
+	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+	constexpr int VoxelCount = 8;
+	BaseVoxelDataDummy->VoxelCountPerChunkDimension = VoxelCount;
+	BaseVoxelDataDummy->CalculateVoxelData();
+
+	FBasicMesherDataDummy BasicMesherDataDummy(BaseVoxelDataDummy);
+
+	const uint32 IndexAtEndOfYZ =
+		BasicMesherDataDummy.CalculateIndexFromPosition(FIntVector(0, VoxelCount - 1, VoxelCount - 1));
+	const uint32 IndexAtStartOfNextX = BasicMesherDataDummy.CalculateIndexFromPosition(FIntVector(1, 0, 0));
+
+	TestEqual(TEXT("Index should advance by one when Y and Z wrap and X increments"), IndexAtStartOfNextX,
+	          IndexAtEndOfYZ + 1u);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FBasicMesherData_OddVoxelCountsUseSameFormulaAsBaseVoxelData,
+	"RDM.RDMMeshersTests.BasicMesherData.OddVoxelCountsUseSameFormulaAsBaseVoxelData",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
+);
+
+bool FBasicMesherData_OddVoxelCountsUseSameFormulaAsBaseVoxelData::RunTest(const FString& Parameters)
+{
+	const TArray<int> Counts = {3, 5, 7};
+
+	for (const int Count : Counts)
+	{
+		UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
+		BaseVoxelDataDummy->VoxelCountPerChunkDimension = Count;
+		BaseVoxelDataDummy->CalculateVoxelData();
+
+		FBasicMesherDataDummy BasicMesherDataDummy(BaseVoxelDataDummy);
+
+		TArray<FIntVector> Samples;
+		Samples.Add(FIntVector(0, 0, 0));
+		Samples.Add(FIntVector(Count - 1, Count - 1, Count - 1));
+		Samples.Add(FIntVector(Count - 1, 0, 0));
+		Samples.Add(FIntVector(0, Count - 1, 0));
+		Samples.Add(FIntVector(0, 0, Count - 1));
+		Samples.Add(FIntVector(Count / 2, Count / 2, Count / 2));
+
+		for (const FIntVector& Position : Samples)
+		{
+			const uint32 MesherIndex = BasicMesherDataDummy.CalculateIndexFromPosition(Position);
+			const uint32 BaseIndex = BaseVoxelDataDummy->CalculateVoxelIndex(Position);
+			TestEqual(*FString::Printf(TEXT("Index formula should match BaseVoxelData for count %d at (%d,%d,%d)"),
+			                          Count, Position.X, Position.Y, Position.Z),
+			          MesherIndex, BaseIndex);
+		}
+	}
+
+	return true;
+}
+

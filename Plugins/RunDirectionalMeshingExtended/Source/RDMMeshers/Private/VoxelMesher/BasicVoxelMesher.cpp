@@ -1,6 +1,6 @@
 ﻿#include "VoxelMesher/BasicVoxelMesher.h"
 
-#include "VoxelMesher/VirtualChunk/ChunkBorderContext.h"
+#include "VirtualChunk/ChunkBorderContext.h"
 
 const TStaticArray<FBasicVoxelMesher::FVoxelSideParams, VOXEL_FACE_COUNT>
 FBasicVoxelMesher::VoxelSideParams = {

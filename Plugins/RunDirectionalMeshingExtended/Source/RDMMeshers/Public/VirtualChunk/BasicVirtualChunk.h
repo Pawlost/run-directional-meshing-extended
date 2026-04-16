@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "VirtualChunk.h"
+#include "VirtualChunkBase.h"
 #include "Voxel/Voxel.h"
 #include "BasicVirtualChunk.generated.h"
 
@@ -9,7 +9,7 @@ struct FVoxelMesh;
 struct FBorderEventMesher;
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)
-class RDMMESHERS_API UBasicVirtualChunk : public UVirtualChunk
+class RDMMESHERS_API UBasicVirtualChunk : public UVirtualChunkBase
 {
 	GENERATED_BODY()
 

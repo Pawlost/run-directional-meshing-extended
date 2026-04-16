@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "VirtualChunk.h"
+#include "VirtualChunkBase.h"
 #include "Voxel/RLEVoxel.h"
 #include "RLEVirtualChunk.generated.h"
 
@@ -9,7 +9,7 @@ class URLEVoxelGrid;
 struct FChunkParams;
 
 UCLASS(ClassGroup=(Meshers), Blueprintable)
-class RDMMESHERS_API URLEVirtualChunk : public UVirtualChunk
+class RDMMESHERS_API URLEVirtualChunk : public UVirtualChunkBase
 {
 	GENERATED_BODY()
 
