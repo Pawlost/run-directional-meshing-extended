@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "BaseVoxelData.h"
 #include "VoxelMesher/BorderVoxelEventMesher.h"
-#include "VirtualChunk.generated.h"
+#include "VirtualChunkBase.generated.h"
 
 struct FChunkBorderContext;
 struct FRLEVoxelEdit;
@@ -12,7 +12,7 @@ class UBaseVoxelData;
   * @brief Base class for components that convert voxel models into a mesh.
   */
 UCLASS(Abstract, Blueprintable)
-class RDMMESHERS_API UVirtualChunk : public UActorComponent
+class RDMMESHERS_API UVirtualChunkBase : public UActorComponent
 {
 	GENERATED_BODY()
 

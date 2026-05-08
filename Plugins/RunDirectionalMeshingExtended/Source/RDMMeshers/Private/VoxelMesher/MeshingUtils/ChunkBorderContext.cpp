@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "VoxelMesher/VirtualChunk/ChunkBorderContext.h"
-#include "VoxelMesher/VirtualChunk/VirtualChunk.h"
+#include "VirtualChunk/ChunkBorderContext.h"
+#include "VirtualChunk/VirtualChunkBase.h"
 
 bool FChunkBorderContext::CanGenerateBorder(const EFaceDirection Direction, const FIntVector& BorderVoxelPosition,
                                             const FVoxel& CurrentVoxel)

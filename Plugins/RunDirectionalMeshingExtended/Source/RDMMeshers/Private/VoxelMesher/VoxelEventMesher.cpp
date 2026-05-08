@@ -1,5 +1,5 @@
 ﻿#include "VoxelMesher/VoxelEventMesher.h"
-#include "VoxelMesher/VirtualChunk/ChunkBorderContext.h"
+#include "VirtualChunk/ChunkBorderContext.h"
 
 void FVoxelEventMesher::AdvanceEditInterval(TArray<FRLEVoxelEdit>& VoxelEdits)
 {

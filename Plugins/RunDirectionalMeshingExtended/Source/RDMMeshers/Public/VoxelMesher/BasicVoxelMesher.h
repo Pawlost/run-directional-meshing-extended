@@ -31,7 +31,7 @@ struct FBasicVoxelMesher : FBasicMesherData
 
 	TSharedPtr<TArray<FVoxel>> VoxelGrid;
 
-private:
+PRIVATE_MODIFIER:
 	TStaticArray<FVoxel*, VOXEL_FACE_COUNT> TempVoxels;
 
 	bool CheckInnerVoxel(const EFaceDirection FaceIndex, bool CanGenerate);;

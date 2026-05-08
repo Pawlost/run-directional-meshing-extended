@@ -2,7 +2,7 @@
 
 #include "BaseVoxelData.h"
 #include "VoxelGeneratorBase.h"
-#include "VoxelMesher/VirtualChunk/VirtualChunk.h"
+#include "VirtualChunk/VirtualChunkBase.h"
 
 bool AChunkSpawnerBase::IsInitialized() const
 {
@@ -199,7 +199,7 @@ void AChunkSpawnerBase::AddChunkToGrid(TSharedPtr<FChunk>& Chunk,
 	if (VoxelMesherBlueprint)
 	{
 		// Register mesher
-		Chunk->VoxelMesher = NewObject<UVirtualChunk>(GetGameInstance(), VoxelMesherBlueprint);
+		Chunk->VoxelMesher = NewObject<UVirtualChunkBase>(GetGameInstance(), VoxelMesherBlueprint);
 		Chunk->VoxelMesher->SetVoxelGenerator(VoxelGenerator);
 	}
 	

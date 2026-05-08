@@ -1,7 +1,7 @@
 ﻿#include "VoxelGeneratorBase.h"
 
 #include "Chunk/MesherVariables.h"
-#include "VoxelMesher/VirtualChunk/VirtualChunk.h"
+#include "VirtualChunk/VirtualChunkBase.h"
 
 void UVoxelGeneratorBase::BeginPlay()
 {
