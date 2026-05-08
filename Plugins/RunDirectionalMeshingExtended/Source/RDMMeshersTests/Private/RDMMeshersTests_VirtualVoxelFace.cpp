@@ -587,8 +587,8 @@ bool FRDMMeshersVirtualVoxelFace_MergeFaceStart_MergesWhenAdjacentAndSameVoxel::
 {
 	// Arrange
 	FVoxel CommonVoxel(3);
-	FVirtualVoxelFace Prev(CommonVoxel, FIntVector(5, 5, 5), FIntVector(6, 6, 6), FIntVector(7, 7, 7), FIntVector(8, 8, 8));
-	FVirtualVoxelFace NewFace(CommonVoxel, FIntVector(2, 2, 2), FIntVector(3, 3, 3), FIntVector(6, 6, 6), FIntVector(5, 5, 5));
+	FVirtualVoxelFace NewFace  (CommonVoxel, FIntVector(5, 5, 5), FIntVector(5, 5, 6), FIntVector(5, 6, 6), FIntVector(5, 6, 5));
+	FVirtualVoxelFace Prev (CommonVoxel, FIntVector(5, 5, 6), FIntVector(5, 5, 7), FIntVector(5, 6, 7), FIntVector(5, 6, 6));
 	// Act
 	bool Merged = FVirtualVoxelFace::MergeFaceStart(Prev, NewFace);
 	// Assert
@@ -608,8 +608,8 @@ bool FRDMMeshersVirtualVoxelFace_MergeFaceUp_MergesWhenAdjacentAndSameVoxel::Run
 {
 	// Arrange
 	FVoxel CommonVoxel(4);
-	FVirtualVoxelFace Prev(CommonVoxel, FIntVector(0), FIntVector(1, 0, 0), FIntVector(1, 0, 1), FIntVector(2, 0, 1));
-	FVirtualVoxelFace NewFace(CommonVoxel, FIntVector(2, 0, 1), FIntVector(3, 0, 1), FIntVector(1, 0, 0), FIntVector(4, 0, 1));
+	FVirtualVoxelFace Prev(CommonVoxel, FIntVector(0), FIntVector(1, 0, 0), FIntVector(1, 0, 1), FIntVector(0, 0, 1));
+	FVirtualVoxelFace NewFace(CommonVoxel, FIntVector(0, 0, 1), FIntVector(1, 0, 1), FIntVector(1, 0, 2), FIntVector(0, 0, 2));
 	// Act
 	bool Merged = FVirtualVoxelFace::MergeFaceUp(Prev, NewFace);
 	// Assert
