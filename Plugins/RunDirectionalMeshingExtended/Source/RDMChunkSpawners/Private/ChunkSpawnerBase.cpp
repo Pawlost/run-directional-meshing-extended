@@ -3,6 +3,7 @@
 #include "BaseVoxelData.h"
 #include "VoxelGeneratorBase.h"
 #include "VirtualChunk/VirtualChunkBase.h"
+#include "VirtualChunk/ChunkBorderContext.h"
 
 bool AChunkSpawnerBase::IsInitialized() const
 {
@@ -310,6 +311,35 @@ FIntVector AChunkSpawnerBase::GetChunkGridPositionFromGlobalPosition(const FVect
 	// Floor is used to adjust negative numbers
 	return FIntVector(FMath::Floor(ImpreciseChunkPosition.X), FMath::Floor(ImpreciseChunkPosition.Y),
 	                  FMath::Floor(ImpreciseChunkPosition.Z));
+}
+
+void AChunkSpawnerBase::GenerateMesh(FMesherVariables MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits) const
+{
+	const auto& VoxelMesher = MeshVars.OriginalChunk->VoxelMesher;
+	if (VoxelMesher->bEnableVoxelMeshing)
+	{
+		
+#if CPUPROFILERTRACE_ENABLED
+		TRACE_CPUPROFILER_EVENT_SCOPE("Total - Mesh generation - RDM Meshing")
+	#endif
+		
+		FChunkBorderContext BorderParams;
+		BorderParams.BorderVisualization = BorderVisualization;
+		for (int i = 0; i < VOXEL_FACE_COUNT; i++)
+		{
+			auto& SideChunk= MeshVars.SideChunks[i];
+			if (SideChunk != nullptr)
+			{
+				BorderParams.SideMeshers[i] = TStrongObjectPtr<UVirtualChunkBase>(SideChunk->VoxelMesher);
+			}
+		}
+		
+		VoxelMesher->GenerateMesh(MeshVars.MeshContainer, BorderParams,VoxelEdits);
+		
+		MeshVars.OriginalChunk->ChunkMeshActor->AddMeshToActor(MeshVars.MeshContainer);
+		
+		MeshVars.MeshContainer.Empty();
+	}
 }
 
 bool AChunkSpawnerBase::CheckVoxelBoundary(const FIntVector& VoxelPosition) const

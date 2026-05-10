@@ -3,8 +3,7 @@
 #include "VoxelMesher/BorderVoxelEventMesher.h"
 #include "VoxelMesher/MeshingUtil/Enum/BorderVisualizationOption.h"
 #include "VoxelMesher/MeshingUtil/Enum/FaceDirection.h"
-
-class UVirtualChunkBase;
+#include "VirtualChunkBase.h"
 
 struct FChunkBorderContext
 {

@@ -2,7 +2,7 @@
 #include "VoxelEventMesher.h"
 #include "BasicMesherData.h"
 
-struct FBasicVoxelMesher : FBasicMesherData
+struct RDMMESHERS_API FBasicVoxelMesher : FBasicMesherData
 {
 	struct FVoxelSideParams
 	{

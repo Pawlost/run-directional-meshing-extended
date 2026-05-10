@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "MesherVariables.h"
 #include "ProceduralMeshComponent.h"
+#include "Tests/AutomationTestAccessModifiers.h"
 #include "VoxelMesher/MeshingUtil/Enum/BorderVisualizationOption.h"
 #include "ChunkActor.generated.h"
 
@@ -24,16 +25,13 @@ public:
 	
 	void ClearMesh() const;
 	void SetVoxelGenerator(const TObjectPtr<UVoxelGeneratorBase>& VoxelGeneratorBase);
-		
-	void GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits, EBorderVisualizationOption BorderVisualization) const;
+	void AddMeshToActor(const FVoxelMesh& LocalVoxelTable) const;
+
 protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	
+
 private:
 	
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
-	
-	void AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
-                        	const FVoxelMesh& LocalVoxelTable) const;
 };

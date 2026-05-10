@@ -4,7 +4,7 @@
 
 struct FVoxelMesh;
 
-struct FVirtualVoxelFaceContext
+struct RDMMESHERS_API FVirtualVoxelFaceContext
 {
 	void AddNewVirtualFace(const EFaceDirection FaceIndex, const FVoxel Voxel, const FIntVector& Position,
 	                       const int Lenght);

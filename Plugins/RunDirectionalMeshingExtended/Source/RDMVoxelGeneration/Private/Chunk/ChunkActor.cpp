@@ -40,8 +40,7 @@ void AChunkActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
-	const FVoxelMesh& LocalVoxelTable) const
+void AChunkActor::AddMeshToActor(const FVoxelMesh& LocalVoxelTable) const
 {
 	for (const auto LocalVoxelType : LocalVoxelTable.VoxelTable)
 	{
@@ -50,49 +49,17 @@ void AChunkActor::AddMeshToActor(TWeakObjectPtr<AChunkActor> MeshActor,
 		
 		const auto VoxelRow = VoxelGenerator->GetVoxelTableRow(LocalVoxelType.Key);
 
-		AsyncTask(ENamedThreads::GameThread, [MeshActor, ProcMeshVarsPtr, VoxelRow]()
+		AsyncTask(ENamedThreads::GameThread, [this, ProcMeshVarsPtr, VoxelRow]()
 		{
-			
 			const FProcMeshSectionVars& QuadMeshSection = *ProcMeshVarsPtr;
-			MeshActor->ProceduralMeshComponent->SetMaterial(QuadMeshSection.MeshSectionId, VoxelRow.Value.Material);
+			ProceduralMeshComponent->SetMaterial(QuadMeshSection.MeshSectionId, VoxelRow.Value.Material);
 
-			MeshActor->ProceduralMeshComponent->ClearMeshSection(QuadMeshSection.MeshSectionId);
+			ProceduralMeshComponent->ClearMeshSection(QuadMeshSection.MeshSectionId);
 			// Add voxel materials to mesh
-			MeshActor->ProceduralMeshComponent->CreateMeshSection_LinearColor(
+			ProceduralMeshComponent->CreateMeshSection_LinearColor(
 				QuadMeshSection.MeshSectionId, QuadMeshSection.Vertices, QuadMeshSection.Triangles, QuadMeshSection.Normals,
 				QuadMeshSection.UV0, TArray<FLinearColor>(),
 				QuadMeshSection.Tangents, true);
 		});
-	}
-}
-
-void AChunkActor::GenerateMesh(FMesherVariables& MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits, const EBorderVisualizationOption BorderVisualization) const
-{
-	auto& VoxelMesher = MeshVars.OriginalChunk->VoxelMesher;
-	if (VoxelMesher->bEnableVoxelMeshing)
-	{
-		//TODO: move
-			
-	#if CPUPROFILERTRACE_ENABLED
-		TRACE_CPUPROFILER_EVENT_SCOPE("Total - Mesh generation - RDM Meshing")
-	#endif
-		
-		FChunkBorderContext BorderParams;
-		BorderParams.BorderVisualization = BorderVisualization;
-		for (int i = 0; i < VOXEL_FACE_COUNT; i++)
-		{
-			auto& SideChunk= MeshVars.SideChunks[i];
-			if (SideChunk != nullptr)
-			{
-				BorderParams.SideMeshers[i] = TStrongObjectPtr<UVirtualChunkBase>(SideChunk->VoxelMesher);
-			}
-		}
-		
-		VoxelMesher->GenerateMesh(MeshVars.MeshContainer, BorderParams,VoxelEdits);
-		
-		AddMeshToActor(MeshVars.OriginalChunk->ChunkMeshActor,
-					   MeshVars.MeshContainer);
-		
-		MeshVars.MeshContainer.Empty();
 	}
 }

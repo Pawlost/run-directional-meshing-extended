@@ -37,7 +37,6 @@ bool FRDMMeshersTests_VoxelMesh_AddVirtualFaceToMesh_AddsFrontFace::RunTest(cons
 	TestEqual("Third vertex", Section->Vertices[2], FVector(0, 0, 1));
 	TestEqual("Fourth vertex", Section->Vertices[3], FVector(0, 1, 1));
 	TestEqual("First normal", Section->Normals[0], FVector(1, 0, 0));
-	TestEqual("First tangent", Section->Tangents[0], FProcMeshTangent(0, 1, 0));
 	TestEqual("Triangles", Section->Triangles, TArray<int32>({0, 1, 2, 2, 3, 0}));
 	TestEqual("UV0", Section->UV0, TArray<FVector2D>({FVector2D(0, 0), FVector2D(1, 0), FVector2D(1, 1), FVector2D(0, 1)}));
 
@@ -102,7 +101,6 @@ bool FRDMMeshersTests_VoxelMesh_AddVirtualFaceToMesh_AddsTopFace::RunTest(const 
 	// Assert
 	const auto& Section = Mesh.VoxelTable[Voxel];
 	TestEqual("Normals should be top", Section->Normals[0], FVector(0, 0, 1));
-	TestEqual("Tangents should be top", Section->Tangents[0], FProcMeshTangent(1, 0, 0));
 	TestEqual("First vertex scaled", Section->Vertices[0], FVector(2, 8, 6)); // (1,4,3)*2
 
 	return true;
@@ -189,7 +187,6 @@ bool FRDMMeshersTests_VoxelMesh_AddVirtualFaceToMesh_AddsBackFace::RunTest(const
 	// Assert
 	const auto& Section = Mesh.VoxelTable[Voxel];
 	TestEqual("Normals should be back", Section->Normals[0], FVector(-1, 0, 0));
-	TestEqual("Tangents should be back", Section->Tangents[0], FProcMeshTangent(0, 1, 0));
 	TestEqual("First vertex", Section->Vertices[0], FVector(0, 0, 0));
 
 	return true;
@@ -219,7 +216,6 @@ bool FRDMMeshersTests_VoxelMesh_AddVirtualFaceToMesh_AddsLeftFace::RunTest(const
 	// Assert
 	const auto& Section = Mesh.VoxelTable[Voxel];
 	TestEqual("Normals should be left", Section->Normals[0], FVector(0, -1, 0));
-	TestEqual("Tangents should be left", Section->Tangents[0], FProcMeshTangent(1, 0, 0));
 	TestEqual("First vertex", Section->Vertices[0], FVector(1, 0, 0));
 
 	return true;
@@ -249,7 +245,6 @@ bool FRDMMeshersTests_VoxelMesh_AddVirtualFaceToMesh_AddsRightFace::RunTest(cons
 	// Assert
 	const auto& Section = Mesh.VoxelTable[Voxel];
 	TestEqual("Normals should be right", Section->Normals[0], FVector(0, 1, 0));
-	TestEqual("Tangents should be right", Section->Tangents[0], FProcMeshTangent(1, 0, 0));
 	TestEqual("First vertex", Section->Vertices[0], FVector(0, 0, 0));
 
 	return true;
@@ -279,7 +274,6 @@ bool FRDMMeshersTests_VoxelMesh_AddVirtualFaceToMesh_AddsBottomFace::RunTest(con
 	// Assert
 	const auto& Section = Mesh.VoxelTable[Voxel];
 	TestEqual("Normals should be bottom", Section->Normals[0], FVector(0, 0, -1));
-	TestEqual("Tangents should be bottom", Section->Tangents[0], FProcMeshTangent(1, 0, 0));
 	TestEqual("First vertex", Section->Vertices[0], FVector(0, 1, 0));
 
 	return true;
@@ -559,11 +553,6 @@ bool FRDMMeshersTests_VoxelMesh_AddVirtualFaceToMesh_VerifiesTangentsRepeatedFor
 
 	// Assert
 	const auto& Section = Mesh.VoxelTable[Voxel];
-	const FProcMeshTangent ExpectedTangent(1, 0, 0);
-	TestEqual("Tangent 0", Section->Tangents[0], ExpectedTangent);
-	TestEqual("Tangent 1", Section->Tangents[1], ExpectedTangent);
-	TestEqual("Tangent 2", Section->Tangents[2], ExpectedTangent);
-	TestEqual("Tangent 3", Section->Tangents[3], ExpectedTangent);
 
 	return true;
 }

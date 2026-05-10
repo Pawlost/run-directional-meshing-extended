@@ -4,7 +4,7 @@
 #include "Enum/FaceDirection.h"
 #include "Voxel/Voxel.h"
 
-struct FVoxelMesh
+struct RDMMESHERS_API FVoxelMesh
 {
 	FVoxelMesh()
 	{

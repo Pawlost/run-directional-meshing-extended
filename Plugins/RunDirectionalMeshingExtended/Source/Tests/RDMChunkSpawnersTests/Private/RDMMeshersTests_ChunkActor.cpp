@@ -6,6 +6,7 @@
 #undef protected
 #undef private
 
+#include "Dummies/ChunkActorDummy.h"
 #include "Engine/DataTable.h"
 #include "HAL/PlatformProcess.h"
 #include "Single/SingleVoxelGenerator.h"
@@ -90,7 +91,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FRDMMeshersTests_ChunkActor_ConstructorCreatesProceduralMeshComponentAsRoot::RunTest(const FString& Parameters)
 {
 	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
+	AChunkActorDummy* ChunkActor = NewObject<AChunkActorDummy>();
 
 	// Act
 	const bool bHasProceduralMeshComponent = IsValid(ChunkActor->ProceduralMeshComponent);
@@ -111,7 +112,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FRDMMeshersTests_ChunkActor_HasMeshReturnsFalseWhenNoSectionsExist::RunTest(const FString& Parameters)
 {
 	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
+	AChunkActorDummy* ChunkActor = NewObject<AChunkActorDummy>();
 
 	// Act
 	const bool bHasMesh = ChunkActor->HasMesh();
@@ -130,7 +131,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FRDMMeshersTests_ChunkActor_HasMeshReturnsTrueWhenSectionExists::RunTest(const FString& Parameters)
 {
 	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
+	AChunkActorDummy* ChunkActor = NewObject<AChunkActorDummy>();
 	AddMeshSection(ChunkActor->ProceduralMeshComponent, 0);
 
 	// Act
@@ -150,7 +151,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FRDMMeshersTests_ChunkActor_ClearMeshRemovesAllSections::RunTest(const FString& Parameters)
 {
 	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
+	AChunkActorDummy* ChunkActor = NewObject<AChunkActorDummy>();
 	AddMeshSection(ChunkActor->ProceduralMeshComponent, 0);
 
 	// Act
@@ -163,26 +164,6 @@ bool FRDMMeshersTests_ChunkActor_ClearMeshRemovesAllSections::RunTest(const FStr
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTests_ChunkActor_SetVoxelGeneratorStoresProvidedGenerator,
-	"RDM.RDMChunkSpawnersTests.ChunkActor.SetVoxelGenerator.StoresProvidedGenerator",
-	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
-);
-
-bool FRDMMeshersTests_ChunkActor_SetVoxelGeneratorStoresProvidedGenerator::RunTest(const FString& Parameters)
-{
-	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
-	USingleVoxelGenerator* Generator = CreateVoxelGenerator(ChunkActor);
-
-	// Act
-	ChunkActor->SetVoxelGenerator(Generator);
-
-	// Assert
-	TestEqual("VoxelGenerator should be stored", ChunkActor->VoxelGenerator, static_cast<UVoxelGeneratorBase*>(Generator));
-	return true;
-}
-
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FRDMMeshersTests_ChunkActor_EndPlayClearsExistingMesh,
 	"RDM.RDMChunkSpawnersTests.ChunkActor.EndPlay.ClearsExistingMesh",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
@@ -191,7 +172,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FRDMMeshersTests_ChunkActor_EndPlayClearsExistingMesh::RunTest(const FString& Parameters)
 {
 	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
+	AChunkActorDummy* ChunkActor = NewObject<AChunkActorDummy>();
 	AddMeshSection(ChunkActor->ProceduralMeshComponent, 0);
 
 	// Act
@@ -201,94 +182,3 @@ bool FRDMMeshersTests_ChunkActor_EndPlayClearsExistingMesh::RunTest(const FStrin
 	TestFalse("HasMesh should return false after EndPlay", ChunkActor->HasMesh());
 	return true;
 }
-
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTests_ChunkActor_AddMeshToActorCreatesSectionForVoxelEntry,
-	"RDM.RDMChunkSpawnersTests.ChunkActor.AddMeshToActor.CreatesSectionForVoxelEntry",
-	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
-);
-
-bool FRDMMeshersTests_ChunkActor_AddMeshToActorCreatesSectionForVoxelEntry::RunTest(const FString& Parameters)
-{
-	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
-	USingleVoxelGenerator* Generator = CreateVoxelGenerator(ChunkActor);
-	ChunkActor->SetVoxelGenerator(Generator);
-
-	FVoxelMesh VoxelMesh;
-	VoxelMesh.VoxelTable.Add(FVoxel(static_cast<uint32>(0), false), CreateTriangleMeshSection(0));
-
-	// Act
-	ChunkActor->AddMeshToActor(ChunkActor, VoxelMesh);
-	const bool bSectionCreated = WaitForMeshSections(ChunkActor->ProceduralMeshComponent, 1);
-
-	// Assert
-	TestTrue("Mesh section should be created", bSectionCreated);
-	TestTrue("HasMesh should return true", ChunkActor->HasMesh());
-	return true;
-}
-
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTests_ChunkActor_GenerateMeshSkipsWhenMeshingDisabled,
-	"RDM.RDMChunkSpawnersTests.ChunkActor.GenerateMesh.SkipsWhenMeshingDisabled",
-	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
-);
-
-bool FRDMMeshersTests_ChunkActor_GenerateMeshSkipsWhenMeshingDisabled::RunTest(const FString& Parameters)
-{
-	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
-	USingleVoxelGenerator* Generator = CreateVoxelGenerator(ChunkActor);
-	ChunkActor->SetVoxelGenerator(Generator);
-
-	UBasicVirtualChunk* VoxelMesher = NewObject<UBasicVirtualChunk>(ChunkActor);
-	VoxelMesher->bEnableVoxelMeshing = false;
-
-	FMesherVariables MeshVars;
-	MeshVars.OriginalChunk = MakeShared<FChunk>();
-	MeshVars.OriginalChunk->ChunkMeshActor = ChunkActor;
-	MeshVars.OriginalChunk->VoxelMesher = VoxelMesher;
-	MeshVars.MeshContainer.VoxelTable.Add(FVoxel(static_cast<uint32>(0), false), CreateTriangleMeshSection(0));
-
-	TArray<FRLEVoxelEdit> VoxelEdits;
-
-	// Act
-	ChunkActor->GenerateMesh(MeshVars, VoxelEdits, EBorderVisualizationOption::None);
-
-	// Assert
-	TestEqual("MeshContainer should keep original entries when meshing is disabled", MeshVars.MeshContainer.VoxelTable.Num(), 1);
-	return true;
-}
-
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersTests_ChunkActor_GenerateMeshClearsMeshContainerWhenMeshingEnabled,
-	"RDM.RDMChunkSpawnersTests.ChunkActor.GenerateMesh.ClearsMeshContainerWhenMeshingEnabled",
-	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
-);
-
-bool FRDMMeshersTests_ChunkActor_GenerateMeshClearsMeshContainerWhenMeshingEnabled::RunTest(const FString& Parameters)
-{
-	// Arrange
-	AChunkActor* ChunkActor = NewObject<AChunkActor>();
-	USingleVoxelGenerator* Generator = CreateVoxelGenerator(ChunkActor);
-	ChunkActor->SetVoxelGenerator(Generator);
-
-	UBasicVirtualChunk* VoxelMesher = NewObject<UBasicVirtualChunk>(ChunkActor);
-	VoxelMesher->bEnableVoxelMeshing = true;
-
-	FMesherVariables MeshVars;
-	MeshVars.OriginalChunk = MakeShared<FChunk>();
-	MeshVars.OriginalChunk->ChunkMeshActor = ChunkActor;
-	MeshVars.OriginalChunk->VoxelMesher = VoxelMesher;
-	MeshVars.MeshContainer.VoxelTable.Add(FVoxel(static_cast<uint32>(0), false), CreateTriangleMeshSection(0));
-
-	TArray<FRLEVoxelEdit> VoxelEdits;
-
-	// Act
-	ChunkActor->GenerateMesh(MeshVars, VoxelEdits, EBorderVisualizationOption::None);
-
-	// Assert
-	TestEqual("MeshContainer should be cleared after GenerateMesh", MeshVars.MeshContainer.VoxelTable.Num(), 0);
-	return true;
-}
-

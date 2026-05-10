@@ -1,16 +1,16 @@
-﻿#include "Misc/AutomationTest.h"
+#include "Misc/AutomationTest.h"
 #include "Dummies/BaseVoxelDataDummy.h"
 #include "Dummies/VoxelEventMesherBaseDummy.h"
 #include "VoxelMesher/MeshingUtil/MeshingEvent.h"
 #include "Voxel/RLEVoxel.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventUpdatesWhenSmaller,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Updates_When_Smaller,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.UpdatesWhenSmaller",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventUpdatesWhenSmaller::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Updates_When_Smaller::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -26,12 +26,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventUpdatesWhenSmaller:
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenLarger,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_No_Update_When_Larger,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.NoUpdateWhenLarger",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenLarger::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_No_Update_When_Larger::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -47,12 +47,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenLarger:
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenEqual,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_No_Update_When_Equal,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.NoUpdateWhenEqual",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenEqual::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_No_Update_When_Equal::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -68,12 +68,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenEqual::
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenNextIsZero,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_No_Update_When_Next_Is_Zero,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.NoUpdateWhenNextIsZero",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenNextIsZero::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_No_Update_When_Next_Is_Zero::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -89,12 +89,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoUpdateWhenNextIsZ
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventUpdatesToZero,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Updates_To_Zero,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.UpdatesToZero",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventUpdatesToZero::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Updates_To_Zero::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -110,12 +110,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventUpdatesToZero::RunT
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseResetSetsIndicesToZero,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Sets_Indices_To_Zero,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.SetsIndicesToZero",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetSetsIndicesToZero::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Sets_Indices_To_Zero::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -133,12 +133,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetSetsIndicesToZero::RunTest(const FStrin
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseResetDoesNothingWhenAlreadyZero,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Does_Nothing_When_Already_Zero,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.DoesNothingWhenAlreadyZero",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetDoesNothingWhenAlreadyZero::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Does_Nothing_When_Already_Zero::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -154,12 +154,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetDoesNothingWhenAlreadyZero::RunTest(con
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesWhenIndicesMatch,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Advances_When_Indices_Match,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.AdvancesWhenIndicesMatch",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesWhenIndicesMatch::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Advances_When_Indices_Match::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -192,12 +192,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesWhenIndicesMatch:
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotAdvanceWhenIndicesDoNotMatch,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Does_Not_Advance_When_Indices_Do_Not_Match,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.DoesNotAdvanceWhenIndicesDoNotMatch",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotAdvanceWhenIndicesDoNotMatch::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Does_Not_Advance_When_Indices_Do_Not_Match::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -230,12 +230,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotAdvanceWhenIndices
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesWithDifferentRunLengths,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Advances_With_Different_Run_Lengths,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.AdvancesWithDifferentRunLengths",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesWithDifferentRunLengths::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Advances_With_Different_Run_Lengths::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -268,12 +268,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesWithDifferentRunL
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventMultipleConsecutiveAdvances,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Multiple_Consecutive_Advances,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.MultipleConsecutiveAdvances",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventMultipleConsecutiveAdvances::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Multiple_Consecutive_Advances::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -311,12 +311,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventMultipleConsecutiveAdvanc
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithZeroVoxelIndex,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Zero_Voxel_Index,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.WithZeroVoxelIndex",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithZeroVoxelIndex::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Zero_Voxel_Index::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -349,12 +349,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithZeroVoxelIndex::RunTe
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventPreservesSmallestNextIndex,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Preserves_Smallest_Next_Index,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.PreservesSmallestNextIndex",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventPreservesSmallestNextIndex::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Preserves_Smallest_Next_Index::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -385,12 +385,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventPreservesSmallestNextInde
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventWithLargeValues,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_With_Large_Values,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.WithLargeValues",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventWithLargeValues::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_With_Large_Values::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -406,12 +406,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventWithLargeValues::Ru
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseResetMultipleTimes,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Multiple_Times,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.MultipleTimes",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetMultipleTimes::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Multiple_Times::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -432,12 +432,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetMultipleTimes::RunTest(const FString& P
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithLargerGrid,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Larger_Grid,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.WithLargerGrid",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithLargerGrid::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Larger_Grid::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -476,12 +476,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithLargerGrid::RunTest(c
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventNotAdvancedWhenIndexTooHigh,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Not_Advanced_When_Index_Too_High,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.NotAdvancedWhenIndexTooHigh",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventNotAdvancedWhenIndexTooHigh::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Not_Advanced_When_Index_Too_High::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -513,12 +513,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventNotAdvancedWhenIndexTooHi
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleVoxelGrid,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Single_Voxel_Grid,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.WithSingleVoxelGrid",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleVoxelGrid::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Single_Voxel_Grid::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -548,12 +548,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleVoxelGrid::RunT
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventSequentialDecreases,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Sequential_Decreases,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.SequentialDecreases",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventSequentialDecreases::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Sequential_Decreases::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -571,12 +571,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventSequentialDecreases
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseResetAfterAdvance,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_After_Advance,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.AfterAdvance",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetAfterAdvance::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_After_Advance::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -610,12 +610,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetAfterAdvance::RunTest(const FString& Pa
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithVeryLargeRunLengths,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Very_Large_Run_Lengths,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.WithVeryLargeRunLengths",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithVeryLargeRunLengths::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Very_Large_Run_Lengths::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -648,12 +648,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithVeryLargeRunLengths::
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesOnBoundary,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Advances_On_Boundary,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.AdvancesOnBoundary",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesOnBoundary::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Advances_On_Boundary::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -689,12 +689,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesOnBoundary::RunTe
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoChangeOnSequentialCalls,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_No_Change_On_Sequential_Calls,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.NoChangeOnSequentialCalls",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoChangeOnSequentialCalls::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_No_Change_On_Sequential_Calls::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -712,12 +712,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventNoChangeOnSequentia
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAfterReset,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_After_Reset,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.AfterReset",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAfterReset::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_After_Reset::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -748,12 +748,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAfterReset::RunTest(const
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotAdvanceWhenVoxelIndexBeyondFirstRun,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Does_Not_Advance_When_Voxel_Index_Beyond_First_Run,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.DoesNotAdvanceWhenVoxelIndexBeyondFirstRun",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotAdvanceWhenVoxelIndexBeyondFirstRun::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Does_Not_Advance_When_Voxel_Index_Beyond_First_Run::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -785,12 +785,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotAdvanceWhenVoxelIn
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventUpdatesNextIndexProgressively,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Updates_Next_Index_Progressively,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.UpdatesNextIndexProgressively",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventUpdatesNextIndexProgressively::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Updates_Next_Index_Progressively::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -825,12 +825,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventUpdatesNextIndexProgressi
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseResetPreservesEventState,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Preserves_Event_State,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.PreservesEventState",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetPreservesEventState::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Preserves_Event_State::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -860,12 +860,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetPreservesEventState::RunTest(const FStr
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventReturnsCorrectBoolValue,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Returns_Correct_Bool_Value,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.ReturnsCorrectBoolValue",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventReturnsCorrectBoolValue::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Returns_Correct_Bool_Value::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -892,12 +892,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventReturnsCorrectBoolValue::
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventMinFunctionBehavior,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Min_Function_Behavior,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.MinFunctionBehavior",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventMinFunctionBehavior::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Min_Function_Behavior::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -913,12 +913,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventMinFunctionBehavior
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventMultipleGrids,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Multiple_Grids,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.MultipleGrids",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventMultipleGrids::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Multiple_Grids::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -959,12 +959,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventMultipleGrids::RunTest(co
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseResetClearsStateCompletely,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Clears_State_Completely,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.ClearsStateCompletely",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetClearsStateCompletely::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Clears_State_Completely::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -982,12 +982,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetClearsStateCompletely::RunTest(const FS
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithIdenticalRunLengths,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Identical_Run_Lengths,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.WithIdenticalRunLengths",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithIdenticalRunLengths::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Identical_Run_Lengths::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1018,12 +1018,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithIdenticalRunLengths::
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventAllowsZeroUpdate,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Allows_Zero_Update,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.AllowsZeroUpdate",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventAllowsZeroUpdate::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Allows_Zero_Update::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1040,12 +1040,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventAllowsZeroUpdate::R
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithLargeVoxelIndex,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Large_Voxel_Index,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.WithLargeVoxelIndex",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithLargeVoxelIndex::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Large_Voxel_Index::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1076,12 +1076,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithLargeVoxelIndex::RunT
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotModifyEventWhenNotAdvanced,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Does_Not_Modify_Event_When_Not_Advanced,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.DoesNotModifyEventWhenNotAdvanced",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotModifyEventWhenNotAdvanced::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Does_Not_Modify_Event_When_Not_Advanced::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1110,12 +1110,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventDoesNotModifyEventWhenNot
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventStoresSmallestValue,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Stores_Smallest_Value,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.StoresSmallestValue",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventStoresSmallestValue::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Stores_Smallest_Value::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1133,12 +1133,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventStoresSmallestValue
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventStateIndependence,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_State_Independence,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.StateIndependence",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventStateIndependence::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_State_Independence::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1178,12 +1178,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventStateIndependence::RunTes
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventHandlesMaxUint32,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Handles_Max_Uint32,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.HandlesMaxUint32",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventHandlesMaxUint32::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Handles_Max_Uint32::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1199,12 +1199,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventHandlesMaxUint32::R
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventMaintainsLowestAcrossMixedSequence,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Maintains_Lowest_Across_Mixed_Sequence,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.MaintainsLowestAcrossMixedSequence",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventMaintainsLowestAcrossMixedSequence::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Maintains_Lowest_Across_Mixed_Sequence::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1223,12 +1223,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventMaintainsLowestAcro
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseResetClearsIndicesAfterTryUpdateSequence,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Clears_Indices_After_Try_Update_Sequence,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.ClearsIndicesAfterTryUpdateSequence",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetClearsIndicesAfterTryUpdateSequence::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_Clears_Indices_After_Try_Update_Sequence::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1247,12 +1247,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetClearsIndicesAfterTryUpdateSequence::Ru
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesAtSecondRunBoundaryFromFreshState,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Advances_At_Second_Run_Boundary_From_Fresh_State,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.AdvancesAtSecondRunBoundaryFromFreshState",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesAtSecondRunBoundaryFromFreshState::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Advances_At_Second_Run_Boundary_From_Fresh_State::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1288,12 +1288,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventAdvancesAtSecondRunBounda
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleRunBelowBoundaryDoesNotAdvance,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Single_Run_Below_Boundary_Does_Not_Advance,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.WithSingleRunBelowBoundaryDoesNotAdvance",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleRunBelowBoundaryDoesNotAdvance::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Single_Run_Below_Boundary_Does_Not_Advance::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1323,12 +1323,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleRunBelowBoundar
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleRunExactBoundaryAdvances,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Single_Run_Exact_Boundary_Advances,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.WithSingleRunExactBoundaryAdvances",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleRunExactBoundaryAdvances::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_With_Single_Run_Exact_Boundary_Advances::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1358,12 +1358,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventWithSingleRunExactBoundar
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FRDMMeshersVoxelEventMesherBaseResetAfterAdvanceAndTryUpdateRestoresCleanState,
+	FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_After_Advance_And_Try_Update_Restores_Clean_State,
 	"RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.AfterAdvanceAndTryUpdateRestoresCleanState",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetAfterAdvanceAndTryUpdateRestoresCleanState::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_After_Advance_And_Try_Update_Restores_Clean_State::RunTest(const FString& Parameters)
 {
 	// Arrange
 	UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1397,12 +1397,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetAfterAdvanceAndTryUpdateRestoresCleanSt
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
- FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventKeepsLowerValueAfterLargeCandidate,
+ FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Keeps_Lower_Value_After_Large_Candidate,
  "RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.KeepsLowerValueAfterLargeCandidate",
  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventKeepsLowerValueAfterLargeCandidate::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Keeps_Lower_Value_After_Large_Candidate::RunTest(const FString& Parameters)
 {
  // Arrange
  UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1419,12 +1419,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventKeepsLowerValueAfte
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
- FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventStableOnRepeatedEqualCandidates,
+ FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Stable_On_Repeated_Equal_Candidates,
  "RDM.RDMMeshersTests.VoxelEventMesherBase.TryUpdateNextMeshingEvent.StableOnRepeatedEqualCandidates",
  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventStableOnRepeatedEqualCandidates::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Try_Update_Next_Meshing_Event_Stable_On_Repeated_Equal_Candidates::RunTest(const FString& Parameters)
 {
  // Arrange
  UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1442,12 +1442,12 @@ bool FRDMMeshersVoxelEventMesherBaseTryUpdateNextMeshingEventStableOnRepeatedEqu
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
- FRDMMeshersVoxelEventMesherBaseResetAfterNonAdvancingAttemptClearsIndices,
+ FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_After_Non_Advancing_Attempt_Clears_Indices,
  "RDM.RDMMeshersTests.VoxelEventMesherBase.Reset.AfterNonAdvancingAttemptClearsIndices",
  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseResetAfterNonAdvancingAttemptClearsIndices::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Reset_After_Non_Advancing_Attempt_Clears_Indices::RunTest(const FString& Parameters)
 {
  // Arrange
  UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1477,12 +1477,12 @@ bool FRDMMeshersVoxelEventMesherBaseResetAfterNonAdvancingAttemptClearsIndices::
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
- FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventThirdRunBoundaryFromPresetState,
+ FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Third_Run_Boundary_From_Preset_State,
  "RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.ThirdRunBoundaryFromPresetState",
  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventThirdRunBoundaryFromPresetState::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Third_Run_Boundary_From_Preset_State::RunTest(const FString& Parameters)
 {
  // Arrange
  UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1521,12 +1521,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventThirdRunBoundaryFromPrese
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
- FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventPreBoundaryDoesNotMutateEventIndices,
+ FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Pre_Boundary_Does_Not_Mutate_Event_Indices,
  "RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.PreBoundaryDoesNotMutateEventIndices",
  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventPreBoundaryDoesNotMutateEventIndices::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Pre_Boundary_Does_Not_Mutate_Event_Indices::RunTest(const FString& Parameters)
 {
  // Arrange
  UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();
@@ -1562,12 +1562,12 @@ bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventPreBoundaryDoesNotMutateE
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
- FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventZeroLengthCurrentRunCanAdvance,
+ FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Zero_Length_Current_Run_Can_Advance,
  "RDM.RDMMeshersTests.VoxelEventMesherBase.AdvanceMeshingEvent.ZeroLengthCurrentRunCanAdvance",
  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter
 );
 
-bool FRDMMeshersVoxelEventMesherBaseAdvanceMeshingEventZeroLengthCurrentRunCanAdvance::RunTest(const FString& Parameters)
+bool FRDM_Meshers_Voxel_Event_Mesher_Base_Advance_Meshing_Event_Zero_Length_Current_Run_Can_Advance::RunTest(const FString& Parameters)
 {
  // Arrange
  UBaseVoxelDataDummy* BaseVoxelDataDummy = NewObject<UBaseVoxelDataDummy>();

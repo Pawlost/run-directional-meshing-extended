@@ -31,5 +31,5 @@ void ASingleChunkSpawner::StartMeshing(TArray<FRLEVoxelEdit>& VoxelChange)
 	MeshVar.WorldTransform = UseWorldCenter;
 	
 	MeshVar.OriginalChunk->ChunkMeshActor->SetVoxelGenerator(VoxelGenerator);
-	MeshVar.OriginalChunk->ChunkMeshActor->GenerateMesh(MeshVar, VoxelChange, BorderVisualization);
+	GenerateMesh(MeshVar, VoxelChange);
 }

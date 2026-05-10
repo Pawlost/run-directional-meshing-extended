@@ -3,7 +3,7 @@
 #include "BasicMesherData.h"
 
 // Must be struct and cannot be class because of UE reflection system limitations
-struct FVoxelEventMesherBase : FBasicMesherData
+struct RDMMESHERS_API FVoxelEventMesherBase : FBasicMesherData
 {
 	FVoxelEventMesherBase(const TObjectPtr<UBaseVoxelData> BaseVoxelData) : FBasicMesherData(BaseVoxelData)
 	{

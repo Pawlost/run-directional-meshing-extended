@@ -90,7 +90,9 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UVoxelGeneratorBase> VoxelGenerator;
 	bool bIsInitialized = false;
-
+	
+	void GenerateMesh(FMesherVariables MeshVars, TArray<FRLEVoxelEdit>& VoxelEdits) const;
+	
 private:
 	bool CheckVoxelBoundary(const FIntVector& VoxelPosition) const;
 };

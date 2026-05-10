@@ -1,29 +1,9 @@
 ﻿#include "Dummies/BaseVoxelDataDummy.h"
-#include "Dummies/BasicMesherDataDummy.h"
+#include "Dummies/BasicVoxelMesherDummy.h"
 #include "VoxelMesher/BasicVoxelMesher.h"
 #include "VirtualChunk/ChunkBorderContext.h"
 #include "VoxelMesher/MeshingUtil/VoxelMesh.h"
 #include "Misc/AutomationTest.h"
-
-struct FBasicVoxelMesherDummy : public FBasicVoxelMesher
-{
-public:
-	FBasicVoxelMesherDummy(const TObjectPtr<UBaseVoxelData> BaseVoxelData)
-		: FBasicVoxelMesher(BaseVoxelData)
-	{
-	}
-
-	using FBasicVoxelMesher::CheckBorder;
-	using FBasicVoxelMesher::CheckInnerVoxel;
-	using FBasicVoxelMesher::GenerateVirtualFaces;
-	using FBasicVoxelMesher::ConvertVirtualFacesToMesh;
-	using FBasicVoxelMesher::VoxelPosition;
-	using FBasicVoxelMesher::VoxelIndex;
-	using FBasicVoxelMesher::UpdateIndexFromPosition;
-	using FBasicVoxelMesher::VoxelGrid;
-	using FBasicVoxelMesher::TempVoxels;
-	using FBasicVoxelMesher::VoxelSideParams;
-};
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FBasicVoxelMesher_ConstructorInitializesVirtualFaces,

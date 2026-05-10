@@ -15,7 +15,7 @@ Left = 3,
 Bottom = 4,
 Top = 5
 */
-struct FVoxelEventMesher : FVoxelEventMesherBase
+struct RDMMESHERS_API FVoxelEventMesher : FVoxelEventMesherBase
 {
 public:
 	FVoxelEventMesher(const TObjectPtr<UBaseVoxelData> BaseVoxelData);
